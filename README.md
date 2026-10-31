@@ -1,9 +1,9 @@
 # DBM-CoA v5.0.5 — Deadly Boss Mods for Conquest Reborn
 
-> **[⬇ Download v5.0.5](https://github.com/downingwow/DBM-CoA/releases/download/v5.0.5/DBM-CoA-v5.0.5-Windows-Compatible-FIXED.zip)**
+> **[⬇ Download v5.0.5](https://github.com/uncle-bone/DBM-CoA/releases/download/v5.0.5/DBM-CoA-v5.0.5-Windows-Compatible-FIXED.zip)**
 
 
-**Maintained by Uncle Bone** · [CoA Research & Addons](https://coa-research.unclebone.workers.dev/) · [Report an issue](https://github.com/downingwow/DBM-CoA/issues)
+**Maintained by Uncle Bone** · [CoA Research & Addons](https://coa-research.unclebone.workers.dev/) · [Report an issue](https://github.com/uncle-bone/DBM-CoA/issues)
 
 **Current release: v5.0.5** — WoW 3.3.5a / Ascension Conquest of Azeroth / Conquest Reborn.
 
@@ -74,7 +74,7 @@ Research-backed candidate timers and learned predictions are **experimental**. S
 3. Replace old DBM addon folders with the folders from the v5.0.4 release ZIP. Keep all supplied DBM folders alongside one another; do **not** combine them into one folder.
 4. Start Conquest Reborn and play. The learner and new research features start automatically unless previously disabled in saved settings.
 
-**Release version:** v5.0.4. See [GitHub Releases](https://github.com/downingwow/DBM-CoA/releases) for the published download.
+**Release version:** v5.0.4. See [GitHub Releases](https://github.com/uncle-bone/DBM-CoA/releases) for the published download.
 
 ## Known limits
 
@@ -86,10 +86,10 @@ Research-backed candidate timers and learned predictions are **experimental**. S
 
 ## Credits, support and licensing
 
-**CoA maintainer:** Uncle Bone · [GitHub: downingwow](https://github.com/downingwow)
+**CoA maintainer:** Uncle Bone · [GitHub: uncle-bone](https://github.com/uncle-bone)
 
 **Research and addon hub:** https://coa-research.unclebone.workers.dev/
 
 Based on [Deadly Boss Mods](https://github.com/DeadlyBossMods/DeadlyBossMods) and its upstream contributors. Required third-party licensing and attribution notices remain applicable. This is a community adaptation, not an official DBM or Ascension release.
 
-[GitHub Releases](https://github.com/downingwow/DBM-CoA/releases) · [Issues](https://github.com/downingwow/DBM-CoA/issues)
+[GitHub Releases](https://github.com/uncle-bone/DBM-CoA/releases) · [Issues](https://github.com/uncle-bone/DBM-CoA/issues)
