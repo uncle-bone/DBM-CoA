@@ -1,13 +1,13 @@
-# DBM-CoA — Deadly Boss Mods for Conquest Reborn
+# DBM-CoA v5.0.4 — Deadly Boss Mods for Conquest Reborn
 
-> **[⬇ Download v5.0.3](https://github.com/downingwow/DBM-CoA/releases/download/v5.0.3/DBM-CoA-v5.0.3.zip)**
+> **[⬇ Download v5.0.4](https://github.com/downingwow/DBM-CoA/releases/download/v5.0.4/DBM-CoA-v5.0.4-Performance-TEST.zip)**
 
 
 **Maintained by Uncle Bone** · [CoA Research & Addons](https://coa-research.unclebone.workers.dev/) · [Report an issue](https://github.com/downingwow/DBM-CoA/issues)
 
-**Current release: v5.0.3** — WoW 3.3.5a / Ascension Conquest of Azeroth / Conquest Reborn.
+**Current release: v5.0.4** — WoW 3.3.5a / Ascension Conquest of Azeroth / Conquest Reborn.
 
-> **Release: v5.0.3.** Experimental dungeon mechanics remain source-derived and require in-game validation.
+> **v5.0.4 performance test:** reduces repeated instance queries and spreads large archive indexing work across timed chunks. It has not been verified in-game; keep your existing SavedVariables when updating.
 
 ## 🚨 REQUIRED UPDATE STEP: DELETE THE OLD `DBM-CoA-Observer` FOLDER
 
@@ -24,7 +24,7 @@
 
 Back up your `WTF` SavedVariables before updating. Keeping SavedVariables preserves learner history and user preferences.
 
-## What's new since v4.2.1
+## What's new since v4.2.1 (v5.0.3 baseline)
 
 ### Dungeon research and experimental timers
 
@@ -71,10 +71,10 @@ Research-backed candidate timers and learned predictions are **experimental**. S
 
 1. Close WoW and back up SavedVariables.
 2. **Delete `Interface/AddOns/DBM-CoA-Observer/` if it exists.**
-3. Replace old DBM addon folders with the folders from the current release ZIP. Keep all supplied DBM folders alongside one another; do **not** combine them into one folder.
+3. Replace old DBM addon folders with the folders from the v5.0.4 release ZIP. Keep all supplied DBM folders alongside one another; do **not** combine them into one folder.
 4. Start Conquest Reborn and play. The learner and new research features start automatically unless previously disabled in saved settings.
 
-**Release version:** v5.0.3. See [GitHub Releases](https://github.com/downingwow/DBM-CoA/releases) for the published download.
+**Release version:** v5.0.4. See [GitHub Releases](https://github.com/downingwow/DBM-CoA/releases) for the published download.
 
 ## Known limits
 
