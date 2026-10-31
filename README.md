@@ -1,13 +1,13 @@
-# DBM-CoA v5.0.4 — Deadly Boss Mods for Conquest Reborn
+# DBM-CoA v5.0.5 — Deadly Boss Mods for Conquest Reborn
 
-> **[⬇ Download v5.0.4](https://github.com/downingwow/DBM-CoA/releases/download/v5.0.4/DBM-CoA-v5.0.4-Performance-TEST.zip)**
+> **[⬇ Download v5.0.5](https://github.com/downingwow/DBM-CoA/releases/download/v5.0.5/DBM-CoA-v5.0.5-Windows-Compatible-FIXED.zip)**
 
 
 **Maintained by Uncle Bone** · [CoA Research & Addons](https://coa-research.unclebone.workers.dev/) · [Report an issue](https://github.com/downingwow/DBM-CoA/issues)
 
-**Current release: v5.0.4** — WoW 3.3.5a / Ascension Conquest of Azeroth / Conquest Reborn.
+**Current release: v5.0.5** — WoW 3.3.5a / Ascension Conquest of Azeroth / Conquest Reborn.
 
-> **v5.0.4 performance test:** reduces repeated instance queries and spreads large archive indexing work across timed chunks. It has not been verified in-game; keep your existing SavedVariables when updating.
+> **v5.0.5 Windows-compatible fixed build.** Keep your existing SavedVariables when updating.
 
 ## 🚨 REQUIRED UPDATE STEP: DELETE THE OLD `DBM-CoA-Observer` FOLDER
 
