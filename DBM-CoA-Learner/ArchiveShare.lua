@@ -5,6 +5,8 @@ local PREFIX="DCOAR21"
 local KINDS={"N","S","Q","I"}
 local f=CreateFrame("Frame")
 local tick,announce=0,0
+local networkPaused=true
+local networkResumeAt=math.huge
 local queue,requests,seenRequests={}, {}, {}
 local queueHead=1
 local archiveDiag={hash=0,request=0,data=0,invalid=0,paused=0,indexPending=0}
@@ -61,7 +63,7 @@ local function coaSyncSuspended()
 end
 local function send(payload)
  local db=getDB()
- if coaSyncSuspended() or not db or db.sharingDisabled or db.channelDisabled or db.channelUnsafe or db.archiveSharingDisabled then return false end
+ if networkPaused or GetTime()<networkResumeAt or coaSyncSuspended() or not db or db.sharingDisabled or db.channelDisabled or db.channelUnsafe or db.archiveSharingDisabled then return false end
  local id=channelId()
  if not id or #payload>230 or not payload:match("^[%w ;%-_%.%,:]+$") then return false end
  return pcall(SendChatMessage,payload,"CHANNEL",nil,id)
@@ -131,7 +133,11 @@ local function receive(msg,sender)
 end
 f:RegisterEvent("ADDON_LOADED")
 f:RegisterEvent("CHAT_MSG_CHANNEL")
+f:RegisterEvent("PLAYER_ENTERING_WORLD")
+f:RegisterEvent("PLAYER_LEAVING_WORLD")
 f:SetScript("OnEvent",function(self,event,...)
+ if event=="PLAYER_LEAVING_WORLD" then networkPaused=true;networkResumeAt=math.huge;return end
+ if event=="PLAYER_ENTERING_WORLD" then networkPaused=false;networkResumeAt=GetTime()+10;return end
  if event=="ADDON_LOADED" then
   if ...=="DBM-CoA-Learner" then getDB() end
  elseif event=="CHAT_MSG_CHANNEL" then
@@ -144,7 +150,7 @@ end)
 local cursor=0
 f:SetScript("OnUpdate",function(self,dt)
  tick=tick+dt;announce=announce+dt
- if coaSyncSuspended() then return end
+ if networkPaused or GetTime()<networkResumeAt or coaSyncSuspended() then return end
  if not indexReady then
   -- One compressed archive chunk per frame at most; never parse during combat.
   indexStep()
