@@ -14,6 +14,8 @@ local pendingDirty=false
 local peers={}
 local rx={hello=0,summary=0,request=0,data=0,ack=0,invalid=0,duplicate=0,applied=0,queued=0,throttled=0}
 local seq=0
+local initialHello=false
+local BASELINE_ID="CoAArchive-N-S-Q-I-v1"
 local function now() return GetTime() end
 local function log(msg) if DEFAULT_CHAT_FRAME then DEFAULT_CHAT_FRAME:AddMessage("|cff66ccffDBM-CoA SmartSync v3|r "..msg) end end
 local function hash(s)
@@ -161,6 +163,7 @@ f:SetScript("OnEvent",function(self,event,...)
   if ...~="DBM-CoA-Learner" then return end
   db=DBMCoALearnerDB
   if db and db.smartSync3Disabled==nil then db.smartSync3Disabled=false end
+  if db then db.smartSync3=db.smartSync3 or {};db.smartSync3.schema=3;db.smartSync3.baseline=BASELINE_ID end
  elseif event=="PLAYER_LEAVING_WORLD" then paused=true;resumeAt=math.huge
  elseif event=="PLAYER_ENTERING_WORLD" then paused=false;resumeAt=now()+10
  elseif event=="CHAT_MSG_CHANNEL" then
@@ -177,6 +180,7 @@ f:SetScript("OnUpdate",function(self,dt)
  if tick<1.5 then return end
  tick=0
  if dirty then buildStep();return end
+ if not initialHello then initialHello=true;enqueue("H;3") end
  if not enabled() or (InCombatLockdown and InCombatLockdown()) then return end
  if head<=#queue then
   if send(queue[head]) then
@@ -197,7 +201,7 @@ SlashCmdList.COASMART3=function(arg)
  elseif arg=="hello" then enqueue("H;3")
  elseif arg=="rebuild" then DBMCoASmartSync3Dirty() end
  local n=0;for _,p in pairs(peers) do if now()-p.last<180 then n=n+1 end end
- log("enabled="..tostring(not db.smartSync3Disabled).." index="..(ready and "ready" or "building").." peers="..n.." queue="..math.max(0,#queue-head+1).." H/S/R/D="..rx.hello.."/"..rx.summary.."/"..rx.request.."/"..rx.applied.." duplicates="..rx.duplicate.." rejected="..rx.invalid.." throttled="..rx.throttled)
+ log("baseline="..BASELINE_ID.." learned="..tostring(db.knowledge and "persistent" or "none").." enabled="..tostring(not db.smartSync3Disabled).." index="..(ready and "ready" or "building").." peers="..n.." queue="..math.max(0,#queue-head+1).." H/S/R/D="..rx.hello.."/"..rx.summary.."/"..rx.request.."/"..rx.applied.." duplicates="..rx.duplicate.." rejected="..rx.invalid.." throttled="..rx.throttled)
 end
 
 -- Separate settings category avoids clipping the existing 3.3.5 interface panel.
