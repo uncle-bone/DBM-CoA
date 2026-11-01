@@ -38,13 +38,19 @@ checkbox("Automatic encounter recording","Collect observed spells and NPC inform
 header("Synchronization",-151)
 checkbox("Share learned data","Uses BBLC25C; automatically joins after 20 seconds if missing.","sharingDisabled",-171,true)
 checkbox("Batch synchronization","Conservative batch sending; turn off for single-record compatibility.","fastSyncDisabled",-224,true)
-header("Warnings and timers",-285)
-checkbox("Experimental encounter warnings","Observed mechanics only; may be inaccurate until corroborated.","experimentalDisabled",-305,true)
-header("Status window",-366)
-checkbox("Show draggable status window","Close with X to hide it; recording and sharing continue.","hideStatus",-386,true,function(hidden)
+checkbox("Receive old DBM-CoA messages","Keep compatibility with older discovery and timing formats.","legacyReceiveDisabled",-277,true)
+header("Warnings and timers",-344)
+checkbox("Experimental encounter warnings","Observed mechanics only; may be inaccurate until corroborated.","experimentalDisabled",-364,true)
+header("Status window",-425)
+checkbox("Show draggable status window","Close with X to hide it; recording and sharing continue.","hideStatus",-445,true,function(hidden)
  local frame=_G.DBMCoALearnerStatus
  if frame then if hidden then frame:Hide() else frame:Show() end end
 end)
 local hint=panel:CreateFontString(nil,"ARTWORK","GameFontHighlightSmall")
-hint:SetPoint("TOPLEFT",16,-450);hint:SetText("Responsive addon peers are shown in the status window (last 3 minutes).")
+hint:SetPoint("TOPLEFT",16,-498);hint:SetText("Responsive addon peers are shown in the status window (last 3 minutes).")
+local intensity=CreateFrame("Button",nil,panel,"UIPanelButtonTemplate")
+intensity:SetWidth(185);intensity:SetHeight(23);intensity:SetPoint("TOPLEFT",16,-241)
+local function updateIntensity() local db=DBMCoALearnerDB or {};intensity:SetText("Sharing intensity: "..(db.syncIntensity or "Normal")) end
+intensity:SetScript("OnClick",function() local db=DBMCoALearnerDB;if not db then return end;local v=db.syncIntensity or "Normal";db.syncIntensity=(v=="Low" and "Normal" or v=="Normal" and "Fast" or "Low");updateIntensity() end)
+intensity:SetScript("OnShow",updateIntensity)
 if type(InterfaceOptions_AddCategory)=="function" then InterfaceOptions_AddCategory(panel) end
