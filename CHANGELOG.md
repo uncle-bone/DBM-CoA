@@ -1,10 +1,8 @@
-## 5.1.1-TEST — Legacy network safety (development checkpoint)
-- Preserve DCOAL31 discovery/timing and DCOAR21 archive protocols.
-- Pause outbound traffic through loading screens, with a 10-second resume gate.
-- Suppress login/upgrade full-record backfill and relay rebroadcasts.
-- Skip network sends during combat; introduce Low / Normal / Fast pacing.
-- Add legacy receiving preference to the settings GUI.
-- This checkpoint is NOT a complete SmartSync v3 implementation; no packaged release yet.
+## 5.1.2 — Stable learner tracker update
+- Keep a maintained learner discovery counter instead of recounting the full table on each tracker refresh.
+- Preserve the learner tracker position when the window is recreated.
+- Preserve existing learned data and SavedVariables.
+- Full SmartSync v3 and in-game validation of research-derived mechanics remain outstanding.
 
 # Changelog
 
