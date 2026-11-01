@@ -183,7 +183,7 @@ local function syncSend(payload)
  if type(id)~="number" or id<=0 or type(SendChatMessage)~="function" then return false end
  local msg=PREFIX..";"..payload
  if #msg>240 or msg:find("[^%w ;%-_%.|]") then lastSyncError="invalid payload";return false end
- local ok,err=pcall(SendChatMessage,msg,"CHANNEL",nil,id)
+ local ok,err=DBMCoAChannelSend(msg,id)
  if ok then sent=sent+1;if payload:sub(1,2)=="D;" then discoverySent=discoverySent+1 elseif payload:sub(1,2)=="T;" then timingSent=timingSent+1 else pingSent=pingSent+1 end;lastSyncError="none" else lastSyncError=tostring(err):sub(1,80) end
  return ok
 end
@@ -535,7 +535,7 @@ f:SetScript("OnUpdate",function(self,dt)
   if InCombatLockdown and InCombatLockdown() then return end
  syncClock=syncClock+dt
  if retryWait>0 then retryWait=math.max(0,retryWait-dt) end
- local interval=db.syncIntensity=="Low" and 2 or (db.syncIntensity=="Fast" and 0.75 or 1.25)
+ local interval=db.syncIntensity=="Low" and 3 or (db.syncIntensity=="Fast" and 1.1 or 1.75)
   if syncClock<interval or retryWait>0 then return end
  -- Consume one time slot even on failure: never send in a rapid burst.
  syncClock=0
@@ -582,7 +582,7 @@ f:SetScript("OnUpdate",function(self,dt)
  else
   -- Low-frequency presence heartbeat, not an endless discovery rebroadcast.
   syncSeq=syncSeq+1
-  if syncSeq>=60 then syncSeq=0;payload="H;1";kind="heartbeat" end
+  if syncSeq>=600 then syncSeq=0;payload="H;1";kind="heartbeat" end
  end
  if not payload then return end
  if syncSend(payload) then
