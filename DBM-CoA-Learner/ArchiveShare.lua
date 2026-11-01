@@ -66,10 +66,10 @@ local function send(payload)
  if networkPaused or GetTime()<networkResumeAt or coaSyncSuspended() or not db or db.sharingDisabled or db.channelDisabled or db.channelUnsafe or db.archiveSharingDisabled then return false end
  local id=channelId()
  if not id or #payload>230 or not payload:match("^[%w ;%-_%.%,:]+$") then return false end
- return pcall(SendChatMessage,payload,"CHANNEL",nil,id)
+ return DBMCoAChannelSend(payload,id)
 end
 local function enqueue(s)
- if #queue-queueHead<5000 then queue[#queue+1]=s end
+ if #queue-queueHead<200 then queue[#queue+1]=s end
 end
 local function receive(msg,sender)
  if type(msg)~="string" or #msg>230 or msg:sub(1,8)~=PREFIX..";" then return end
@@ -152,8 +152,8 @@ f:SetScript("OnUpdate",function(self,dt)
  tick=tick+dt;announce=announce+dt
  if networkPaused or GetTime()<networkResumeAt or coaSyncSuspended() then return end
  if not indexReady then
-  -- One compressed archive chunk per frame at most; never parse during combat.
-  indexStep()
+  -- Bound archive index work to one chunk per 100 ms.
+  if tick>=0.1 then tick=0;indexStep() end
   return
  end
  if tick<3 then return end
@@ -169,7 +169,7 @@ f:SetScript("OnUpdate",function(self,dt)
    queue[queueHead]=false;queueHead=queueHead+1
    if queueHead>#queue then queue={};queueHead=1 end
   end
- elseif announce>=12 then
+ elseif announce>=3600 then
   announce=0
   local kind=KINDS[math.floor(cursor/64)+1]
   local bucket=cursor%64
