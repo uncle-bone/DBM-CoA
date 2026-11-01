@@ -66,8 +66,8 @@ local function ensureSyncChannel()
  if type(id)=="number" and id>0 then return end
  if joinGrace<20 or joinRetry>0 then return end
  -- Joining is independent of the sharing pause; traffic remains paused in instances.
- pcall(JoinChannelByName,SYNC_CHANNEL)
- joinRetry=20
+ -- Existing-channel-only safety mode: do not risk taking an occupied channel slot.
+ joinRetry=60
 end
 local function verifyChannels() end
 local function say(s) if DEFAULT_CHAT_FRAME then DEFAULT_CHAT_FRAME:AddMessage("|cff66ccffDBM-CoA|r "..s) end end
