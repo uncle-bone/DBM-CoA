@@ -185,7 +185,9 @@ end
 local panel=CreateFrame("Frame","DBMCoASmartSync3Panel",UIParent)
 panel.name="DBM-CoA SmartSync v3"
 local title=panel:CreateFontString(nil,"ARTWORK","GameFontNormalLarge")
-title:SetPoint("TOPLEFT",16,-16);title:SetText("DBM-CoA | SmartSync v3")
+title:SetPoint("TOPLEFT",16,-16)
+local version=(GetAddOnMetadata and GetAddOnMetadata("DBM-CoA-Learner","Version")) or "unknown"
+title:SetText("DBM-CoA | SmartSync v3 | "..version)
 local help=panel:CreateFontString(nil,"ARTWORK","GameFontHighlight")
 help:SetPoint("TOPLEFT",title,"BOTTOMLEFT",0,-16)
 help:SetText("Incremental discovery reconciliation on BBLC25C. Legacy receive stays available.")
