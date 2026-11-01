@@ -1,3 +1,13 @@
+## 5.2.0-TEST — Additive encounter database synchronization
+- Keep packaged CoA archive baseline separate from persistent per-character learned encounter records; record SmartSync v3 schema and baseline identity without rewriting old SavedVariables.
+- Extend DCOAS3: HELLO/SUMMARY mismatch -> fingerprint inventory (I/K) -> request only absent record hashes (R) -> validated record transfer (D) -> optional ACK.
+- Incrementally build 32 fingerprint buckets, with constant-time per-bucket fingerprint lookup and bounded 20-record inventory windows.
+- Reconcile in both directions through each client's independent HELLO/SUMMARY; add one initial handshake after indexing.
+- Retain shared one-outgoing-message-per-1.05-seconds DBM throttle across DCOAL31, DCOAR21 and DCOAS3, existing-channel-only BBLC25C mode, and 12 v3 inbound messages per sender per 10 seconds.
+- Never replace existing learned records or automatically rebroadcast received discoveries.
+- Correct Learner TOC version to 5.2.0-TEST.
+- Experimental: no in-game multi-client validation; timing aggregates and robust collision-resistant inventory paging remain outstanding. Old clients can still transmit rapidly; local throttle cannot constrain remote addons.
+
 ## 5.1.8-TEST — SmartSync anti-spam safety checkpoint
 - Route all three DBM-CoA protocol senders (DCOAL31, DCOAR21, DCOAS3) through a single shared hard gate of at most one outgoing message per 1.05 seconds.
 - Suppress routine legacy heartbeat and SmartSync v3 HELLO traffic; archive announcements reduced to at most hourly.
