@@ -1,11 +1,11 @@
-# DBM-CoA v5.1.8 — Stable
+# DBM-CoA v5.2.0-TEST — Database-based SmartSync v3
 
-Current stable package for WoW 3.3.5a / Ascension Conquest Reborn, promoted from the latest v5.1.7-TEST development build.
+Separate shipped archive baseline from persistent learned encounter discoveries. The DCOAS3 protocol now exchanges compact per-record inventory hashes and requests missing records individually instead of transferring entire mismatched buckets. Incremental index building, rate limiting, strict validation and additive merges are retained.
 
-- Corrects the main DBM window's displayed CoA version and maintainer/repository branding.
-- Includes the latest learner tracker and SmartSync v3 discovery-reconciliation work from the current main branch.
-- Packages all 26 DBM addon folders and preserves existing SavedVariables and learned data.
+The v5.1.9 shared outgoing DBM throttle remains: at most one outgoing message per 1.05 seconds across all three DBM protocols on BBLC25C. It cannot control traffic from other players' older addons.
 
-Known limitations: SmartSync v3 still requires live client-to-client validation. Research-derived timers and custom Conquest Reborn encounter behavior still need in-game validation. Back up SavedVariables before updating.
+Run /coasmart3 for diagnostics and /coasmart3 hello to start a handshake. Legacy discovery and archive protocols remain available.
+
+TEST limitations: no live multi-client test or simulated peer harness run; timing aggregates not reconciled through v3, hash collisions and paging remain edge cases, and the addon will not automatically join BBLC25C if absent. Back up SavedVariables before installation.
 
 Maintainer: Uncle Bone
