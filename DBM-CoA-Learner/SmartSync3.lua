@@ -57,7 +57,7 @@ local function buildStep()
   rebuildKeys={}
   for k in pairs(db.knowledge or {}) do rebuildKeys[#rebuildKeys+1]=k end
   rebuildPos=1;buckets={};keys={}
-  for i=0,31 do buckets[i]={count=0,digest=0,records={}} end
+  for i=0,31 do buckets[i]={count=0,digest=0,records={},hashes={}} end
  end
  local stop=math.min(#rebuildKeys,rebuildPos+79)
  for i=rebuildPos,stop do
@@ -67,6 +67,7 @@ local function buildStep()
    local v=buckets[b]
    v.count=v.count+1;v.digest=(v.digest+hash(encoded))%2147483647
    v.records[#v.records+1]=encoded
+   v.hashes[hash(encoded)]=encoded
    keys[encoded]=true
   end
  end
@@ -123,8 +124,7 @@ local function receive(msg,sender)
   local b,h=payload:match("^K;(%d+);(%d+)$")
   b=tonumber(b);h=tonumber(h)
   if not b or b>31 or not h or h>2147483646 then rx.invalid=rx.invalid+1;return end
-  local found=false
-  for _,entry in ipairs(buckets[b].records) do if hash(entry)==h then found=true;break end end
+  local found=buckets[b].hashes[h]~=nil
   if not found and t-(p["want"..h] or -1000)>180 then
    p["want"..h]=t;enqueue("R;"..b..";"..h)
   end
@@ -136,7 +136,8 @@ local function receive(msg,sender)
   rx.request=rx.request+1
   if t-(p["serve"..h] or -1000)<180 then return end
   p["serve"..h]=t
-  for _,entry in ipairs(buckets[b].records) do if hash(entry)==h then enqueue("D;"..entry);break end end
+  local entry=buckets[b].hashes[h]
+  if entry then enqueue("D;"..entry) end
  elseif payload:sub(1,2)=="D;" then
   local kind,inst,diff,nid,sid,name=payload:match("^D;([NS]);([^;]+);(%d+);(%d+);(%d+);([^;]*)$")
   if not kind then rx.invalid=rx.invalid+1;return end
