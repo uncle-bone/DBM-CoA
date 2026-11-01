@@ -1,16 +1,16 @@
-# DBM-CoA v5.1.1 — Legacy Network Safety TEST
+# DBM-CoA v5.1.2 — Stable
 
-Experimental checkpoint, **not** full SmartSync v3.
+This release packages the current DBM-CoA main branch, including the latest learner tracker optimization.
 
-- Keep existing `DCOAL31` discovery/timing and `DCOAR21` archive reception formats.
-- Suspend outbound transmissions on loading-screen exit and resume no sooner than 10 seconds after entering the world.
-- Avoid full saved-data broadcast on login/upgrade.
-- Stop network sends during combat and preserve normal boss timers and learning.
-- Prevent automatic relay of imported discovery messages.
-- Add legacy receiving checkbox and Low / Normal / Fast sharing intensity selector.
+## Included
+- Maintains a running learner discovery count to avoid repeatedly recounting the full table during tracker refreshes.
+- Preserves the learner tracker position when it is recreated.
+- Includes all 26 DBM addon folders for WoW 3.3.5a / Conquest Reborn.
+- Keeps existing SavedVariables and learned data.
 
-**Not yet implemented:** full SmartSync v3 HELLO/SUMMARY/DIFF/REQUEST/DATA/ACK handshake, record fingerprints, peer-specific retransmission, chunking, and cross-version integration tests.
+## Known limitations
+- Full SmartSync v3 handshake and record synchronization are not implemented.
+- Research-derived timers and custom Conquest Reborn encounter mechanics still need in-game validation.
+- The tracker optimization has not had a fresh in-game regression pass.
 
-Preserve existing SavedVariables and extract all 26 DBM folders into `Interface/AddOns`. Live gameplay compatibility is not yet validated.
-
-Maintainer: Uncle Bone — https://github.com/uncle-bone/
+Maintainer: Uncle Bone
