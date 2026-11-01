@@ -11,13 +11,13 @@ local retryDelay, retryWait = 1, 0
 local controlQueue = {} -- Ping/pong use the same rate limiter as discoveries.
 local MAX_CONTROL_QUEUE=12
 local PREFIX="DCOAL31" -- keep v3.3 discovery protocol compatible
-local MAX_QUEUE=20000
+local MAX_QUEUE=1500 -- bounded outgoing discovery queue
 local batchSent=0
 local backfillDone=false
 local timingQueue, timingQueued, relayQueued = {}, {}, {}
 local timingSent, timingReceived, timingDuplicates, relaySent = 0,0,0,0
 local lastAbility = {}
-local MAX_TIMING_QUEUE=4000
+local MAX_TIMING_QUEUE=600
 local MAX_INTERVAL=600
 local RELAY_LIMIT=2
 local lastSyncError="none"
@@ -34,6 +34,8 @@ local peerCount=0
 local statusFrame, statusText
 local known = {}
 local knowledgeCount=0
+local lastZoneSignature=nil
+local loadingAnnounced=false
 local perf={statusRefreshes=0,combatEvents=0,storedEvents=0,droppedEvents=0,discoveries=0}
 -- Channel setup is optional and separate from recording. This release does not transmit data.
 local SYNC_CHANNEL="BBLC25C" -- shared with LootCollector; do not own or alter membership
@@ -139,6 +141,9 @@ end
 local function refresh()
  if not db then return end
  local z=zone()
+ local sig=tostring(z.instance).."|"..tostring(z.type).."|"..tostring(z.map).."|"..tostring(z.difficulty)
+ if sig==lastZoneSignature then return end
+ lastZoneSignature=sig
  observeInstance(z)
  if recording then
   if session.type=="coa_event" and z.type=="none" and UnitAffectingCombat and UnitAffectingCombat("player") then z.type="coa_event";z.instance="World Events" end
@@ -287,7 +292,7 @@ local function receive(msg,sender)
  if not nid or nid<1 or nid>100000000 or not sid or sid>100000000 or not diff or diff>100 then rejected=rejected+1;rxMark("badValues");lastReceive="invalid discovery values";return end
  local key=table.concat({kind,inst,tostring(diff),tostring(nid),tostring(sid)},";")
  if known[key] then duplicates=duplicates+1;return end
- known[key]=true;received=received+1
+ known[key]=true;knowledgeCount=knowledgeCount+1;received=received+1
  db.knowledge=db.knowledge or {}
  db.knowledge[key]={kind=kind,instance=inst,difficulty=diff,npc=nid,spell=sid,name=label,seen=date("%Y-%m-%d %H:%M"),remote=true}
  -- Received legacy discoveries remain stored locally; no automatic network relay.
@@ -484,6 +489,7 @@ f:SetScript("OnEvent",function(self,event,...)
    if db.legacyReceiveDisabled==nil then db.legacyReceiveDisabled=false end
    if db.syncIntensity==nil then db.syncIntensity="Normal" end
    makeStatus()
+   say("Learner loaded: "..knowledgeCount.." discoveries, "..#db.sessions.." sessions. Initializing encounter tracking...")
   -- Preserve old recordings; default to automatic operation.
   refresh();return
  end
@@ -497,11 +503,11 @@ f:SetScript("OnEvent",function(self,event,...)
   return
  end
  if event=="PLAYER_LEAVING_WORLD" then networkPaused=true;networkResumeAt=math.huge;return end
-  if event=="PLAYER_ENTERING_WORLD" then networkPaused=false;networkResumeAt=clock()+10;syncClock=0;refresh();return end
-  if event=="ZONE_CHANGED_NEW_AREA" then refresh();return end
+  if event=="PLAYER_ENTERING_WORLD" then networkPaused=false;networkResumeAt=clock()+10;syncClock=0;lastZoneSignature=nil;refresh();if not loadingAnnounced then loadingAnnounced=true;say("Learner ready: tracking enabled; sharing resumes after loading guard.") end;return end
+  if event=="ZONE_CHANGED_NEW_AREA" then lastZoneSignature=nil;refresh();return end
  if event=="CHANNEL_UI_UPDATE" or event=="UPDATE_CHAT_WINDOWS" or event=="CHAT_MSG_CHANNEL_NOTICE" then hideSyncChannel();return end
  if not recording then return end
- if event=="PLAYER_TARGET_CHANGED" then refresh();target()
+ if event=="PLAYER_TARGET_CHANGED" then target()
  elseif event=="COMBAT_LOG_EVENT_UNFILTERED" then combat(...)
  elseif event=="PLAYER_REGEN_DISABLED" or event=="PLAYER_REGEN_ENABLED" then add(event)
  elseif event=="CHAT_MSG_MONSTER_YELL" or event=="CHAT_MSG_MONSTER_EMOTE" or event=="CHAT_MSG_RAID_BOSS_EMOTE" then local msg,sender=...;add(event,nil,sender,nil,nil,nil,nil,msg) end
@@ -513,10 +519,7 @@ f:SetScript("OnUpdate",function(self,dt)
  if joinRetry>0 then joinRetry=math.max(0,joinRetry-dt) end
  if elapsed>=2 then
   local delta=elapsed;elapsed=0
-  if db then refresh() end
   updateStatus()
-  local sig=channelSignature()
-  if sig and sig==previousSignature then stableSeconds=stableSeconds+delta else stableSeconds=0;previousSignature=sig end
   channelElapsed=channelElapsed+delta
   if channelElapsed>=10 then
    channelElapsed=0
@@ -622,5 +625,5 @@ SlashCmdList.DBMCOA=function(s)
  elseif s=="on" then db.disabled=false;refresh();say("Automatic recording enabled")
  elseif s=="clear" then db.sessions={};say("Saved sessions cleared")
  elseif s=="save" then save();refresh();say("Current recording saved (if any)")
- else say("Automatic in instances. Settings: /dbmcoa options. Commands: /dbmcoa status | on | off | save | clear | channel on | channel off | share on/off | fast on/off | experimental on/off | ping | syncdebug | ui on/off") end
+ else say("Automatic in instances. Settings: /dbmcoa options. Commands: /dbmcoa status | on | off | save | clear | channel on | channel off | share on/off | fast on/off | experimental on/off | ping | syncdebug | ui on/off | perf") end
 end
