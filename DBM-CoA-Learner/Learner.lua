@@ -288,10 +288,7 @@ local function receive(msg,sender)
  known[key]=true;received=received+1
  db.knowledge=db.knowledge or {}
  db.knowledge[key]={kind=kind,instance=inst,difficulty=diff,npc=nid,spell=sid,name=label,seen=date("%Y-%m-%d %H:%M"),remote=true}
- -- Relay newly imported discoveries once; never relay a record already known.
- if #syncQueue<MAX_QUEUE and not relayQueued[key] then
-  relayQueued[key]=true;syncQueue[#syncQueue+1]=key
- end
+ -- Received legacy discoveries remain stored locally; no automatic network relay.
 end
 -- CHAT_MSG_CHANNEL differs between client builds. Accept the channel's base
 -- name, display name, or its local numeric index, but never unrelated channels.
