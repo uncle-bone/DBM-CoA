@@ -1,6 +1,6 @@
 {
-  "version": "v5.1.7",
-  "prerelease": true,
+  "version": "v5.1.8",
+  "prerelease": false,
   "folders": [
     "DBM-AQ20",
     "DBM-AQ40",
