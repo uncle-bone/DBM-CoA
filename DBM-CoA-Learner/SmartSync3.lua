@@ -177,3 +177,22 @@ SlashCmdList.COASMART3=function(arg)
  local n=0;for _,p in pairs(peers) do if now()-p.last<180 then n=n+1 end end
  log("enabled="..tostring(not db.smartSync3Disabled).." index="..(ready and "ready" or "building").." peers="..n.." queue="..math.max(0,#queue-head+1).." H/S/R/D="..rx.hello.."/"..rx.summary.."/"..rx.request.."/"..rx.applied.." duplicates="..rx.duplicate.." rejected="..rx.invalid.." throttled="..rx.throttled)
 end
+
+-- Separate settings category avoids clipping the existing 3.3.5 interface panel.
+local panel=CreateFrame("Frame","DBMCoASmartSync3Panel",UIParent)
+panel.name="DBM-CoA SmartSync v3"
+local title=panel:CreateFontString(nil,"ARTWORK","GameFontNormalLarge")
+title:SetPoint("TOPLEFT",16,-16);title:SetText("DBM-CoA | SmartSync v3")
+local help=panel:CreateFontString(nil,"ARTWORK","GameFontHighlight")
+help:SetPoint("TOPLEFT",title,"BOTTOMLEFT",0,-16)
+help:SetText("Incremental discovery reconciliation on BBLC25C. Legacy receive stays available.")
+local check=CreateFrame("CheckButton",nil,panel,"InterfaceOptionsCheckButtonTemplate")
+check:SetPoint("TOPLEFT",16,-100)
+local label=check:CreateFontString(nil,"ARTWORK","GameFontNormal")
+label:SetPoint("LEFT",check,"RIGHT",5,0);label:SetText("Enable SmartSync v3 (recommended)")
+check:SetScript("OnShow",function(self) self:SetChecked(db and not db.smartSync3Disabled) end)
+check:SetScript("OnClick",function(self) if db then db.smartSync3Disabled=not self:GetChecked() end end)
+local status=panel:CreateFontString(nil,"ARTWORK","GameFontHighlightSmall")
+status:SetPoint("TOPLEFT",16,-155)
+status:SetText("Use /coasmart3 for peer, queue and reconciliation diagnostics.")
+if type(InterfaceOptions_AddCategory)=="function" then InterfaceOptions_AddCategory(panel) end
