@@ -79,7 +79,7 @@ local function send(msg)
  return pcall(SendChatMessage,PREFIX..";"..msg,"CHANNEL",nil,id)
 end
 local function receive(msg,sender)
- if not enabled() or suspended() or paused or now()<resumeAt or not ready then return end
+ if not enabled() or suspended() or paused or now()<resumeAt then return end
  if type(msg)~="string" or #msg>240 or msg:sub(1,#PREFIX+1)~=PREFIX..";" then return end
  if not msg:match("^[%w ;%-_%.|]+$") then rx.invalid=rx.invalid+1;return end
  local p=peers[sender or "?"] or {last=0,window=0,count=0}
@@ -90,9 +90,11 @@ local function receive(msg,sender)
  p.last=t;peers[sender or "?"]=p
  local payload=msg:sub(#PREFIX+2)
  if payload=="H;3" then
+  if not ready then return end
   rx.hello=rx.hello+1
   for i=0,31 do local b=buckets[i];enqueue("S;"..i..";"..b.count..";"..b.digest) end
  elseif payload:sub(1,2)=="S;" then
+  if not ready then return end
   local b,c,h=payload:match("^S;(%d+);(%d+);(%d+)$")
   b=tonumber(b);c=tonumber(c);h=tonumber(h)
   if not b or b>31 or not c or not h then rx.invalid=rx.invalid+1;return end
@@ -102,6 +104,7 @@ local function receive(msg,sender)
    p["request"..b]=t;enqueue("R;"..b)
   end
  elseif payload:sub(1,2)=="R;" then
+  if not ready then return end
   local b=tonumber(payload:match("^R;(%d+)$"))
   if not b or b>31 then rx.invalid=rx.invalid+1;return end
   rx.request=rx.request+1
