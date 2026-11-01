@@ -32,7 +32,7 @@ local function enabled()
  return db and db.smartSync3Disabled~=true and db.sharingDisabled~=true and db.channelDisabled~=true and db.channelUnsafe~=true
 end
 local function enqueue(msg)
- if #queue-head+1>=MAX_PENDING or #msg>235 or not msg:match("^[%w ;%-_%.|]+$") then return false end
+ if #queue-head+1>=MAX_PENDING or #msg>231 or not msg:match("^[%w ;%-_%.|]+$") then return false end
  queue[#queue+1]=msg;rx.queued=rx.queued+1;return true
 end
 local function record(key,e)
@@ -126,6 +126,7 @@ local function receive(msg,sender)
   if type(DBMCoALearnerNoteRemote)=="function" then DBMCoALearnerNoteRemote(key) end
   -- Do not relay received records automatically; next digest reconciliation handles them.
   dirty=true
+  if rx.applied%10==0 then enqueue("A;"..rx.applied) end
  elseif payload:sub(1,2)=="A;" then rx.ack=rx.ack+1
  else rx.invalid=rx.invalid+1 end
 end
