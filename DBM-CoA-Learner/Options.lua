@@ -1,8 +1,13 @@
--- DBM-CoA v3.8 test settings, WoW 3.3.5 compatible.
+-- DBM-CoA settings; version read from installed addon metadata (WoW 3.3.5a).
 local panel=CreateFrame("Frame","DBMCoAOptionsPanel",UIParent)
 panel.name="DBM-CoA"
 local title=panel:CreateFontString(nil,"ARTWORK","GameFontNormalLarge")
-title:SetPoint("TOPLEFT",16,-16);title:SetText("DBM-CoA | Test Settings")
+title:SetPoint("TOPLEFT",16,-16)
+local function addonVersion()
+ return (type(GetAddOnMetadata)=="function" and GetAddOnMetadata("DBM-CoA-Learner","Version")) or "unknown"
+end
+title:SetText("DBM-CoA | v"..tostring(addonVersion()):gsub("^v",""))
+panel:SetScript("OnShow",function() title:SetText("DBM-CoA | v"..tostring(addonVersion()):gsub("^v","")) end)
 local subtitle=panel:CreateFontString(nil,"ARTWORK","GameFontHighlightSmall")
 subtitle:SetPoint("TOPLEFT",title,"BOTTOMLEFT",0,-10)
 subtitle:SetText("Shared channel: BBLC25C (auto-joins after 20 seconds if missing). /dbmcoa status for diagnostics.")
