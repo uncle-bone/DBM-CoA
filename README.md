@@ -1,15 +1,12 @@
-# DBM-CoA v5.1.0 — Deadly Boss Mods for Conquest Reborn
+# DBM-CoA v5.1.2 — Deadly Boss Mods for Conquest Reborn
 
-> **[⬇ Download v5.1.0 test build](https://github.com/uncle-bone/DBM-CoA/releases/download/v5.1.0/DBM-CoA-v5.1.0-Research-Consolidation-TEST.zip)**
-
-
-> Research consolidation test build. Encounter timing and roster data are source-derived; in-game Conquest Reborn mechanics are not fully verified.
+> **[⬇ Download v5.1.2 — Current stable release](https://github.com/uncle-bone/DBM-CoA/releases/download/v5.1.2/DBM-CoA-v5.1.2.zip)** — ZIP includes all 26 addon folders.
 
 **Maintained by Uncle Bone** · [CoA Research & Addons](https://coa-research.unclebone.workers.dev/) · [Report an issue](https://github.com/uncle-bone/DBM-CoA/issues)
 
-**Current prerelease: v5.1.0** — WoW 3.3.5a / Ascension Conquest of Azeroth / Conquest Reborn.
+**Current stable release: v5.1.2** — WoW 3.3.5a / Ascension Conquest of Azeroth / Conquest Reborn.
 
-> **v5.0.5 Windows-compatible fixed build.** Keep your existing SavedVariables when updating.
+This release includes the current learner tracker optimization and preserves existing SavedVariables. Full SmartSync v3 is not implemented yet; research-derived timers and custom Conquest Reborn mechanics still need in-game validation.
 
 ## 🚨 REQUIRED UPDATE STEP: DELETE THE OLD `DBM-CoA-Observer` FOLDER
 
