@@ -33,6 +33,8 @@ end
 local peerCount=0
 local statusFrame, statusText
 local known = {}
+local knowledgeCount=0
+local perf={statusRefreshes=0,combatEvents=0,storedEvents=0,droppedEvents=0,discoveries=0}
 -- Channel setup is optional and separate from recording. This release does not transmit data.
 local SYNC_CHANNEL="BBLC25C" -- shared with LootCollector; do not own or alter membership
 local channelElapsed=0
@@ -153,7 +155,7 @@ local function remember(kind, instance, difficulty, npcId, spellId, label)
  if not db or db.disabled or not npcId or npcId<=0 then return end
  local key=table.concat({kind,safeField(instance),tostring(difficulty or 0),tostring(npcId),tostring(spellId or 0)}, ";")
  if known[key] then return end
- known[key]=true;discovered=discovered+1
+ known[key]=true;knowledgeCount=knowledgeCount+1;discovered=discovered+1;perf.discoveries=perf.discoveries+1
  db.knowledge=db.knowledge or {}
  db.knowledge[key]={kind=kind,instance=safeField(instance),difficulty=difficulty or 0,npc=npcId,spell=spellId or 0,name=safeField(label),seen=date("%Y-%m-%d %H:%M")}
  if #syncQueue<MAX_QUEUE then syncQueue[#syncQueue+1]=key end
@@ -316,7 +318,8 @@ local function updateStatus()
  if not statusText then return end
  local z=zone()
  local ch=type(GetChannelName)=="function" and GetChannelName(SYNC_CHANNEL) or 0
- local n=0;for _ in pairs(db and db.knowledge or {}) do n=n+1 end
+ local n=knowledgeCount
+ perf.statusRefreshes=perf.statusRefreshes+1
  local a=db and db.archiveSmart21 or {}
  local archiveStatus=(db and db.archiveSharingDisabled) and "Paused" or ((ch>0 and db and not db.sharingDisabled and not db.channelDisabled) and "Smart Sync" or "Offline")
  local lines={
@@ -363,7 +366,10 @@ local function makeStatus()
  width=math.max(320,math.min(850,width))
  height=math.max(155,math.min(500,height))
  statusFrame:SetWidth(width);statusFrame:SetHeight(height)
- statusFrame:SetPoint("CENTER",UIParent,"CENTER",0,180)
+ local pos=db and db.statusPosition
+ if type(pos)=="table" and type(pos.x)=="number" and type(pos.y)=="number" then
+  statusFrame:SetPoint("CENTER",UIParent,"CENTER",pos.x,pos.y)
+ else statusFrame:SetPoint("CENTER",UIParent,"CENTER",0,180) end
  statusFrame:SetFrameStrata("MEDIUM")
  statusFrame:SetResizable(true)
  statusFrame:SetMinResize(320,155)
@@ -377,7 +383,13 @@ local function makeStatus()
  statusFrame:EnableMouse(true);statusFrame:SetMovable(true)
  statusFrame:RegisterForDrag("LeftButton")
  statusFrame:SetScript("OnDragStart",function(self) self:StartMoving() end)
- statusFrame:SetScript("OnDragStop",function(self) self:StopMovingOrSizing() end)
+ statusFrame:SetScript("OnDragStop",function(self)
+  self:StopMovingOrSizing()
+  if db then
+   local x,y=self:GetCenter();local ux,uy=UIParent:GetCenter()
+   if x and y and ux and uy then db.statusPosition={x=x-ux,y=y-uy} end
+  end
+ end)
  local close=CreateFrame("Button",nil,statusFrame,"UIPanelCloseButton")
  close:SetWidth(22);close:SetHeight(22)
  close:SetPoint("TOPRIGHT",statusFrame,"TOPRIGHT",0,0)
@@ -410,7 +422,7 @@ end
 
 local function add(ev,sg,sn,dg,dn,spell,name,extra)
  if not recording then return end
- if #session.events>=MAX_EVENTS then session.dropped=session.dropped+1;return end
+ if #session.events>=MAX_EVENTS then session.dropped=session.dropped+1;perf.droppedEvents=perf.droppedEvents+1;return end
  if ev=="SPELL_CAST_START" or ev=="SPELL_CAST_SUCCESS" or ev=="SPELL_AURA_APPLIED" then
   local id=npc(sg)
   if id then
@@ -427,6 +439,7 @@ local function add(ev,sg,sn,dg,dn,spell,name,extra)
    end
   end
  end
+ perf.storedEvents=perf.storedEvents+1
  session.events[#session.events+1]={t=math.floor((clock()-session.started)*100+0.5)/100,e=ev,src=npc(sg),sn=sn,dst=npc(dg),dn=dn,spell=spell,name=name,extra=extra}
 end
 local function target()
@@ -435,6 +448,7 @@ local function target()
  if id then session.samples[tostring(id)]=UnitName("target") or "unknown";remember("N",session.instance,session.difficulty,id,0,UnitName("target")) end
 end
 local function combat(...)
+ perf.combatEvents=perf.combatEvents+1
  local ev=select(2,...)
  if type(ev)~="string" then return end
  if ev~="SPELL_CAST_START" and ev~="SPELL_CAST_SUCCESS" and ev~="SPELL_AURA_APPLIED" and ev~="SPELL_AURA_REMOVED" and ev~="SPELL_AURA_APPLIED_DOSE" and ev~="SPELL_SUMMON" and ev~="UNIT_DIED" and ev~="PARTY_KILL" and ev~="SPELL_INTERRUPT" then return end
@@ -464,7 +478,8 @@ f:SetScript("OnEvent",function(self,event,...)
   if db.coaDungeonResearchEnabled==nil then db.coaDungeonResearchEnabled=true end
   if db.coaDungeonResearchWarnings==nil then db.coaDungeonResearchWarnings=true end
   if db.coaDungeonPredictiveTimers==nil then db.coaDungeonPredictiveTimers=true end
-  for k in pairs(db.knowledge) do known[k]=true end
+  knowledgeCount=0
+   for k in pairs(db.knowledge) do known[k]=true;knowledgeCount=knowledgeCount+1 end
   backfillDone=false
    if db.legacyReceiveDisabled==nil then db.legacyReceiveDisabled=false end
    if db.syncIntensity==nil then db.syncIntensity="Normal" end
@@ -589,7 +604,8 @@ SlashCmdList.DBMCOA=function(s)
  s=(s or ""):lower():match("^%s*(.-)%s*$")
  if not db then return end
  if s=="options" then if InterfaceOptionsFrame_OpenToCategory and _G.DBMCoAOptionsPanel then InterfaceOptionsFrame_OpenToCategory(_G.DBMCoAOptionsPanel);InterfaceOptionsFrame_OpenToCategory(_G.DBMCoAOptionsPanel) else say("Options unavailable on this client") end
- elseif s=="status" then local z=zone();say("Auto="..tostring(not db.disabled).." recording="..tostring(recording).." instance="..z.instance.." type="..z.type.." saved="..#db.sessions.." sent="..sent.." received="..received.." pending="..#syncQueue.." controlPending="..#controlQueue.." retryWait="..math.floor(retryWait+0.5).." pongs="..pings.." lastError="..lastSyncError.." channel="..tostring(type(GetChannelName)=="function" and GetChannelName(SYNC_CHANNEL) or "unsupported").." raw="..rawReceived.." duplicates="..duplicates.." rejected="..rejected.." discoverySent="..discoverySent.." peers3m="..activePeers().." timingSent="..timingSent.." timingReceived="..timingReceived.." timingDuplicates="..timingDuplicates.." timingPending="..#timingQueue.." batches="..batchSent.." relaySent="..relaySent.." lastReceive="..lastReceive)
+ elseif s=="perf" then say("Perf: combat="..perf.combatEvents.." stored="..perf.storedEvents.." dropped="..perf.droppedEvents.." new="..perf.discoveries.." UI="..perf.statusRefreshes.." known="..knowledgeCount.." queue="..#syncQueue.." timing="..#timingQueue)
+  elseif s=="status" then local z=zone();say("Auto="..tostring(not db.disabled).." recording="..tostring(recording).." instance="..z.instance.." type="..z.type.." saved="..#db.sessions.." sent="..sent.." received="..received.." pending="..#syncQueue.." controlPending="..#controlQueue.." retryWait="..math.floor(retryWait+0.5).." pongs="..pings.." lastError="..lastSyncError.." channel="..tostring(type(GetChannelName)=="function" and GetChannelName(SYNC_CHANNEL) or "unsupported").." raw="..rawReceived.." duplicates="..duplicates.." rejected="..rejected.." discoverySent="..discoverySent.." peers3m="..activePeers().." timingSent="..timingSent.." timingReceived="..timingReceived.." timingDuplicates="..timingDuplicates.." timingPending="..#timingQueue.." batches="..batchSent.." relaySent="..relaySent.." lastReceive="..lastReceive)
  elseif s=="experimental off" then db.experimentalDisabled=true;say("Experimental warnings and bars disabled")
  elseif s=="experimental on" then db.experimentalDisabled=false;say("Experimental warnings and bars enabled")
  elseif s=="fast off" then db.fastSyncDisabled=true;say("Batch sync off; single-record compatibility mode")
