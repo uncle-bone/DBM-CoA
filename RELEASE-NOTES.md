@@ -1,4 +1,4 @@
-# DBM-CoA v5.0.4 — Legacy Network Safety TEST
+# DBM-CoA v5.0.5 — Legacy Network Safety TEST
 
 Experimental checkpoint, **not** full SmartSync v3.
 
