@@ -1,4 +1,4 @@
-## 5.0.4-TEST — Legacy network safety (development checkpoint)
+## 5.0.5-TEST — Legacy network safety (development checkpoint)
 - Preserve DCOAL31 discovery/timing and DCOAR21 archive protocols.
 - Pause outbound traffic through loading screens, with a 10-second resume gate.
 - Suppress login/upgrade full-record backfill and relay rebroadcasts.
