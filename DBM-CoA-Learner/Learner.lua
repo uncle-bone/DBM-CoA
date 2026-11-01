@@ -155,6 +155,9 @@ local function safeField(v)
  v=tostring(v or ""):gsub("[|;\r\n%z]", " "):gsub("[^%w %-_%.%,]", " ")
  return v:sub(1,55)
 end
+function DBMCoALearnerNoteRemote(key)
+ if key and not known[key] then known[key]=true;knowledgeCount=knowledgeCount+1;received=received+1 end
+end
 local function remember(kind, instance, difficulty, npcId, spellId, label)
  if (not label or label=="") and CoAArchiveRefs then label=(kind=="N" and CoAArchiveRefs.npcs[npcId]) or (kind=="S" and CoAArchiveRefs.spells[spellId]) end
  if not db or db.disabled or not npcId or npcId<=0 then return end
@@ -164,6 +167,7 @@ local function remember(kind, instance, difficulty, npcId, spellId, label)
  db.knowledge=db.knowledge or {}
  db.knowledge[key]={kind=kind,instance=safeField(instance),difficulty=difficulty or 0,npc=npcId,spell=spellId or 0,name=safeField(label),seen=date("%Y-%m-%d %H:%M")}
  if #syncQueue<MAX_QUEUE then syncQueue[#syncQueue+1]=key end
+ if type(DBMCoASmartSync3Dirty)=="function" then DBMCoASmartSync3Dirty() end
 end
 -- ASCII-only channel protocol, intentionally separate from LootCollector BBLC25C.
 -- Prefix and payload are plain printable text; never embed WoW escape/control bytes.
