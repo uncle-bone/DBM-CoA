@@ -10,6 +10,7 @@ local queue,head={},1
 local MAX_PENDING=160
 local buckets,keys,dirty={}, {},true
 local rebuildKeys,rebuildPos=nil,1
+local pendingDirty=false
 local peers={}
 local rx={hello=0,summary=0,request=0,data=0,ack=0,invalid=0,duplicate=0,applied=0,queued=0,throttled=0}
 local seq=0
@@ -68,10 +69,10 @@ local function buildStep()
   end
  end
  rebuildPos=stop+1
- if rebuildPos>#rebuildKeys then rebuildKeys=nil;dirty=false;ready=true end
+ if rebuildPos>#rebuildKeys then rebuildKeys=nil;dirty=pendingDirty;pendingDirty=false;ready=not dirty end
 end
 function DBMCoASmartSync3Dirty()
- dirty=true;ready=false;rebuildKeys=nil
+ if rebuildKeys then pendingDirty=true else dirty=true;ready=false end
 end
 local function send(msg)
  local id=channelId()
@@ -86,7 +87,7 @@ local function receive(msg,sender)
  local t=now()
  if t-p.window>10 then p.window=t;p.count=0 end
  p.count=p.count+1
- if p.count>16 then rx.throttled=rx.throttled+1;peers[sender or "?"]=p;return end
+ if p.count>12 then rx.throttled=rx.throttled+1;peers[sender or "?"]=p;return end
  p.last=t;peers[sender or "?"]=p
  local payload=msg:sub(#PREFIX+2)
  if payload=="H;3" then
@@ -101,21 +102,39 @@ local function receive(msg,sender)
   rx.summary=rx.summary+1
   local own=buckets[b]
   if own and (own.count~=c or own.digest~=h) and t-(p["request"..b] or -1000)>180 then
-   p["request"..b]=t;enqueue("R;"..b)
+   p["request"..b]=t;enqueue("I;"..b)
+  end
+ elseif payload:sub(1,2)=="I;" then
+  if not ready then return end
+  local b=tonumber(payload:match("^I;(%d+)$"))
+  if not b or b>31 then rx.invalid=rx.invalid+1;return end
+  rx.request=rx.request+1
+  if t-(p["inventory"..b] or -1000)<120 then return end
+  p["inventory"..b]=t
+  local list=buckets[b].records
+  local start=(p["invOffset"..b] or 0)+1
+  local stop=math.min(#list,start+19)
+  for i=start,stop do enqueue("K;"..b..";"..hash(list[i])) end
+  p["invOffset"..b]=stop>=#list and 0 or stop
+ elseif payload:sub(1,2)=="K;" then
+  if not ready then return end
+  local b,h=payload:match("^K;(%d+);(%d+)$")
+  b=tonumber(b);h=tonumber(h)
+  if not b or b>31 or not h or h>2147483646 then rx.invalid=rx.invalid+1;return end
+  local found=false
+  for _,entry in ipairs(buckets[b].records) do if hash(entry)==h then found=true;break end end
+  if not found and t-(p["want"..h] or -1000)>180 then
+   p["want"..h]=t;enqueue("R;"..b..";"..h)
   end
  elseif payload:sub(1,2)=="R;" then
   if not ready then return end
-  local b=tonumber(payload:match("^R;(%d+)$"))
-  if not b or b>31 then rx.invalid=rx.invalid+1;return end
+  local b,h=payload:match("^R;(%d+);(%d+)$")
+  b=tonumber(b);h=tonumber(h)
+  if not b or b>31 or not h then rx.invalid=rx.invalid+1;return end
   rx.request=rx.request+1
-  if t-(p["serve"..b] or -1000)<180 then return end
-  p["serve"..b]=t
-  local list=buckets[b] and buckets[b].records or {}
-  -- Bounded reconciliation window; remaining records are picked up on future rounds.
-  local start=(p["offset"..b] or 0)+1
-  local stop=math.min(#list,start+39)
-  for i=start,stop do enqueue("D;"..list[i]) end
-  p["offset"..b]=stop>=#list and 0 or stop
+  if t-(p["serve"..h] or -1000)<180 then return end
+  p["serve"..h]=t
+  for _,entry in ipairs(buckets[b].records) do if hash(entry)==h then enqueue("D;"..entry);break end end
  elseif payload:sub(1,2)=="D;" then
   local kind,inst,diff,nid,sid,name=payload:match("^D;([NS]);([^;]+);(%d+);(%d+);(%d+);([^;]*)$")
   if not kind then rx.invalid=rx.invalid+1;return end
@@ -128,7 +147,7 @@ local function receive(msg,sender)
   keys[canonical]=true;rx.applied=rx.applied+1
   if type(DBMCoALearnerNoteRemote)=="function" then DBMCoALearnerNoteRemote(key) end
   -- Do not relay received records automatically; next digest reconciliation handles them.
-  dirty=true
+  DBMCoASmartSync3Dirty()
   if rx.applied%10==0 then enqueue("A;"..rx.applied) end
  elseif payload:sub(1,2)=="A;" then rx.ack=rx.ack+1
  else rx.invalid=rx.invalid+1 end
