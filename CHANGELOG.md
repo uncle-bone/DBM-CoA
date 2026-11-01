@@ -1,3 +1,13 @@
+## 5.1.8-TEST — SmartSync anti-spam safety checkpoint
+- Route all three DBM-CoA protocol senders (DCOAL31, DCOAR21, DCOAS3) through a single shared hard gate of at most one outgoing message per 1.05 seconds.
+- Suppress routine legacy heartbeat and SmartSync v3 HELLO traffic; archive announcements reduced to at most hourly.
+- Limit archive outbound pending work to 200 messages and retain existing SmartSync v3 queue bounds.
+- Display only DBM protocol packets as hidden chat events on BBLC25C; other addon traffic remains visible.
+- Avoid automatic BBLC25C joining when absent, rather than risk changing occupied channel order. Existing-channel-only mode requires another addon or manual safe channel join.
+- Add shared send-gate counters to /dbmcoa status.
+- Preserve existing SavedVariables, learned discoveries, legacy protocols and experimental SmartSync v3.
+- IMPORTANT: This is a partial anti-spam build, not full two-way differential SmartSync. The existing v3 bucket request still transfers bounded records without exact per-record set comparison. No simulated-peer or live-game tests have been run.
+
 ## 5.1.8 — Stable release
 - Promote the current v5.1.7-TEST main-branch build as stable with corrected version and maintainer branding in the main DBM window.
 - Include the existing SmartSync v3 discovery-reconciliation implementation and tracker updates.
