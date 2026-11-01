@@ -1,16 +1,9 @@
-# DBM-CoA v5.1.2 — Stable
+# DBM-CoA v5.1.3-TEST — Performance checkpoint
 
-This release packages the current DBM-CoA main branch, including the latest learner tracker optimization.
+This experimental release reduces recurring idle tracker and archive-index work, while retaining encounter learning, saved data and shared BBLC25C compatibility.
 
-## Included
-- Maintains a running learner discovery count to avoid repeatedly recounting the full table during tracker refreshes.
-- Preserves the learner tracker position when it is recreated.
-- Includes all 26 DBM addon folders for WoW 3.3.5a / Conquest Reborn.
-- Keeps existing SavedVariables and learned data.
+Changes: event-driven instance refresh, paced archive index, lower bounded network queues, chat initialization/completion messages, corrected learned-record count, /dbmcoa perf diagnostics.
 
-## Known limitations
-- Full SmartSync v3 handshake and record synchronization are not implemented.
-- Research-derived timers and custom Conquest Reborn encounter mechanics still need in-game validation.
-- The tracker optimization has not had a fresh in-game regression pass.
+This package is a test build. The recurring five-second BoneProfiler spike is not proven to originate in DBM; no live game regression or CPU test has yet been performed. SmartSync v3 full protocol remains outstanding. Back up SavedVariables before testing.
 
 Maintainer: Uncle Bone
