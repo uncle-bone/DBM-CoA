@@ -1,3 +1,9 @@
+## 5.1.8 — Stable release
+- Promote the current v5.1.7-TEST main-branch build as stable with corrected version and maintainer branding in the main DBM window.
+- Include the existing SmartSync v3 discovery-reconciliation implementation and tracker updates.
+- Preserve all existing SavedVariables and learned data.
+- SmartSync v3 live client interoperability and research-derived encounter behavior still need in-game validation.
+
 ## 5.1.4-TEST — SmartSync v3 discovery reconciliation
 - New separate DCOAS3 protocol on the existing BBLC25C channel, alongside legacy DCOAL31 and DCOAR21.
 - HELLO, bucket SUMMARY, differential REQUEST, validated DATA and periodic ACK messages.
