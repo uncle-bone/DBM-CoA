@@ -10,6 +10,7 @@ ArchiveFullN.lua
 ArchiveFullS.lua
 ArchiveFullQ.lua
 ArchiveFullI.lua
+SyncThrottle.lua
 Learner.lua
 SmartSync3.lua
 Options.lua
