@@ -314,7 +314,7 @@ local function isSyncChannel(displayName, channelIndex, baseName)
  return type(current)=="number" and current>0 and tonumber(channelIndex)==current
 end
 local function channelFilter(self,event,msg,sender,language,displayName,target,flags,zoneId,channelIndex,baseName)
- if type(msg)=="string" and msg:sub(1,#PREFIX+1)==PREFIX..";" and isSyncChannel(displayName,channelIndex,baseName) then return true end
+ if type(msg)=="string" and (msg:sub(1,8)=="DCOAL31;" or msg:sub(1,8)=="DCOAR21;" or msg:sub(1,7)=="DCOAS3;") and isSyncChannel(displayName,channelIndex,baseName) then return true end
  return false
 end
 if type(ChatFrame_AddMessageEventFilter)=="function" then ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL",channelFilter) end
