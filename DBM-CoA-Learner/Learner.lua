@@ -4,7 +4,9 @@ local db, session, recording, elapsed=nil,nil,false,0
 local MAX_EVENTS,MAX_SESSIONS=3500,15
 local syncQueue, seen, peers, sent, received, discovered = {}, {}, {}, 0, 0, 0
 local syncClock, syncSeq = 0, 0
-local SEND_INTERVAL=0.75 -- Conservative cap: <= 1.34 messages/sec; batch discoveries where possible.
+local SEND_INTERVAL=0.75 -- Conservative wire pacing.
+local networkPaused=true
+local networkResumeAt=math.huge
 local retryDelay, retryWait = 1, 0
 local controlQueue = {} -- Ping/pong use the same rate limiter as discoveries.
 local MAX_CONTROL_QUEUE=12
@@ -165,7 +167,7 @@ local function coaSyncSuspended()
  return instanceType and instanceType ~= "none"
 end
 local function syncSend(payload)
- if coaSyncSuspended() or not db or db.channelDisabled or db.channelUnsafe or db.sharingDisabled then return false end
+ if networkPaused or clock()<networkResumeAt or coaSyncSuspended() or not db or db.channelDisabled or db.channelUnsafe or db.sharingDisabled then return false end
  local id=type(GetChannelName)=="function" and GetChannelName(SYNC_CHANNEL) or 0
  if type(id)~="number" or id<=0 or type(SendChatMessage)~="function" then return false end
  local msg=PREFIX..";"..payload
@@ -467,7 +469,9 @@ f:SetScript("OnEvent",function(self,event,...)
   if db.coaDungeonPredictiveTimers==nil then db.coaDungeonPredictiveTimers=true end
   for k in pairs(db.knowledge) do known[k]=true end
   backfillDone=false
-  makeStatus()
+   if db.legacyReceiveDisabled==nil then db.legacyReceiveDisabled=false end
+   if db.syncIntensity==nil then db.syncIntensity="Normal" end
+   makeStatus()
   -- Preserve old recordings; default to automatic operation.
   refresh();return
  end
@@ -476,11 +480,13 @@ f:SetScript("OnEvent",function(self,event,...)
  if event=="CHAT_MSG_CHANNEL" then
   local msg,sender,language,channelString,target,flags,zoneId,channelIndex,baseName=...
   if isSyncChannel(channelString,channelIndex,baseName) then
-   if coaSyncSuspended() then rxMark("paused") else receive(msg,sender) end
+   if coaSyncSuspended() then rxMark("paused") elseif not db.legacyReceiveDisabled then receive(msg,sender) end
   elseif type(msg)=="string" and msg:sub(1,#PREFIX+1)==PREFIX..";" then rxMark("ignoredChannel") end
   return
  end
- if event=="PLAYER_ENTERING_WORLD" or event=="ZONE_CHANGED_NEW_AREA" then refresh();return end
+ if event=="PLAYER_LEAVING_WORLD" then networkPaused=true;networkResumeAt=math.huge;return end
+  if event=="PLAYER_ENTERING_WORLD" then networkPaused=false;networkResumeAt=clock()+10;syncClock=0;refresh();return end
+  if event=="ZONE_CHANGED_NEW_AREA" then refresh();return end
  if event=="CHANNEL_UI_UPDATE" or event=="UPDATE_CHAT_WINDOWS" or event=="CHAT_MSG_CHANNEL_NOTICE" then hideSyncChannel();return end
  if not recording then return end
  if event=="PLAYER_TARGET_CHANGED" then refresh();target()
@@ -506,10 +512,12 @@ f:SetScript("OnUpdate",function(self,dt)
    ensureSyncChannel()
   end
  end
- if coaSyncSuspended() or not db or db.sharingDisabled or db.channelDisabled or db.channelUnsafe then return end
+ if networkPaused or clock()<networkResumeAt or coaSyncSuspended() or not db or db.sharingDisabled or db.channelDisabled or db.channelUnsafe then return end
+  if InCombatLockdown and InCombatLockdown() then return end
  syncClock=syncClock+dt
  if retryWait>0 then retryWait=math.max(0,retryWait-dt) end
- if syncClock<SEND_INTERVAL or retryWait>0 then return end
+ local interval=db.syncIntensity=="Low" and 2 or (db.syncIntensity=="Fast" and 0.75 or 1.25)
+  if syncClock<interval or retryWait>0 then return end
  -- Consume one time slot even on failure: never send in a rapid burst.
  syncClock=0
  local id=type(GetChannelName)=="function" and GetChannelName(SYNC_CHANNEL) or 0
@@ -517,11 +525,8 @@ f:SetScript("OnUpdate",function(self,dt)
  if not backfillDone then
   -- One-time, rate-limited broadcast of saved, observed discoveries on upgrade.
   -- Name-only historical reference IDs are never presented as observed mechanics.
-  if db.lastBroadcastBuild~="3.15" then
-   queueBackfill()
-   db.lastBroadcastBuild="3.15"
-  else backfillDone=true end
-  for k in pairs(db.timings or {}) do enqueueTiming(k) end
+  -- Do not broadcast all historical records on login.
+   backfillDone=true
  end
  local payload,kind,key,batchKeys
  if #controlQueue>0 then
@@ -581,7 +586,7 @@ f:SetScript("OnUpdate",function(self,dt)
   retryDelay=math.min(retryDelay*2,60)
  end
 end)
-for _,e in ipairs({"ADDON_LOADED","PLAYER_ENTERING_WORLD","ZONE_CHANGED_NEW_AREA","PLAYER_LOGOUT","COMBAT_LOG_EVENT_UNFILTERED","PLAYER_TARGET_CHANGED","PLAYER_REGEN_DISABLED","PLAYER_REGEN_ENABLED","CHAT_MSG_MONSTER_YELL","CHAT_MSG_MONSTER_EMOTE","CHAT_MSG_RAID_BOSS_EMOTE","CHANNEL_UI_UPDATE","UPDATE_CHAT_WINDOWS","CHAT_MSG_CHANNEL_NOTICE","CHAT_MSG_CHANNEL"}) do f:RegisterEvent(e) end
+for _,e in ipairs({"ADDON_LOADED","PLAYER_ENTERING_WORLD","PLAYER_LEAVING_WORLD","ZONE_CHANGED_NEW_AREA","PLAYER_LOGOUT","COMBAT_LOG_EVENT_UNFILTERED","PLAYER_TARGET_CHANGED","PLAYER_REGEN_DISABLED","PLAYER_REGEN_ENABLED","CHAT_MSG_MONSTER_YELL","CHAT_MSG_MONSTER_EMOTE","CHAT_MSG_RAID_BOSS_EMOTE","CHANNEL_UI_UPDATE","UPDATE_CHAT_WINDOWS","CHAT_MSG_CHANNEL_NOTICE","CHAT_MSG_CHANNEL"}) do f:RegisterEvent(e) end
 SLASH_DBMCOA1="/dbmcoa"
 SlashCmdList.DBMCOA=function(s)
  s=(s or ""):lower():match("^%s*(.-)%s*$")
