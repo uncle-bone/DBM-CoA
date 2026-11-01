@@ -76,7 +76,7 @@ end
 local function send(msg)
  local id=channelId()
  if not id or paused or now()<resumeAt or suspended() or not enabled() then return false end
- return pcall(SendChatMessage,PREFIX..";"..msg,"CHANNEL",nil,id)
+ return DBMCoAChannelSend(PREFIX..";"..msg,id)
 end
 local function receive(msg,sender)
  if not enabled() or suspended() or paused or now()<resumeAt then return end
@@ -92,7 +92,7 @@ local function receive(msg,sender)
  if payload=="H;3" then
   if not ready then return end
   rx.hello=rx.hello+1
-  for i=0,31 do local b=buckets[i];enqueue("S;"..i..";"..b.count..";"..b.digest) end
+  for i=0,31 do local b=buckets[i];if b.count>0 then enqueue("S;"..i..";"..b.count..";"..b.digest) end end
  elseif payload:sub(1,2)=="S;" then
   if not ready then return end
   local b,c,h=payload:match("^S;(%d+);(%d+);(%d+)$")
@@ -166,7 +166,7 @@ f:SetScript("OnUpdate",function(self,dt)
   end
  else
   seq=seq+1
-  if seq>=40 then seq=0;enqueue("H;3") end
+  if seq>=2400 then seq=0;enqueue("H;3") end
  end
 end)
 SLASH_COASMART3_1="/coasmart3"
