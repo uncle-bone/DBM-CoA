@@ -159,7 +159,7 @@ f:SetScript("OnUpdate",function(self,dt)
  if tick<3 then return end
  tick=0
  local db=getDB()
- if not db or db.archiveSharingDisabled or db.sharingDisabled or db.channelDisabled then return end
+ if not db or db.archiveSharingDisabled or db.sharingDisabled or db.channelDisabled or db.channelUnsafe then return end
  if not channelId() then return end
  if InCombatLockdown and InCombatLockdown() then return end
  if queueHead<=#queue then
