@@ -1,12 +1,12 @@
 # DBM-CoA v5.2.14 — Deadly Boss Mods for Conquest Reborn
 
-> **[⬇ Download v5.2.14 — Latest development release](https://github.com/uncle-bone/DBM-CoA/releases/download/v5.2.14/DBM-CoA-v5.2.14.zip)** — ZIP includes all 26 addon folders.
+> **[⬇ Download v5.2.14 — Current stable release](https://github.com/uncle-bone/DBM-CoA/releases/download/v5.2.14/DBM-CoA-v5.2.14.zip)** — ZIP includes all 26 addon folders.
 
 **Maintained by Uncle Bone** · [CoA Research & Addons](https://coa-research.unclebone.workers.dev/) · [Report an issue](https://github.com/uncle-bone/DBM-CoA/issues)
 
-**Latest development release: v5.2.14** — WoW 3.3.5a / Ascension Conquest of Azeroth / Conquest Reborn.
+**Current stable release: v5.2.14** — WoW 3.3.5a / Ascension Conquest of Azeroth / Conquest Reborn.
 
-The latest development release adds a compact Learner dashboard with live discoveries, saved sessions, send/receive totals, archive statistics, and SmartSync v3 status. Learning and Sharing buttons provide quick control; More expands Send Hello, Settings, and Diagnostics. The shared channel is **CoASync**. Existing SavedVariables and learned data are preserved. Cross-client synchronization, research-derived timers, and custom encounters still require in-game validation.
+This stable release fixes the in-game version labels so DBM Core and DBM-CoA Learner both report **5.2.14**. It includes the compact Learner dashboard, CoASync controls and safeguards, and preserves existing SavedVariables. Confirm the displayed versions in Conquest Reborn; cross-client synchronization, research-derived timers, and custom encounters still need in-game validation.
 
 ## 🚨 REQUIRED UPDATE STEP: DELETE THE OLD `DBM-CoA-Observer` FOLDER
 
@@ -84,7 +84,7 @@ Research-backed candidate timers and learned predictions are **experimental**. S
 3. Replace old DBM addon folders with the folders from the v5.2.14 release ZIP. Keep all supplied DBM folders alongside one another; do **not** combine them into one folder.
 4. Start Conquest Reborn and play. The learner and new research features start automatically unless previously disabled in saved settings.
 
-**Release version:** v5.2.14 (latest development). See [GitHub Releases](https://github.com/uncle-bone/DBM-CoA/releases) for the published download.
+**Release version:** v5.2.14 (current stable). See [GitHub Releases](https://github.com/uncle-bone/DBM-CoA/releases) for the published download.
 
 ## Known limits
 
