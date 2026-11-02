@@ -568,7 +568,7 @@ f:SetScript("OnUpdate",function(self,dt)
   local delta=elapsed;elapsed=0
   updateStatus()
   channelElapsed=channelElapsed+delta
-  if channelElapsed>=20 then
+  if channelElapsed>=2 then
    channelElapsed=0
    if db and db.channelBefore then verifyChannels() end
    ensureSyncChannel()
