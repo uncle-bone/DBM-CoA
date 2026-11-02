@@ -194,7 +194,7 @@ f:SetScript("OnUpdate",function(self,dt)
  end
 end)
 SLASH_COASMART3_1="/coasmart3"
-SlashCmdList.COASMART3=function(arg)
+function DBMCoASmartSync3Command(arg)
  if not db then return end
  arg=(arg or ""):lower():match("^%s*(.-)%s*$")
  if arg=="on" then db.smartSync3Disabled=false
@@ -204,6 +204,7 @@ SlashCmdList.COASMART3=function(arg)
  local n=0;for _,p in pairs(peers) do if now()-p.last<180 then n=n+1 end end
  log("baseline="..BASELINE_ID.." learned="..tostring(db.knowledge and "persistent" or "none").." enabled="..tostring(not db.smartSync3Disabled).." index="..(ready and "ready" or "building").." peers="..n.." queue="..math.max(0,#queue-head+1).." H/S/R/D="..rx.hello.."/"..rx.summary.."/"..rx.request.."/"..rx.applied.." duplicates="..rx.duplicate.." rejected="..rx.invalid.." throttled="..rx.throttled)
 end
+SlashCmdList.COASMART3=DBMCoASmartSync3Command
 
 -- Separate settings category avoids clipping the existing 3.3.5 interface panel.
 local panel=CreateFrame("Frame","DBMCoASmartSync3Panel",UIParent)
@@ -223,5 +224,5 @@ check:SetScript("OnShow",function(self) self:SetChecked(db and not db.smartSync3
 check:SetScript("OnClick",function(self) if db then db.smartSync3Disabled=not self:GetChecked() end end)
 local status=panel:CreateFontString(nil,"ARTWORK","GameFontHighlightSmall")
 status:SetPoint("TOPLEFT",16,-155)
-status:SetText("Use /coasmart3 for peer, queue and reconciliation diagnostics.")
+status:SetText("Use /dbmcoa smart3 for peer, queue and reconciliation diagnostics.")
 if type(InterfaceOptions_AddCategory)=="function" then InterfaceOptions_AddCategory(panel) end
