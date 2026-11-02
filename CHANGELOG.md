@@ -1,3 +1,10 @@
+## 5.2.6-TEST — Join confirmation and chat notification
+- Confirm actual BBLC25C membership and announce the assigned channel number in chat.
+- Retain the 20-second startup grace, stable-channel checks and protection against unexpected channel changes.
+- Limit join attempts to three, spaced 15 seconds apart, and report failed attempts in status.
+- Never change chat-frame subscriptions; user controls channel visibility.
+- Live Conquest Reborn validation pending.
+
 ## 5.2.5-TEST — Guarded shared-channel autojoin
 - Restore BBLC25C autojoin after a 20-second startup grace period with channel-slot and stable-list checks.
 - Halt autojoin if an attempted join changes the channel list without joining BBLC25C.
