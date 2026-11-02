@@ -38,7 +38,7 @@ local lastZoneSignature=nil
 local loadingAnnounced=false
 local perf={statusRefreshes=0,combatEvents=0,storedEvents=0,droppedEvents=0,discoveries=0}
 -- Channel setup is optional and separate from recording. This release does not transmit data.
-local SYNC_CHANNEL="BBLC25C" -- shared with LootCollector; do not own or alter membership
+local SYNC_CHANNEL="CoASync" -- Uncle Bone addon sharing channel; do not alter existing channel memberships
 local channelElapsed=0
 local stableSeconds=0
 local previousSignature=nil
@@ -89,7 +89,7 @@ local function ensureSyncChannel()
   joinPending=nil;joinReason="joined as /"..id
   if not joinNotified then
    joinNotified=true
-   joinNotice("Joined shared channel BBLC25C (/"..id.."). Channel chat visibility remains under your Chat Settings.")
+   joinNotice("Joined shared channel CoASync (/"..id.."). Channel chat visibility remains under your Chat Settings.")
   end
   return
  end
@@ -104,8 +104,8 @@ local function ensureSyncChannel()
   if joinRetry>0 then return end
   if snapshot~=joinPending then
    joinUnsafe=true
-   joinReason="channel list changed without BBLC25C; autojoin stopped"
-   joinNotice("BBLC25C join changed another channel. Autojoin stopped to protect existing channels.")
+   joinReason="channel list changed without CoASync; autojoin stopped"
+   joinNotice("CoASync join changed another channel. Autojoin stopped to protect existing channels.")
    return
   end
   joinPending=nil
@@ -230,7 +230,7 @@ local function remember(kind, instance, difficulty, npcId, spellId, label)
  if #syncQueue<MAX_QUEUE then syncQueue[#syncQueue+1]=key end
  if type(DBMCoASmartSync3Dirty)=="function" then DBMCoASmartSync3Dirty() end
 end
--- ASCII-only channel protocol, intentionally separate from LootCollector BBLC25C.
+-- ASCII-only channel protocol, intentionally separate from other addon protocols on CoASync.
 -- Prefix and payload are plain printable text; never embed WoW escape/control bytes.
 -- Automatically suspend ALL DBM-CoA network sync in every instance.
 -- Do not leave/rejoin LootCollector's shared channel; resume outside automatically.
@@ -688,7 +688,7 @@ SlashCmdList.DBMCOA=function(s)
  elseif s=="ui off" then db.hideStatus=true;if statusFrame then statusFrame:Hide() end
  elseif s=="ui on" then db.hideStatus=false;db.statusPosition=nil;local ok,err=pcall(makeStatus);if ok and statusFrame then statusFrame:ClearAllPoints();statusFrame:SetPoint("CENTER",UIParent,"CENTER",0,180);statusFrame:Show();statusFrame:Raise();say("Learner window restored and centered") else say("Learner window error: "..tostring(err)) end
  elseif s=="channel off" then db.channelDisabled=true;say("Shared-channel listening disabled; existing channel membership unchanged")
- elseif s=="channel on" then db.channelDisabled=false;db.channelUnsafe=nil;say("Shared-channel listening enabled; guarded BBLC25C autojoin after 20 seconds")
+ elseif s=="channel on" then db.channelDisabled=false;db.channelUnsafe=nil;say("Shared-channel listening enabled; guarded CoASync autojoin after 20 seconds")
  elseif s=="off" then db.disabled=true;save();say("Automatic recording disabled")
  elseif s=="on" then db.disabled=false;refresh();say("Automatic recording enabled")
  elseif s=="clear" then db.sessions={};say("Saved sessions cleared")
