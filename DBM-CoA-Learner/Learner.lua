@@ -541,6 +541,11 @@ local function makeStatus()
  statusButtons.advanced=actionButton("Diagnostics",163,5,92,function()
   if type(SlashCmdList.DBMCOA)=="function" then SlashCmdList.DBMCOA("syncdebug");SlashCmdList.DBMCOA("smart3") end
  end)
+ -- Always visible at minimum 320px panel width.
+ statusButtons.status=actionButton("Status",260,5,52,function()
+  if type(SlashCmdList.DBMCOA)=="function" then SlashCmdList.DBMCOA("status") end
+  updateStatus()
+ end)
  for _,b in pairs(statusButtons) do
   b:SetFrameLevel(statusFrame:GetFrameLevel()+4)
  end
