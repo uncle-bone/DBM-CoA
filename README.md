@@ -1,10 +1,10 @@
-# DBM-CoA v5.2.14 — Deadly Boss Mods for Conquest Reborn
+# DBM-CoA v5.2.17 — Deadly Boss Mods for Conquest Reborn
 
-> **[⬇ Download v5.2.14 — Current stable release](https://github.com/uncle-bone/DBM-CoA/releases/download/v5.2.14/DBM-CoA-v5.2.14.zip)** — ZIP includes all 26 addon folders.
+> **[⬇ Download v5.2.17 — Current stable release](https://github.com/uncle-bone/DBM-CoA/releases/download/v5.2.17/DBM-CoA-v5.2.17.zip)** — ZIP includes all 26 addon folders.
 
 **Maintained by Uncle Bone** · [CoA Research & Addons](https://coa-research.unclebone.workers.dev/) · [Report an issue](https://github.com/uncle-bone/DBM-CoA/issues)
 
-**Current stable release: v5.2.14** — WoW 3.3.5a / Ascension Conquest of Azeroth / Conquest Reborn.
+**Current stable release: v5.2.17** — WoW 3.3.5a / Ascension Conquest of Azeroth / Conquest Reborn.
 
 This stable release fixes the in-game version labels so DBM Core and DBM-CoA Learner both report **5.2.14**. It includes the compact Learner dashboard, CoASync controls and safeguards, and preserves existing SavedVariables. Confirm the displayed versions in Conquest Reborn; cross-client synchronization, research-derived timers, and custom encounters still need in-game validation.
 
@@ -23,10 +23,10 @@ This stable release fixes the in-game version labels so DBM Core and DBM-CoA Lea
 
 Back up your `WTF` SavedVariables before updating. Keeping SavedVariables preserves learner history and user preferences.
 
-## What's new in v5.2.14
+## What's new in v5.2.17
 
 - Fixed the two conflicting in-game version labels: DBM Core and DBM-CoA Learner now both report **5.2.14**.
-- Retains the v5.2.13 Learner dashboard and CoASync improvements.
+- Retains the compact Learner dashboard and CoASync improvements.
 
 - **Compact Learner dashboard:** discovery counts, new discoveries this login, session counts, sent/received totals, timing information, archive statistics, peer count, queue size and SmartSync index readiness.
 - **Simple controls:** Learning and Sharing toggles, plus an expandable **More** section with Send Hello, Settings and Diagnostics.
@@ -81,10 +81,10 @@ Research-backed candidate timers and learned predictions are **experimental**. S
 
 1. Close WoW and back up SavedVariables.
 2. **Delete `Interface/AddOns/DBM-CoA-Observer/` if it exists.**
-3. Replace old DBM addon folders with the folders from the v5.2.14 release ZIP. Keep all supplied DBM folders alongside one another; do **not** combine them into one folder.
+3. Replace old DBM addon folders with the folders from the v5.2.17 release ZIP. Keep all supplied DBM folders alongside one another; do **not** combine them into one folder.
 4. Start Conquest Reborn and play. The learner and new research features start automatically unless previously disabled in saved settings.
 
-**Release version:** v5.2.14 (current stable). See [GitHub Releases](https://github.com/uncle-bone/DBM-CoA/releases) for the published download.
+**Release version:** v5.2.17 (current stable). See [GitHub Releases](https://github.com/uncle-bone/DBM-CoA/releases) for the published download.
 
 ## Known limits
 
