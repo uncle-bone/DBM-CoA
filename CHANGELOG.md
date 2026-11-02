@@ -1,3 +1,9 @@
+## 5.2.1-TEST — Restore shared-channel autojoin
+- Fix regression introduced in 5.1.9: DBM-CoA can again join BBLC25C automatically after its 20-second grace period when the channel is not already present.
+- Never leave, replace, rename, or reorder existing channels; allow the game client to refuse the join if the channel limit is reached.
+- Retain the 1.05-second global DBM outbound anti-spam gate and additive SmartSync v3 database protocol.
+- No live 3.3.5a channel-slot verification performed.
+
 ## 5.2.0-TEST — Additive encounter database synchronization
 - Keep packaged CoA archive baseline separate from persistent per-character learned encounter records; record SmartSync v3 schema and baseline identity without rewriting old SavedVariables.
 - Extend DCOAS3: HELLO/SUMMARY mismatch -> fingerprint inventory (I/K) -> request only absent record hashes (R) -> validated record transfer (D) -> optional ACK.
