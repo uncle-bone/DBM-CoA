@@ -1,3 +1,9 @@
+## 5.2.13-TEST — Compact Learner control dashboard
+- Preserve discovery, session, timing, learner and archive counters in the existing movable/resizable window.
+- Add read-only SmartSync v3 index, peer, queue, and advanced RX metrics.
+- Add Learning and Sharing toggle buttons and expandable More controls for Hello, Settings and Diagnostics.
+- Preserve saved position, visibility, and all existing synchronization protocols.
+
 ## 5.2.12-TEST — Self-sync protection
 - Ignore own character's channel messages in SmartSync v3, ArchiveShare, and Learner before peer accounting or reconciliation.
 - Prevent self-echoes from creating fake peers, recursive summaries, ping/pong loops, and queue growth.
