@@ -429,7 +429,7 @@ local function updateStatus()
   statusButtons.learn:SetText(db.disabled and "Learning: OFF" or "Learning: ON")
   statusButtons.share:SetText(db.sharingDisabled and "Sharing: OFF" or "Sharing: ON")
   statusButtons.more:SetText(db.statusMoreOpen and "Less" or "More")
-  for _,b in ipairs({statusButtons.advanced,statusButtons.hello,statusButtons.archive,statusButtons.status}) do
+  for _,b in ipairs({statusButtons.advanced,statusButtons.hello,statusButtons.archive}) do
    if db.statusMoreOpen then b:Show() else b:Hide() end
   end
  end
