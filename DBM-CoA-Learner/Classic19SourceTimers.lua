@@ -1,5 +1,5 @@
 -- Source-backed dungeon predictive timers; never live-verified.
--- Enabled by default; explicit saved opt-outs respected. Map+NPC+spell strict matching.
+-- Public-source candidate predictions are opt-in only. Map+NPC+spell strict matching.
 local rows={
  {36,646,975011,7550,9550,8000,9000},
  {36,646,2102553,15000,17000,15000,17000},
@@ -91,7 +91,7 @@ local function zone() local _,kind,_,_,_,_,_,id=GetInstanceInfo();map=kind=="par
 local function stock(n,s) local t=DBMCoAStockTimerIndex;return t and t[n] and t[n][s] end
 local function bar(sec,sid) if not DBM or not DBM.Bars or not DBM.Bars.CreateBar then return end local name,_,icon=GetSpellInfo(sid);DBM.Bars:CreateBar(sec,"[CoA source?] "..(name or tostring(sid)),icon or "Interface\\Icons\\INV_Misc_PocketWatch_01") end
 local function log(...)
- local db=DBMCoALearnerDB;if not db or db.coaDungeonResearchEnabled==false or db.coaDungeonPredictiveTimers==false then return end
+ local db=DBMCoALearnerDB;if not db or db.coaDungeonResearchEnabled==false or db.coaDungeonPredictiveTimers~=true then return end
  local t=byMap[map];if not t then return end
  local ev=select(2,...);if ev~="SPELL_CAST_START" and ev~="SPELL_CAST_SUCCESS" then return end
  local off=type(select(3,...))=="boolean" and 1 or 0;local guid=select(3+off,...);local flags=select(5+off,...)
