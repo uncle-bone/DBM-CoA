@@ -207,6 +207,11 @@ f:SetScript("OnUpdate",function(self,dt)
   if seq>=2400 then seq=0;enqueue("H;3") end
  end
 end)
+function DBMCoASmartSync3Snapshot()
+ local n=0
+ for _,p in pairs(peers) do if now()-p.last<180 then n=n+1 end end
+ return {ready=ready,peers=n,queue=math.max(0,#queue-head+1),hello=rx.hello,summaries=rx.summary,requests=rx.request,applied=rx.applied,duplicates=rx.duplicate,rejected=rx.invalid,throttled=rx.throttled}
+end
 SLASH_COASMART3_1="/coasmart3"
 function DBMCoASmartSync3Command(arg)
  if not db then return end
