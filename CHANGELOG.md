@@ -1,3 +1,8 @@
+## 5.2.3-TEST — Emergency channel safety
+- Remove automatic BBLC25C joins and automatic chat-frame channel changes to protect /1 General on Conquest Reborn.
+- Continue sharing on an already joined BBLC25C channel using its resolved number.
+- Preserve SmartSync v3 controls, rate limits and saved data. No live game validation.
+
 ## 5.2.2-TEST — Faster shared-channel recovery and unified SmartSync commands
 - Join BBLC25C after 10 seconds; recheck membership and retry every 15 seconds if the client does not confirm joining. Never evict existing channels.
 - Hide only BBLC25C from the default chat frame once per login; manual Chat Settings opt-in remains respected afterward.
