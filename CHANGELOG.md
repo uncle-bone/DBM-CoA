@@ -1,3 +1,8 @@
+## 5.2.9-TEST — Fix Learner compile failure
+- Fix malformed string concatenation in `/dbmcoa status` which prevented Learner.lua from compiling, disabling the Learner window, slash commands, and BBLC25C joining.
+- Enforce Lua 5.1 syntax validation in the GitHub release pipeline.
+- Preserve Learner UI and existing channel-join notifications; in-game verification still required.
+
 ## 5.2.7-TEST — Learner window recovery and channel diagnostics
 - /dbmcoa ui on recenters and raises the Learner window; reports UI initialization errors.
 - Learner initialization continues if the status window fails to construct.
