@@ -55,7 +55,18 @@ local function channelSignature()
  end
  return table.concat(parts,"|")
 end
-local function hideSyncChannel() end
+-- Hide only BBLC25C in the default chat frame once per login.
+-- Never hide all CHANNEL traffic or override a user's later manual opt-in.
+local channelHiddenThisLogin=false
+local function hideSyncChannel()
+ if channelHiddenThisLogin or type(GetChannelName)~="function" then return end
+ local id=GetChannelName(SYNC_CHANNEL)
+ if type(id)~="number" or id<=0 then return end
+ if type(ChatFrame_RemoveChannel)=="function" and DEFAULT_CHAT_FRAME then
+  ChatFrame_RemoveChannel(DEFAULT_CHAT_FRAME,SYNC_CHANNEL)
+  channelHiddenThisLogin=true
+ end
+end
 -- Independently join the existing shared channel after a 20-second grace period.
 -- Never leave, rename, reorder or create an alternate channel.
 local joinGrace=0
@@ -75,11 +86,11 @@ local function ensureSyncChannel()
  joinRetry=ok and 15 or 30
 end
 local function verifyChannels() end
+local function say(s) if DEFAULT_CHAT_FRAME then DEFAULT_CHAT_FRAME:AddMessage("|cff66ccffDBM-CoA|r "..s) end end
 local function smart3Command(arg)
  if type(DBMCoASmartSync3Command)=="function" then DBMCoASmartSync3Command(arg or "")
  else say("SmartSync v3 command handler unavailable; check Lua errors") end
 end
-local function say(s) if DEFAULT_CHAT_FRAME then DEFAULT_CHAT_FRAME:AddMessage("|cff66ccffDBM-CoA|r "..s) end end
 local function clock() return GetTime() end
 -- CoA instance aliases are observed, not blindly trusted. Map IDs are authoritative
 -- only after repeated in-client observations; never overwrite a canonical label.
@@ -486,7 +497,7 @@ end
 f:SetScript("OnEvent",function(self,event,...)
  if event=="ADDON_LOADED" then
   if ...~="DBM-CoA-Learner" then return end
-  joinGrace=0;joinRetry=0
+  joinGrace=0;joinRetry=0;channelHiddenThisLogin=false
   DBMCoALearnerDB=DBMCoALearnerDB or {}
   db=DBMCoALearnerDB;db.sessions=db.sessions or {};db.knowledge=db.knowledge or {};db.timings=db.timings or {};db.remoteTimingSources=db.remoteTimingSources or {}
   -- Auto-learning is ON for both party (dungeons) and raid instances by default.
@@ -538,6 +549,7 @@ f:SetScript("OnUpdate",function(self,dt)
    channelElapsed=0
    if db and db.channelBefore then verifyChannels() end
    ensureSyncChannel()
+   hideSyncChannel()
   end
  end
  if networkPaused or clock()<networkResumeAt or coaSyncSuspended() or not db or db.sharingDisabled or db.channelDisabled or db.channelUnsafe then return end
