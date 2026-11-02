@@ -184,6 +184,15 @@ local function npc(g)
  if g:sub(1,2)=="0x" then return tonumber(g:sub(9,12),16) end
  if g:find("^Creature%-") or g:find("^Vehicle%-") then return tonumber(g:match("%-(%d+)%-[0-9a-fA-F]+$")) end
 end
+-- CoA-Research v2.0.1 combat attribution policy: only observed hostile NPCs
+-- are eligible for shared encounter knowledge. Never blacklist templates by ID.
+local bitBand=bit and bit.band
+local function hostileNPC(guid,flags)
+ if type(guid)~="string" or type(flags)~="number" or not bitBand then return false end
+ if bitBand(flags,0x800)==0 or bitBand(flags,0x3000)~=0 or bitBand(flags,0x100)~=0 then return false end
+ if bitBand(flags,0x4000)~=0 then return false end -- player-controlled
+ return npc(guid)~=nil
+end
 local function save()
  if not recording or not session then return end
  session.duration=math.floor((clock()-session.started)*100+0.5)/100
@@ -554,7 +563,7 @@ local function makeStatus()
  updateStatus()
 end
 
-local function add(ev,sg,sn,dg,dn,spell,name,extra)
+local function add(ev,sg,sn,dg,dn,spell,name,extra,sourceFlags)
  if not recording then return end
  if #session.events>=MAX_EVENTS then session.dropped=session.dropped+1;perf.droppedEvents=perf.droppedEvents+1;return end
  if ev=="SPELL_CAST_START" or ev=="SPELL_CAST_SUCCESS" or ev=="SPELL_AURA_APPLIED" then
@@ -579,7 +588,7 @@ end
 local function target()
  if not recording or not UnitExists("target") then return end
  local id=npc(UnitGUID("target"))
- if id then session.samples[tostring(id)]=UnitName("target") or "unknown";remember("N",session.instance,session.difficulty,id,0,UnitName("target")) end
+ if id and UnitCanAttack and UnitCanAttack("player","target") and (not UnitIsPlayer or not UnitIsPlayer("target")) then session.samples[tostring(id)]=UnitName("target") or "unknown";remember("N",session.instance,session.difficulty,id,0,UnitName("target")) end
 end
 local function combat(...)
  perf.combatEvents=perf.combatEvents+1
@@ -588,6 +597,7 @@ local function combat(...)
  if ev~="SPELL_CAST_START" and ev~="SPELL_CAST_SUCCESS" and ev~="SPELL_AURA_APPLIED" and ev~="SPELL_AURA_REMOVED" and ev~="SPELL_AURA_APPLIED_DOSE" and ev~="SPELL_SUMMON" and ev~="UNIT_DIED" and ev~="PARTY_KILL" and ev~="SPELL_INTERRUPT" then return end
  local sg,sn,dg,dn,spell,name
  sg,sn=select(3,...),select(4,...)
+ local sourceFlags=select(5,...)
  -- Legacy header: 8 fields; with sourceRaidFlags and destRaidFlags: 10 fields.
  local a6,a7=select(6,...),select(7,...)
  local header=8
@@ -597,7 +607,7 @@ local function combat(...)
   local v1,v2=select(header+1,...),select(header+2,...)
   if type(v1)=="number" then spell,name=v1,v2 end
  end
- add(ev,sg,sn,dg,dn,spell,name)
+ add(ev,sg,sn,dg,dn,spell,name,nil,sourceFlags)
 end
 f:SetScript("OnEvent",function(self,event,...)
  if event=="ADDON_LOADED" then
@@ -611,7 +621,7 @@ f:SetScript("OnEvent",function(self,event,...)
   -- Plug-and-play research defaults. Never overwrite existing saved choices.
   if db.coaDungeonResearchEnabled==nil then db.coaDungeonResearchEnabled=true end
   if db.coaDungeonResearchWarnings==nil then db.coaDungeonResearchWarnings=true end
-  if db.coaDungeonPredictiveTimers==nil then db.coaDungeonPredictiveTimers=true end
+  if db.coaDungeonPredictiveTimers==nil then db.coaDungeonPredictiveTimers=false end
   knowledgeCount=0
    for k in pairs(db.knowledge) do known[k]=true;knowledgeCount=knowledgeCount+1 end
   backfillDone=false
