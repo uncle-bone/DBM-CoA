@@ -1,10 +1,10 @@
 # DBM-CoA v5.2.19 — Deadly Boss Mods for Conquest Reborn
 
-> **[⬇ Download v5.2.19 — Latest verified prerelease](https://github.com/uncle-bone/DBM-CoA/releases/download/v5.2.19/DBM-CoA-v5.2.19.zip)** — install-ready ZIP with all 26 addon folders.
+> **[⬇ Download v5.2.19 — Latest stable release](https://github.com/uncle-bone/DBM-CoA/releases/download/v5.2.19/DBM-CoA-v5.2.19.zip)** — install-ready ZIP with all 26 addon folders.
 
 **Maintained by Uncle Bone** · [CoA Research & Addons](https://coa-research.unclebone.workers.dev/) · [Report an issue](https://github.com/uncle-bone/DBM-CoA/issues)
 
-**Current research build: v5.2.19 (prerelease).** Integrates the CoA-Research [Shared Database v2.0.1](https://github.com/uncle-bone/CoA-Research/releases/tag/shared-database-v2.0.1) combat attribution and pet/summon candidate policy. New Learner spell discoveries and observed timing records require hostile, non-player-controlled NPC combat sources; target discovery requires an attackable NPC. Source timer predictions remain opt-in for new installations. Historical ownership candidates are **not** hardcoded as universal NPC blacklists, and source encounters are not live-verified. Existing saved records remain preserved. Automated Lua 5.1 and package validation passed; actual in-game behavior awaits testing.
+**Current stable release: v5.2.19.** Integrates the CoA-Research [Shared Database v2.0.1](https://github.com/uncle-bone/CoA-Research/releases/tag/shared-database-v2.0.1) combat attribution and pet/summon candidate policy. New Learner spell discoveries and observed timing records require hostile, non-player-controlled NPC combat sources; target discovery requires an attackable NPC. Source timer predictions remain opt-in for new installations. Historical ownership candidates are **not** hardcoded as universal NPC blacklists, and source encounters are not live-verified. Existing saved records remain preserved. Automated Lua 5.1 and package validation passed; actual in-game behavior awaits testing.
 
 ## 🚨 REQUIRED UPDATE STEP: DELETE THE OLD `DBM-CoA-Observer` FOLDER
 
@@ -20,6 +20,15 @@
 **Why:** `DBM-CoA-Observer` was discontinued and is no longer distributed. Installing a new ZIP does **not** automatically remove old addon folders. Do not delete `DBM-CoA-Learner` or `DBM-Core`.
 
 Back up your `WTF` SavedVariables before updating. Keeping SavedVariables preserves learner history and user preferences.
+
+## What's new in v5.2.19 — current stable
+
+- CoA-Research Shared Database v2.0.1 evidence integration with provenance preserved.
+- Filter new Learner discoveries and timing evidence to hostile, non-player-controlled NPC sources.
+- Prevent player-owned pets and summons from contaminating new encounter records based on combat flags rather than broad NPC-ID blacklists.
+- Keep unverified source timers opt-in for new installs; retain previous user settings and SavedVariables.
+- Preserve existing CoASync sharing, UI, historical encounter research, and the Learner Status button.
+- Automated Lua 5.1 and ZIP checks passed; live Conquest Reborn boss mechanics remain unverified.
 
 ## What's new in v5.2.17
 
