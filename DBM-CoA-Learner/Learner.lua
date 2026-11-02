@@ -68,10 +68,17 @@ local function ensureSyncChannel()
  -- Joining is independent of the sharing pause; traffic remains paused in instances.
  -- Join only the named shared channel; never leave, rename, or reorder any existing channel.
  -- WoW refuses a join when the channel limit is reached; do not evict other channels.
- local ok=pcall(JoinChannelByName,SYNC_CHANNEL)
- joinRetry=ok and 60 or 120
+ local ok, result=pcall(JoinChannelByName,SYNC_CHANNEL)
+ -- A successful Lua call does not prove that WoW accepted the join.
+ -- Recheck membership on subsequent ticks; retry gently without touching other channels.
+ joinAttempted=true
+ joinRetry=ok and 15 or 30
 end
 local function verifyChannels() end
+local function smart3Command(arg)
+ if type(DBMCoASmartSync3Command)=="function" then DBMCoASmartSync3Command(arg or "")
+ else say("SmartSync v3 command handler unavailable; check Lua errors") end
+end
 local function say(s) if DEFAULT_CHAT_FRAME then DEFAULT_CHAT_FRAME:AddMessage("|cff66ccffDBM-CoA|r "..s) end end
 local function clock() return GetTime() end
 -- CoA instance aliases are observed, not blindly trusted. Map IDs are authoritative
@@ -613,8 +620,9 @@ SlashCmdList.DBMCOA=function(s)
  s=(s or ""):lower():match("^%s*(.-)%s*$")
  if not db then return end
  if s=="options" then if InterfaceOptionsFrame_OpenToCategory and _G.DBMCoAOptionsPanel then InterfaceOptionsFrame_OpenToCategory(_G.DBMCoAOptionsPanel);InterfaceOptionsFrame_OpenToCategory(_G.DBMCoAOptionsPanel) else say("Options unavailable on this client") end
+ elseif s=="smart3" or s:sub(1,7)=="smart3 " then smart3Command(s:sub(8))
  elseif s=="perf" then say("Perf: combat="..perf.combatEvents.." stored="..perf.storedEvents.." dropped="..perf.droppedEvents.." new="..perf.discoveries.." UI="..perf.statusRefreshes.." known="..knowledgeCount.." queue="..#syncQueue.." timing="..#timingQueue)
-  elseif s=="status" then local z=zone();local throttleSent,throttleDeferred,throttleFailed=DBMCoAChannelStats();say("Shared channel throttle: sent="..throttleSent.." deferred="..throttleDeferred.." failed="..throttleFailed.." | SmartSync v3: /coasmart3");say("Auto="..tostring(not db.disabled).." recording="..tostring(recording).." instance="..z.instance.." type="..z.type.." saved="..#db.sessions.." sent="..sent.." received="..received.." pending="..#syncQueue.." controlPending="..#controlQueue.." retryWait="..math.floor(retryWait+0.5).." pongs="..pings.." lastError="..lastSyncError.." channel="..tostring(type(GetChannelName)=="function" and GetChannelName(SYNC_CHANNEL) or "unsupported").." raw="..rawReceived.." duplicates="..duplicates.." rejected="..rejected.." discoverySent="..discoverySent.." peers3m="..activePeers().." timingSent="..timingSent.." timingReceived="..timingReceived.." timingDuplicates="..timingDuplicates.." timingPending="..#timingQueue.." batches="..batchSent.." relaySent="..relaySent.." lastReceive="..lastReceive)
+  elseif s=="status" then local z=zone();local throttleSent,throttleDeferred,throttleFailed=DBMCoAChannelStats();say("Shared channel throttle: sent="..throttleSent.." deferred="..throttleDeferred.." failed="..throttleFailed.." | SmartSync v3: /dbmcoa smart3");say("Auto="..tostring(not db.disabled).." recording="..tostring(recording).." instance="..z.instance.." type="..z.type.." saved="..#db.sessions.." sent="..sent.." received="..received.." pending="..#syncQueue.." controlPending="..#controlQueue.." retryWait="..math.floor(retryWait+0.5).." pongs="..pings.." lastError="..lastSyncError.." channel="..tostring(type(GetChannelName)=="function" and GetChannelName(SYNC_CHANNEL) or "unsupported").." raw="..rawReceived.." duplicates="..duplicates.." rejected="..rejected.." discoverySent="..discoverySent.." peers3m="..activePeers().." timingSent="..timingSent.." timingReceived="..timingReceived.." timingDuplicates="..timingDuplicates.." timingPending="..#timingQueue.." batches="..batchSent.." relaySent="..relaySent.." lastReceive="..lastReceive)
  elseif s=="experimental off" then db.experimentalDisabled=true;say("Experimental warnings and bars disabled")
  elseif s=="experimental on" then db.experimentalDisabled=false;say("Experimental warnings and bars enabled")
  elseif s=="fast off" then db.fastSyncDisabled=true;say("Batch sync off; single-record compatibility mode")
@@ -626,10 +634,10 @@ SlashCmdList.DBMCOA=function(s)
  elseif s=="ui off" then db.hideStatus=true;if statusFrame then statusFrame:Hide() end
  elseif s=="ui on" then db.hideStatus=false;makeStatus();statusFrame:Show()
  elseif s=="channel off" then db.channelDisabled=true;say("Shared-channel listening disabled; existing channel membership unchanged")
- elseif s=="channel on" then db.channelDisabled=false;db.channelUnsafe=nil;say("Shared-channel listening enabled (auto-joins BBLC25C after 20 seconds)")
+ elseif s=="channel on" then db.channelDisabled=false;db.channelUnsafe=nil;say("Shared-channel listening enabled (auto-joins BBLC25C after startup grace; retries safely)")
  elseif s=="off" then db.disabled=true;save();say("Automatic recording disabled")
  elseif s=="on" then db.disabled=false;refresh();say("Automatic recording enabled")
  elseif s=="clear" then db.sessions={};say("Saved sessions cleared")
  elseif s=="save" then save();refresh();say("Current recording saved (if any)")
- else say("Automatic in instances. Settings: /dbmcoa options. Commands: /dbmcoa status | on | off | save | clear | channel on | channel off | share on/off | fast on/off | experimental on/off | ping | syncdebug | ui on/off | perf") end
+ else say("Automatic in instances. Settings: /dbmcoa options. Commands: /dbmcoa status | on | off | save | clear | channel on | channel off | share on/off | fast on/off | experimental on/off | ping | syncdebug | ui on/off | perf | smart3 [hello/rebuild/on/off]") end
 end
