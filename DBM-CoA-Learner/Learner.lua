@@ -67,7 +67,7 @@ local function hideSyncChannel()
   channelHiddenThisLogin=true
  end
 end
--- Independently join the existing shared channel after a 20-second grace period.
+-- Independently join the existing shared channel after a 10-second grace period.
 -- Never leave, rename, reorder or create an alternate channel.
 local joinGrace=0
 local joinRetry=0
@@ -75,7 +75,7 @@ local function ensureSyncChannel()
  if type(GetChannelName)~="function" or type(JoinChannelByName)~="function" then return end
  local id=GetChannelName(SYNC_CHANNEL)
  if type(id)=="number" and id>0 then return end
- if joinGrace<20 or joinRetry>0 then return end
+ if joinGrace<10 or joinRetry>0 then return end
  -- Joining is independent of the sharing pause; traffic remains paused in instances.
  -- Join only the named shared channel; never leave, rename, or reorder any existing channel.
  -- WoW refuses a join when the channel limit is reached; do not evict other channels.
@@ -646,7 +646,7 @@ SlashCmdList.DBMCOA=function(s)
  elseif s=="ui off" then db.hideStatus=true;if statusFrame then statusFrame:Hide() end
  elseif s=="ui on" then db.hideStatus=false;makeStatus();statusFrame:Show()
  elseif s=="channel off" then db.channelDisabled=true;say("Shared-channel listening disabled; existing channel membership unchanged")
- elseif s=="channel on" then db.channelDisabled=false;db.channelUnsafe=nil;say("Shared-channel listening enabled (auto-joins BBLC25C after startup grace; retries safely)")
+ elseif s=="channel on" then db.channelDisabled=false;db.channelUnsafe=nil;say("Shared-channel listening enabled (auto-joins BBLC25C after 10 seconds; retries safely)")
  elseif s=="off" then db.disabled=true;save();say("Automatic recording disabled")
  elseif s=="on" then db.disabled=false;refresh();say("Automatic recording enabled")
  elseif s=="clear" then db.sessions={};say("Saved sessions cleared")
