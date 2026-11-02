@@ -1,0 +1,80 @@
+{
+  "schema": "dbm-coa-shared-reference-integration-v1",
+  "researchRelease": "https://github.com/uncle-bone/CoA-Research/releases/tag/shared-database-v2.0.1",
+  "version": "2.0.1",
+  "runtimeBehavior": "combat-log attribution gates only; no static NPC blacklist or unverified mechanic timer activation",
+  "sourcePaths": [
+    "datasets/shared-reference/v2.0/combat-attribution.json",
+    "datasets/shared-reference/v2.0/pets-and-summons.json",
+    "datasets/shared-reference/v2.0/relationship-graph.json",
+    "datasets/shared-reference/v2.0/encounter-evidence.json",
+    "datasets/shared-reference/v2.0/coverage-report.json",
+    "datasets/shared-reference/v2.0/unresolved-evidence.json"
+  ],
+  "petNpcCandidates": [
+    {
+      "id": 50078,
+      "name": "Skeletal Rogue",
+      "status": "unverified ownership candidate",
+      "liveRebornVerified": false,
+      "sourcePath": "datasets/shared-reference/v1/pets-and-summons.json"
+    },
+    {
+      "id": 50068,
+      "name": "Abomination",
+      "status": "unverified ownership candidate",
+      "liveRebornVerified": false,
+      "sourcePath": "datasets/shared-reference/v1/pets-and-summons.json"
+    },
+    {
+      "id": 50119,
+      "name": "Shadow Effigy",
+      "status": "unverified ownership candidate",
+      "liveRebornVerified": false,
+      "sourcePath": "datasets/shared-reference/v1/pets-and-summons.json"
+    },
+    {
+      "id": 1374,
+      "name": "Devilsaur",
+      "status": "unverified ownership candidate",
+      "liveRebornVerified": false,
+      "sourcePath": "datasets/shared-reference/v1/pets-and-summons.json"
+    },
+    {
+      "id": 4528,
+      "name": "Summoned Earth Guardian",
+      "status": "unverified ownership candidate",
+      "liveRebornVerified": false,
+      "sourcePath": "datasets/shared-reference/v1/pets-and-summons.json"
+    },
+    {
+      "id": 2630,
+      "name": "Earthbind Totem",
+      "status": "unverified ownership candidate",
+      "liveRebornVerified": false,
+      "sourcePath": "datasets/shared-reference/v1/pets-and-summons.json"
+    },
+    {
+      "id": 6066,
+      "name": "Summoned Earthgrab Totem",
+      "status": "unverified ownership candidate",
+      "liveRebornVerified": false,
+      "sourcePath": "datasets/shared-reference/v1/pets-and-summons.json"
+    }
+  ],
+  "policy": {
+    "hostileCreatureSourceFlags": true,
+    "excludeFriendlyAndPlayerControlled": true,
+    "trackUncertainCombatEventsInSessionOnly": true,
+    "neverBlacklistTemplateId": true,
+    "sourceMechanicsRequireLiveVerification": true
+  },
+  "unresolved": [
+    "No verified summon spell->NPC->owner->pet ability chain",
+    "Existing learned SavedVariables may contain pre-filter friendly records; preserve until audit",
+    "Historical encounter candidates do not establish deployed Conquest Reborn boss AI",
+    "Real client/source GUID flags need in-game testing",
+    "Razorfen Kraul boss AI and trash attribution not verified"
+  ],
+  "liveRebornVerified": false
+}
