@@ -1,4 +1,4 @@
--- Shared per-client BBLC25C send gate for DCOAL31, DCOAR21, DCOAS3.
+-- Shared per-client CoASync send gate for DCOAL31, DCOAR21, DCOAS3.
 -- All DBM-CoA channel senders MUST call this function; WoW 3.3.5a Lua 5.1.
 local last=-1000
 local sent=0
