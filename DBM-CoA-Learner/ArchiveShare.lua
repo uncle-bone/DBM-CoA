@@ -1,6 +1,6 @@
 -- DBM-CoA v3.21: demand-driven archive sync. Never auto-broadcast the whole archive.
 -- Historical references are NOT verified combat discoveries.
-local CHANNEL="BBLC25C"
+local CHANNEL="CoASync"
 local PREFIX="DCOAR21"
 local KINDS={"N","S","Q","I"}
 local f=CreateFrame("Frame")
