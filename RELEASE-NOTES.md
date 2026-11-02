@@ -1,1 +1,1 @@
-DBM-CoA v5.2.14 fixes inconsistent in-game version labels: the DBM core panel and Learner addon metadata now both display 5.2.14 instead of legacy 5.21 and 5.2.13-TEST. All existing CoASync, learning, and encounter functionality is preserved. In-game verification required.
+DBM-CoA v5.2.15 adds a Status button in the Learner window's More section. It runs the existing /dbmcoa status command directly, alongside Hello, Settings, and Diagnostics. All in-game version labels updated to 5.2.15. In-game verification pending.
