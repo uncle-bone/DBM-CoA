@@ -1,7 +1,7 @@
 -- DBM-CoA v5.0 experimental, research-backed Classic dungeon cast alerts.
--- Research source: downingwow/CoA-Research research/dbm (2026-10-30)
+-- Research source: uncle-bone/CoA-Research research/dbm (2026-10-30)
 -- These are SOURCE candidates, not live-verified. Never schedules predictive bars.
--- This supplement never modifies stock DBM modules or the BBLC25C protocol.
+-- This supplement never modifies stock DBM modules or the CoASync protocol.
 local spellByMap={
   [36]={[975011]=true,[2102553]=true,[2102580]=true,[2102576]=true,[2102577]=true,[674]=true,[5200]=true,[5141]=true,[2102559]=true,[2102569]=true,[2102554]=true,[2102590]=true,[2102589]=true,[2102527]=true,[40505]=true,[5208]=true,[2101111]=true,[5213]=true,[2102571]=true},
   [48]={[2102687]=true},
@@ -75,7 +75,7 @@ local panel=CreateFrame("Frame","DBMCoADungeonResearchOptions",UIParent)
 panel.name="Dungeon Research"
 panel.parent="DBM-CoA"
 local title=panel:CreateFontString(nil,"ARTWORK","GameFontNormalLarge")
-title:SetPoint("TOPLEFT",16,-16);title:SetText("DBM-CoA v5.0.2 | Dungeon Research")
+title:SetPoint("TOPLEFT",16,-16);title:SetText("DBM-CoA | Dungeon Research")
 local note=panel:CreateFontString(nil,"ARTWORK","GameFontHighlightSmall")
 note:SetPoint("TOPLEFT",16,-45);note:SetWidth(500);note:SetJustifyH("LEFT")
 note:SetText("Experimental source-backed cast alerts. All 19 dungeon NPC rosters are indexed. Source repeat bars are experimental, cast-triggered, and not live verified.")
@@ -95,8 +95,8 @@ local function option(key,label,y,default)
 end
 option("coaDungeonResearchEnabled","Enable experimental dungeon research",-100,true)
 option("coaDungeonResearchWarnings","Show researched enemy cast warnings",-145,true)
-option("coaDungeonPredictiveTimers","Experimental source repeat timers (unverified)",-185,true)
+option("coaDungeonPredictiveTimers","Experimental source repeat timers (unverified)",-185,false)
 local footer=panel:CreateFontString(nil,"ARTWORK","GameFontHighlightSmall")
 footer:SetPoint("TOPLEFT",16,-240);footer:SetWidth(510);footer:SetJustifyH("LEFT")
-footer:SetText("Existing raid modules, AutoLearner, stock timers, and BBLC25C sharing remain unchanged. Source-only research is not proof of live encounter behavior.")
+footer:SetText("Existing raid modules, AutoLearner, stock timers, and CoASync sharing remain unchanged. Source-only research is not proof of live encounter behavior.")
 if type(InterfaceOptions_AddCategory)=="function" then InterfaceOptions_AddCategory(panel) end
