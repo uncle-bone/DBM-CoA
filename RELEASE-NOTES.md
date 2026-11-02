@@ -1,11 +1,7 @@
-# DBM-CoA v5.2.0-TEST — Database-based SmartSync v3
+# DBM-CoA v5.2.2-TEST
 
-Separate shipped archive baseline from persistent learned encounter discoveries. The DCOAS3 protocol now exchanges compact per-record inventory hashes and requests missing records individually instead of transferring entire mismatched buckets. Incremental index building, rate limiting, strict validation and additive merges are retained.
+BBLC25C joins after 10 seconds with safe 15-second retry and no forced channel number or channel eviction. BBLC25C is hidden from the default chat frame once per login, and can be enabled manually in Chat Settings afterward. SmartSync v3 commands are now accessible using /dbmcoa smart3, /dbmcoa smart3 hello, /dbmcoa smart3 rebuild, /dbmcoa smart3 on and /dbmcoa smart3 off. /coasmart3 remains an alias.
 
-The v5.1.9 shared outgoing DBM throttle remains: at most one outgoing message per 1.05 seconds across all three DBM protocols on BBLC25C. It cannot control traffic from other players' older addons.
-
-Run /coasmart3 for diagnostics and /coasmart3 hello to start a handshake. Legacy discovery and archive protocols remain available.
-
-TEST limitations: no live multi-client test or simulated peer harness run; timing aggregates not reconciled through v3, hash collisions and paging remain edge cases, and the addon will not automatically join BBLC25C if absent. Back up SavedVariables before installation.
+Preserves learned data and the global outgoing throttle. Not yet live-tested on Conquest Reborn. Back up SavedVariables before installing.
 
 Maintainer: Uncle Bone
