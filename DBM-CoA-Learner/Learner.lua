@@ -568,7 +568,7 @@ local function add(ev,sg,sn,dg,dn,spell,name,extra,sourceFlags)
  if #session.events>=MAX_EVENTS then session.dropped=session.dropped+1;perf.droppedEvents=perf.droppedEvents+1;return end
  if ev=="SPELL_CAST_START" or ev=="SPELL_CAST_SUCCESS" or ev=="SPELL_AURA_APPLIED" then
   local id=npc(sg)
-  if id then
+  if id and hostileNPC(sg,sourceFlags) then
    remember("S",session.instance,session.difficulty,id,spell,name or sn)
    -- Count a cast once, not both CAST_START and CAST_SUCCESS.
    if spell and (ev=="SPELL_CAST_START" or ev=="SPELL_CAST_SUCCESS") then
