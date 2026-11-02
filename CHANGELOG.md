@@ -1,3 +1,9 @@
+## 5.2.5-TEST — Guarded shared-channel autojoin
+- Restore BBLC25C autojoin after a 20-second startup grace period with channel-slot and stable-list checks.
+- Halt autojoin if an attempted join changes the channel list without joining BBLC25C.
+- Never force /1 or another channel number, leave channels, or change default chat subscriptions.
+- Report join state in /dbmcoa status. Requires live client verification; cannot guarantee client slot behavior.
+
 ## 5.2.4-TEST — Restore 20-second channel maintenance interval
 - Check existing BBLC25C membership on a 20-second cadence, not 10 seconds.
 - Keep emergency safety: no automatic channel joins or chat-frame modifications.
