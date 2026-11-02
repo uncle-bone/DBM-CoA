@@ -95,7 +95,7 @@ local function log(...)
  local t=byMap[map];if not t then return end
  local ev=select(2,...);if ev~="SPELL_CAST_START" and ev~="SPELL_CAST_SUCCESS" then return end
  local off=type(select(3,...))=="boolean" and 1 or 0;local guid=select(3+off,...);local flags=select(5+off,...)
- if type(flags)~="number" or not band or band(flags,0x800)==0 or band(flags,0x3000)~=0 or band(flags,0x100)~=0 then return end
+ if type(flags)~="number" or not band or band(flags,0x800)==0 or band(flags,0x3000)~=0 or band(flags,0x100)~=0 or band(flags,0x4000)~=0 then return end
  local id=npc(guid);local spells=id and t[id];if not spells then return end
  local sid=select(9+off,...);local r=spells[sid];if not r or stock(id,sid) then return end
  local key=tostring(id)..":"..sid;local now=GetTime();if last[key] and now-last[key]<2 then return end;last[key]=now
