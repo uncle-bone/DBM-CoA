@@ -429,7 +429,7 @@ local function updateStatus()
   statusButtons.learn:SetText(db.disabled and "Learning: OFF" or "Learning: ON")
   statusButtons.share:SetText(db.sharingDisabled and "Sharing: OFF" or "Sharing: ON")
   statusButtons.more:SetText(db.statusMoreOpen and "Less" or "More")
-  for _,b in ipairs({statusButtons.advanced,statusButtons.hello,statusButtons.archive}) do
+  for _,b in ipairs({statusButtons.advanced,statusButtons.hello,statusButtons.archive,statusButtons.status}) do
    if db.statusMoreOpen then b:Show() else b:Hide() end
   end
  end
@@ -531,14 +531,14 @@ local function makeStatus()
  statusButtons.more=actionButton("More",228,28,80,function()
   if db then db.statusMoreOpen=not db.statusMoreOpen;updateStatus() end
  end)
- statusButtons.hello=actionButton("Send Hello",8,5,95,function()
+ statusButtons.hello=actionButton("Hello",8,5,70,function()
   if type(DBMCoASmartSync3Command)=="function" then DBMCoASmartSync3Command("hello") end
   updateStatus()
  end)
- statusButtons.archive=actionButton("Settings",108,5,95,function()
+ statusButtons.archive=actionButton("Settings",83,5,75,function()
   if type(SlashCmdList.DBMCOA)=="function" then SlashCmdList.DBMCOA("options") end
  end)
- statusButtons.advanced=actionButton("Diagnostics",208,5,100,function()
+ statusButtons.advanced=actionButton("Diagnostics",163,5,92,function()
   if type(SlashCmdList.DBMCOA)=="function" then SlashCmdList.DBMCOA("syncdebug");SlashCmdList.DBMCOA("smart3") end
  end)
  for _,b in pairs(statusButtons) do
