@@ -6,7 +6,7 @@
 
 **Current stable release: v5.2.17** — WoW 3.3.5a / Ascension Conquest of Azeroth / Conquest Reborn.
 
-This stable release fixes the in-game version labels so DBM Core and DBM-CoA Learner both report **5.2.14**. It includes the compact Learner dashboard, CoASync controls and safeguards, and preserves existing SavedVariables. Confirm the displayed versions in Conquest Reborn; cross-client synchronization, research-derived timers, and custom encounters still need in-game validation.
+This stable release ensures the Learner **Status** button is created on the main button row and runs `/dbmcoa status`. It retains the compact Learner dashboard, CoASync controls and safeguards, and existing SavedVariables. Automated validation passed; confirm the button layout in-game. Cross-client synchronization, research-derived timers, and custom encounters still need in-game validation.
 
 ## 🚨 REQUIRED UPDATE STEP: DELETE THE OLD `DBM-CoA-Observer` FOLDER
 
@@ -25,7 +25,7 @@ Back up your `WTF` SavedVariables before updating. Keeping SavedVariables preser
 
 ## What's new in v5.2.17
 
-- Fixed the two conflicting in-game version labels: DBM Core and DBM-CoA Learner now both report **5.2.14**.
+- Ensures the Learner **Status** button is created beside the bottom-row controls and runs `/dbmcoa status`.
 - Retains the compact Learner dashboard and CoASync improvements.
 
 - **Compact Learner dashboard:** discovery counts, new discoveries this login, session counts, sent/received totals, timing information, archive statistics, peer count, queue size and SmartSync index readiness.
