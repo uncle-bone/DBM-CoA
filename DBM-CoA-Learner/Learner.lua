@@ -429,9 +429,9 @@ local function updateStatus()
   statusButtons.learn:SetText(db.disabled and "Learning: OFF" or "Learning: ON")
   statusButtons.share:SetText(db.sharingDisabled and "Sharing: OFF" or "Sharing: ON")
   statusButtons.more:SetText(db.statusMoreOpen and "Less" or "More")
-  statusButtons.advanced:SetShown(db.statusMoreOpen==true)
-  statusButtons.hello:SetShown(db.statusMoreOpen==true)
-  statusButtons.archive:SetShown(db.statusMoreOpen==true)
+  for _,b in ipairs({statusButtons.advanced,statusButtons.hello,statusButtons.archive}) do
+   if db.statusMoreOpen then b:Show() else b:Hide() end
+  end
  end
  statusText:SetText(table.concat(lines,string.char(10)))
 end
@@ -535,7 +535,7 @@ local function makeStatus()
   if type(DBMCoASmartSync3Command)=="function" then DBMCoASmartSync3Command("hello") end
   updateStatus()
  end)
- statusButtons.archive=actionButton("Archive",108,5,95,function()
+ statusButtons.archive=actionButton("Settings",108,5,95,function()
   if type(SlashCmdList.DBMCOA)=="function" then SlashCmdList.DBMCOA("options") end
  end)
  statusButtons.advanced=actionButton("Diagnostics",208,5,100,function()
