@@ -58,32 +58,14 @@ end
 -- Hide only BBLC25C in the default chat frame once per login.
 -- Never hide all CHANNEL traffic or override a user's later manual opt-in.
 local channelHiddenThisLogin=false
-local function hideSyncChannel()
- if channelHiddenThisLogin or type(GetChannelName)~="function" then return end
- local id=GetChannelName(SYNC_CHANNEL)
- if type(id)~="number" or id<=0 then return end
- if type(ChatFrame_RemoveChannel)=="function" and DEFAULT_CHAT_FRAME then
-  ChatFrame_RemoveChannel(DEFAULT_CHAT_FRAME,SYNC_CHANNEL)
-  channelHiddenThisLogin=true
- end
-end
--- Independently join the existing shared channel after a 10-second grace period.
--- Never leave, rename, reorder or create an alternate channel.
+-- Safety mode: the Conquest Reborn client can replace /1 when addons join channels.
+-- Never call JoinChannelByName, LeaveChannelByName, or modify chat frame channel lists.
+-- Respect only channels that the player (or another addon) has already joined.
+local function hideSyncChannel() end
 local joinGrace=0
 local joinRetry=0
 local function ensureSyncChannel()
- if type(GetChannelName)~="function" or type(JoinChannelByName)~="function" then return end
- local id=GetChannelName(SYNC_CHANNEL)
- if type(id)=="number" and id>0 then return end
- if joinGrace<10 or joinRetry>0 then return end
- -- Joining is independent of the sharing pause; traffic remains paused in instances.
- -- Join only the named shared channel; never leave, rename, or reorder any existing channel.
- -- WoW refuses a join when the channel limit is reached; do not evict other channels.
- local ok, result=pcall(JoinChannelByName,SYNC_CHANNEL)
- -- A successful Lua call does not prove that WoW accepted the join.
- -- Recheck membership on subsequent ticks; retry gently without touching other channels.
- joinAttempted=true
- joinRetry=ok and 15 or 30
+ -- Intentionally no automatic join: protecting existing channels takes priority.
 end
 local function verifyChannels() end
 local function say(s) if DEFAULT_CHAT_FRAME then DEFAULT_CHAT_FRAME:AddMessage("|cff66ccffDBM-CoA|r "..s) end end
@@ -497,7 +479,7 @@ end
 f:SetScript("OnEvent",function(self,event,...)
  if event=="ADDON_LOADED" then
   if ...~="DBM-CoA-Learner" then return end
-  joinGrace=0;joinRetry=0;channelHiddenThisLogin=false
+  joinGrace=0;joinRetry=0
   DBMCoALearnerDB=DBMCoALearnerDB or {}
   db=DBMCoALearnerDB;db.sessions=db.sessions or {};db.knowledge=db.knowledge or {};db.timings=db.timings or {};db.remoteTimingSources=db.remoteTimingSources or {}
   -- Auto-learning is ON for both party (dungeons) and raid instances by default.
@@ -646,7 +628,7 @@ SlashCmdList.DBMCOA=function(s)
  elseif s=="ui off" then db.hideStatus=true;if statusFrame then statusFrame:Hide() end
  elseif s=="ui on" then db.hideStatus=false;makeStatus();statusFrame:Show()
  elseif s=="channel off" then db.channelDisabled=true;say("Shared-channel listening disabled; existing channel membership unchanged")
- elseif s=="channel on" then db.channelDisabled=false;db.channelUnsafe=nil;say("Shared-channel listening enabled (auto-joins BBLC25C after 10 seconds; retries safely)")
+ elseif s=="channel on" then db.channelDisabled=false;db.channelUnsafe=nil;say("Shared-channel listening enabled; manually join BBLC25C if absent (no automatic join)")
  elseif s=="off" then db.disabled=true;save();say("Automatic recording disabled")
  elseif s=="on" then db.disabled=false;refresh();say("Automatic recording enabled")
  elseif s=="clear" then db.sessions={};say("Saved sessions cleared")
