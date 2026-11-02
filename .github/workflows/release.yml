@@ -19,6 +19,23 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq lua5.1
           find DBM-CoA-Learner -name '*.lua' -print0 | xargs -0 -n1 luac5.1 -p
+      - name: Verify CoASync migration and safe channel ownership
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          names=['Learner.lua','SmartSync3.lua','ArchiveShare.lua','Options.lua','SyncThrottle.lua']
+          for name in names:
+              data=(Path('DBM-CoA-Learner')/name).read_text()
+              assert 'BBLC25C' not in data, f'Legacy channel remains in {name}'
+          for name in ['Learner.lua','SmartSync3.lua','ArchiveShare.lua']:
+              data=(Path('DBM-CoA-Learner')/name).read_text()
+              assert 'CoASync' in data, f'CoASync missing from {name}'
+          learner=(Path('DBM-CoA-Learner')/'Learner.lua').read_text()
+          assert 'SLASH_DBMCOA1="/dbmcoa"' in learner
+          assert 'ChatFrame_RemoveChannel(' not in learner
+          assert 'LeaveChannelByName(' not in learner
+          print('CoASync migration and Learner command invariants verified')
+          PY
       - name: Restore exact offline research database
         run: |
           python3 - <<'PYCODE'
