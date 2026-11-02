@@ -1,3 +1,9 @@
+## 5.2.7-TEST — Learner window recovery and channel diagnostics
+- /dbmcoa ui on recenters and raises the Learner window; reports UI initialization errors.
+- Learner initialization continues if the status window fails to construct.
+- Print guarded BBLC25C join attempts and errors in chat; retain membership success notifications.
+- Live validation required; avoid channel replacement on custom clients.
+
 ## 5.2.6-TEST — Join confirmation and chat notification
 - Confirm actual BBLC25C membership and announce the assigned channel number in chat.
 - Retain the 20-second startup grace, stable-channel checks and protection against unexpected channel changes.
