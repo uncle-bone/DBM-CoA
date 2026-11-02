@@ -34,7 +34,10 @@ jobs:
           assert 'SLASH_DBMCOA1="/dbmcoa"' in learner
           assert 'ChatFrame_RemoveChannel(' not in learner
           assert 'LeaveChannelByName(' not in learner
-          print('CoASync migration and Learner command invariants verified')
+          for name in ['Learner.lua','SmartSync3.lua','ArchiveShare.lua']:
+              data=(Path('DBM-CoA-Learner')/name).read_text()
+              assert 'if isSelfSender(sender) then return end' in data, f'Self-sync filter missing from {name}'
+          print('CoASync migration, self-sync filtering, and Learner command invariants verified')
           PY
       - name: Restore exact offline research database
         run: |
