@@ -1,12 +1,12 @@
-# DBM-CoA v5.1.8 — Deadly Boss Mods for Conquest Reborn
+# DBM-CoA v5.2.13 — Deadly Boss Mods for Conquest Reborn
 
-> **[⬇ Download v5.1.8 — Current stable release](https://github.com/uncle-bone/DBM-CoA/releases/download/v5.1.8/DBM-CoA-v5.1.8.zip)** — ZIP includes all 26 addon folders.
+> **[⬇ Download v5.2.13 — Current stable release](https://github.com/uncle-bone/DBM-CoA/releases/download/v5.2.13/DBM-CoA-v5.2.13.zip)** — ZIP includes all 26 addon folders.
 
 **Maintained by Uncle Bone** · [CoA Research & Addons](https://coa-research.unclebone.workers.dev/) · [Report an issue](https://github.com/uncle-bone/DBM-CoA/issues)
 
-**Current stable release: v5.1.8** — WoW 3.3.5a / Ascension Conquest of Azeroth / Conquest Reborn.
+**Current stable release: v5.2.13** — WoW 3.3.5a / Ascension Conquest of Azeroth / Conquest Reborn.
 
-This release packages the latest current-chat build, including the corrected DBM-CoA version and maintainer branding in the main DBM window, tracker updates, and SmartSync v3 discovery-reconciliation work. Existing SavedVariables and learned data are preserved. SmartSync v3 client-to-client behavior, research-derived timers, and custom Conquest Reborn encounter mechanics still need in-game validation.
+The current stable release adds a compact Learner dashboard with live discoveries, saved sessions, send/receive totals, archive statistics, and SmartSync v3 status. Learning and Sharing buttons provide quick control; More expands Send Hello, Settings, and Diagnostics. The shared channel is **CoASync**. Existing SavedVariables and learned data are preserved. Cross-client synchronization, research-derived timers, and custom encounters still require in-game validation.
 
 ## 🚨 REQUIRED UPDATE STEP: DELETE THE OLD `DBM-CoA-Observer` FOLDER
 
@@ -23,7 +23,15 @@ This release packages the latest current-chat build, including the corrected DBM
 
 Back up your `WTF` SavedVariables before updating. Keeping SavedVariables preserves learner history and user preferences.
 
-## What's new since v4.2.1 (v5.0.3 baseline)
+## What's new in v5.2.13
+
+- **Compact Learner dashboard:** discovery counts, new discoveries this login, session counts, sent/received totals, timing information, archive statistics, peer count, queue size and SmartSync index readiness.
+- **Simple controls:** Learning and Sharing toggles, plus an expandable **More** section with Send Hello, Settings and Diagnostics.
+- **SmartSync v3:** read-only status and counters for hello, summary, request, applied, duplicate, rejected and throttled traffic. Local channel echoes are ignored so they do not appear as other peers.
+- **CoASync channel:** guarded automatic join with startup grace, channel-slot checks and protections against replacing existing channels (including `/1` General). Compatible addons must also use CoASync and their own protocol prefixes.
+- **Window preferences:** retains dragging, resizing, saved position and visibility.
+
+## Earlier features (v5.0.x and later)
 
 ### Dungeon research and experimental timers
 
@@ -45,10 +53,10 @@ Back up your `WTF` SavedVariables before updating. Keeping SavedVariables preser
 
 ### AutoLearner and compatible sharing
 
-- Continues using the shared **`BBLC25C`** channel alongside compatible Questie-X and LootCollector builds.
+- Uses the shared **`CoASync`** channel alongside other compatible addons configured for that channel. DBM-CoA no longer sends to `BBLC25C`.
 - Keeps existing DBM-specific message protocols **`DCOAL31`** and **`DCOAR21`**, rather than introducing a new incompatible format.
 - Preserves existing receiving, duplicate suppression and rate-limit behavior.
-- Outgoing sharing is automatically restricted inside instances as previously designed.
+- Outgoing sharing is automatically restricted inside instances as previously designed. Joining CoASync is guarded to protect existing channels; it never intentionally removes `/1` General.
 - **Exact compatibility with every historical DBM-CoA version has not been verified**; older clients must understand the existing protocol.
 - Sharing only occurs while the game and addon are running.
 
@@ -70,17 +78,17 @@ Research-backed candidate timers and learned predictions are **experimental**. S
 
 1. Close WoW and back up SavedVariables.
 2. **Delete `Interface/AddOns/DBM-CoA-Observer/` if it exists.**
-3. Replace old DBM addon folders with the folders from the v5.1.8 release ZIP. Keep all supplied DBM folders alongside one another; do **not** combine them into one folder.
+3. Replace old DBM addon folders with the folders from the v5.2.13 release ZIP. Keep all supplied DBM folders alongside one another; do **not** combine them into one folder.
 4. Start Conquest Reborn and play. The learner and new research features start automatically unless previously disabled in saved settings.
 
-**Release version:** v5.1.8. See [GitHub Releases](https://github.com/uncle-bone/DBM-CoA/releases) for the published download.
+**Release version:** v5.2.13 (current stable). See [GitHub Releases](https://github.com/uncle-bone/DBM-CoA/releases) for the published download.
 
 ## Known limits
 
 - Dungeon research roster coverage is not the same as fully implemented boss warnings for all 19 dungeons.
 - The 80 timer candidates are source-derived and **not live verified**.
 - Custom Zul'Gurub Ascension-specific encounter scripts are **not yet integrated**.
-- Legacy sharing across all older versions and default UI/DragonUI/ElvUI behavior need player testing.
+- Live two-player SmartSync v3 exchange, the compact window layout, and default UI/DragonUI/ElvUI behavior still need player testing.
 - The discontinued Observer's separately saved data is not automatically merged into the AutoLearner.
 
 ## Credits, support and licensing
