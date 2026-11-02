@@ -66,8 +66,10 @@ local function ensureSyncChannel()
  if type(id)=="number" and id>0 then return end
  if joinGrace<20 or joinRetry>0 then return end
  -- Joining is independent of the sharing pause; traffic remains paused in instances.
- -- Existing-channel-only safety mode: do not risk taking an occupied channel slot.
- joinRetry=60
+ -- Join only the named shared channel; never leave, rename, or reorder any existing channel.
+ -- WoW refuses a join when the channel limit is reached; do not evict other channels.
+ local ok=pcall(JoinChannelByName,SYNC_CHANNEL)
+ joinRetry=ok and 60 or 120
 end
 local function verifyChannels() end
 local function say(s) if DEFAULT_CHAT_FRAME then DEFAULT_CHAT_FRAME:AddMessage("|cff66ccffDBM-CoA|r "..s) end end
