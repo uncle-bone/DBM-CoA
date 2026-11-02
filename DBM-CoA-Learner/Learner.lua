@@ -62,6 +62,8 @@ local joinRetry=0
 local joinBaseline=nil
 local joinPending=nil
 local joinUnsafe=false
+local joinNotified=false
+local joinAttempts=0
 local joinReason="waiting for 20-second startup grace"
 local function hideSyncChannel() end
 local function channelSnapshot()
@@ -77,36 +79,51 @@ local function channelSnapshot()
  end
  return table.concat(parts,"|"),occupied
 end
+local function joinNotice(message)
+ if DEFAULT_CHAT_FRAME then DEFAULT_CHAT_FRAME:AddMessage("|cff66ccffDBM-CoA|r "..message) end
+end
 local function ensureSyncChannel()
- if type(GetChannelName)~="function" or type(JoinChannelByName)~="function" then joinReason="channel APIs unavailable";return end
+ if type(GetChannelName)~="function" then joinReason="channel lookup unavailable";return end
  local id=GetChannelName(SYNC_CHANNEL)
- if type(id)=="number" and id>0 then joinPending=nil;joinReason="joined";return end
+ if type(id)=="number" and id>0 then
+  joinPending=nil;joinReason="joined as /"..id
+  if not joinNotified then
+   joinNotified=true
+   joinNotice("Joined shared channel BBLC25C (/"..id.."). Channel chat visibility remains under your Chat Settings.")
+  end
+  return
+ end
+ joinNotified=false
  if joinUnsafe then return end
+ if joinGrace<20 then return end
+ if type(JoinChannelByName)~="function" then joinReason="join API unavailable";return end
+ local snapshot,count=channelSnapshot()
+ if not snapshot or not count then joinReason="channel inspection unavailable";return end
  if joinPending then
-  local snapshot=channelSnapshot()
+  -- Allow the client time to deliver the channel notice before deciding the attempt failed.
+  if joinRetry>0 then return end
   if snapshot~=joinPending then
    joinUnsafe=true
-   joinReason="channel list changed without BBLC25C; autojoin halted to protect /1"
+   joinReason="channel list changed without BBLC25C; autojoin stopped"
+   joinNotice("BBLC25C join changed another channel. Autojoin stopped to protect existing channels.")
    return
   end
   joinPending=nil
  end
- if joinGrace<20 then return end
- local snapshot,count=channelSnapshot()
- if not snapshot or not count then joinReason="cannot inspect channels";return end
- if count>=9 then joinReason="channel slots nearly full; refusing unsafe join";return end
+ if count>=9 then joinReason="channel slots nearly full; join skipped";return end
  if joinBaseline~=snapshot then
   joinBaseline=snapshot
-  joinRetry=5
+  joinRetry=3
   joinReason="waiting for stable channel list"
   return
  end
  if joinRetry>0 then return end
- -- The client ultimately controls slot assignment; a full safety guarantee requires in-game testing.
- local ok=pcall(JoinChannelByName,SYNC_CHANNEL)
+ if joinAttempts>=3 then joinReason="three attempts failed; autojoin paused";return end
+ joinAttempts=joinAttempts+1
  joinPending=snapshot
- joinRetry=30
- joinReason=ok and "join requested; awaiting membership" or "join API error"
+ local ok=pcall(JoinChannelByName,SYNC_CHANNEL)
+ joinRetry=15
+ joinReason=ok and ("join attempt "..joinAttempts.." awaiting confirmation") or "join API failed"
 end
 local function verifyChannels() end
 local function say(s) if DEFAULT_CHAT_FRAME then DEFAULT_CHAT_FRAME:AddMessage("|cff66ccffDBM-CoA|r "..s) end end
@@ -520,7 +537,7 @@ end
 f:SetScript("OnEvent",function(self,event,...)
  if event=="ADDON_LOADED" then
   if ...~="DBM-CoA-Learner" then return end
-  joinGrace=0;joinRetry=0;joinBaseline=nil;joinPending=nil;joinUnsafe=false
+  joinGrace=0;joinRetry=0;joinBaseline=nil;joinPending=nil;joinUnsafe=false;joinNotified=false;joinAttempts=0
   DBMCoALearnerDB=DBMCoALearnerDB or {}
   db=DBMCoALearnerDB;db.sessions=db.sessions or {};db.knowledge=db.knowledge or {};db.timings=db.timings or {};db.remoteTimingSources=db.remoteTimingSources or {}
   -- Auto-learning is ON for both party (dungeons) and raid instances by default.
