@@ -1,12 +1,12 @@
-# DBM-CoA v5.2.13 — Deadly Boss Mods for Conquest Reborn
+# DBM-CoA v5.2.14 — Deadly Boss Mods for Conquest Reborn
 
-> **[⬇ Download v5.2.13 — Current stable release](https://github.com/uncle-bone/DBM-CoA/releases/download/v5.2.13/DBM-CoA-v5.2.13.zip)** — ZIP includes all 26 addon folders.
+> **[⬇ Download v5.2.14 — Latest development release](https://github.com/uncle-bone/DBM-CoA/releases/download/v5.2.14/DBM-CoA-v5.2.14.zip)** — ZIP includes all 26 addon folders.
 
 **Maintained by Uncle Bone** · [CoA Research & Addons](https://coa-research.unclebone.workers.dev/) · [Report an issue](https://github.com/uncle-bone/DBM-CoA/issues)
 
-**Current stable release: v5.2.13** — WoW 3.3.5a / Ascension Conquest of Azeroth / Conquest Reborn.
+**Latest development release: v5.2.14** — WoW 3.3.5a / Ascension Conquest of Azeroth / Conquest Reborn.
 
-The current stable release adds a compact Learner dashboard with live discoveries, saved sessions, send/receive totals, archive statistics, and SmartSync v3 status. Learning and Sharing buttons provide quick control; More expands Send Hello, Settings, and Diagnostics. The shared channel is **CoASync**. Existing SavedVariables and learned data are preserved. Cross-client synchronization, research-derived timers, and custom encounters still require in-game validation.
+The latest development release adds a compact Learner dashboard with live discoveries, saved sessions, send/receive totals, archive statistics, and SmartSync v3 status. Learning and Sharing buttons provide quick control; More expands Send Hello, Settings, and Diagnostics. The shared channel is **CoASync**. Existing SavedVariables and learned data are preserved. Cross-client synchronization, research-derived timers, and custom encounters still require in-game validation.
 
 ## 🚨 REQUIRED UPDATE STEP: DELETE THE OLD `DBM-CoA-Observer` FOLDER
 
@@ -23,7 +23,10 @@ The current stable release adds a compact Learner dashboard with live discoverie
 
 Back up your `WTF` SavedVariables before updating. Keeping SavedVariables preserves learner history and user preferences.
 
-## What's new in v5.2.13
+## What's new in v5.2.14
+
+- Fixed the two conflicting in-game version labels: DBM Core and DBM-CoA Learner now both report **5.2.14**.
+- Retains the v5.2.13 Learner dashboard and CoASync improvements.
 
 - **Compact Learner dashboard:** discovery counts, new discoveries this login, session counts, sent/received totals, timing information, archive statistics, peer count, queue size and SmartSync index readiness.
 - **Simple controls:** Learning and Sharing toggles, plus an expandable **More** section with Send Hello, Settings and Diagnostics.
@@ -78,10 +81,10 @@ Research-backed candidate timers and learned predictions are **experimental**. S
 
 1. Close WoW and back up SavedVariables.
 2. **Delete `Interface/AddOns/DBM-CoA-Observer/` if it exists.**
-3. Replace old DBM addon folders with the folders from the v5.2.13 release ZIP. Keep all supplied DBM folders alongside one another; do **not** combine them into one folder.
+3. Replace old DBM addon folders with the folders from the v5.2.14 release ZIP. Keep all supplied DBM folders alongside one another; do **not** combine them into one folder.
 4. Start Conquest Reborn and play. The learner and new research features start automatically unless previously disabled in saved settings.
 
-**Release version:** v5.2.13 (current stable). See [GitHub Releases](https://github.com/uncle-bone/DBM-CoA/releases) for the published download.
+**Release version:** v5.2.14 (latest development). See [GitHub Releases](https://github.com/uncle-bone/DBM-CoA/releases) for the published download.
 
 ## Known limits
 
