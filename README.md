@@ -1,10 +1,10 @@
-# DBM-CoA v5.2.18 — Deadly Boss Mods for Conquest Reborn
+# DBM-CoA v5.2.19 — Deadly Boss Mods for Conquest Reborn
 
-> **[⬇ Download v5.2.18 — Latest verified prerelease](https://github.com/uncle-bone/DBM-CoA/releases/download/v5.2.18/DBM-CoA-v5.2.18.zip)** — install-ready ZIP with all 26 addon folders.
+> **[⬇ Download v5.2.19 — Latest verified prerelease](https://github.com/uncle-bone/DBM-CoA/releases/download/v5.2.19/DBM-CoA-v5.2.19.zip)** — install-ready ZIP with all 26 addon folders.
 
 **Maintained by Uncle Bone** · [CoA Research & Addons](https://coa-research.unclebone.workers.dev/) · [Report an issue](https://github.com/uncle-bone/DBM-CoA/issues)
 
-**Current research build: v5.2.18 (prerelease).** WoW 3.3.5a / Conquest Reborn. Imports 22-instance coverage and 128 boss-kit SQL candidates from [CoA-Research release coa-priority-encounters-41510655077](https://github.com/uncle-bone/CoA-Research/releases/tag/coa-priority-encounters-41510655077). Public-source data remains unverified against live Conquest Reborn; it is passive research, not automatically active boss mechanics. Classic19 predictive source bars require explicit opt-in. Includes the v5.2.17 Learner Status button fix. Automated Lua 5.1 and ZIP packaging validation passed; in-game verification pending.
+**Current research build: v5.2.19 (prerelease).** Integrates the CoA-Research [Shared Database v2.0.1](https://github.com/uncle-bone/CoA-Research/releases/tag/shared-database-v2.0.1) combat attribution and pet/summon candidate policy. New Learner spell discoveries and observed timing records require hostile, non-player-controlled NPC combat sources; target discovery requires an attackable NPC. Source timer predictions remain opt-in for new installations. Historical ownership candidates are **not** hardcoded as universal NPC blacklists, and source encounters are not live-verified. Existing saved records remain preserved. Automated Lua 5.1 and package validation passed; actual in-game behavior awaits testing.
 
 ## 🚨 REQUIRED UPDATE STEP: DELETE THE OLD `DBM-CoA-Observer` FOLDER
 
