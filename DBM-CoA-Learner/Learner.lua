@@ -302,7 +302,21 @@ local function parseTiming(payload)
  return timingKey(inst,diff,nid,sid),{instance=inst,difficulty=diff,npc=nid,spell=sid,count=count,sum=total,min=lo,max=hi}
 end
 
+local function isSelfSender(sender)
+ if type(sender)~="string" then return false end
+ local player=type(UnitName)=="function" and UnitName("player") or nil
+ if type(player)~="string" or player=="" then return false end
+ local short=sender:match("^([^%-]+)")
+ if not short or short:lower()~=player:lower() then return false end
+ local realm=sender:match("%-(.+)$")
+ if not realm then return true end
+ local ownRealm=type(GetRealmName)=="function" and GetRealmName() or nil
+ if type(ownRealm)~="string" or ownRealm=="" then return false end
+ local function norm(v) return v:lower():gsub("%s+","") end
+ return norm(realm)==norm(ownRealm)
+end
 local function receive(msg,sender)
+ if isSelfSender(sender) then return end
  -- v3.6 batch envelope: old clients ignore B; new clients unpack each
  -- independently validated v3.4 discovery, without executing remote code.
  if type(msg)=="string" and msg:sub(1,#PREFIX+3)==PREFIX..";B;" then
