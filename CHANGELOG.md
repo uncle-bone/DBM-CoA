@@ -1,3 +1,7 @@
+## 5.2.4-TEST — Restore 20-second channel maintenance interval
+- Check existing BBLC25C membership on a 20-second cadence, not 10 seconds.
+- Keep emergency safety: no automatic channel joins or chat-frame modifications.
+
 ## 5.2.3-TEST — Emergency channel safety
 - Remove automatic BBLC25C joins and automatic chat-frame channel changes to protect /1 General on Conquest Reborn.
 - Continue sharing on an already joined BBLC25C channel using its resolved number.
