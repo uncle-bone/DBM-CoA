@@ -1,12 +1,10 @@
-# DBM-CoA v5.2.17 — Deadly Boss Mods for Conquest Reborn
+# DBM-CoA v5.2.18 — Deadly Boss Mods for Conquest Reborn
 
-> **[⬇ Download v5.2.17 — Current stable release](https://github.com/uncle-bone/DBM-CoA/releases/download/v5.2.17/DBM-CoA-v5.2.17.zip)** — ZIP includes all 26 addon folders.
+> **[⬇ Download v5.2.18 — Latest verified prerelease](https://github.com/uncle-bone/DBM-CoA/releases/download/v5.2.18/DBM-CoA-v5.2.18.zip)** — install-ready ZIP with all 26 addon folders.
 
 **Maintained by Uncle Bone** · [CoA Research & Addons](https://coa-research.unclebone.workers.dev/) · [Report an issue](https://github.com/uncle-bone/DBM-CoA/issues)
 
-**Current stable release: v5.2.17** — WoW 3.3.5a / Ascension Conquest of Azeroth / Conquest Reborn.
-
-This stable release ensures the Learner **Status** button is created on the main button row and runs `/dbmcoa status`. It retains the compact Learner dashboard, CoASync controls and safeguards, and existing SavedVariables. Automated validation passed; confirm the button layout in-game. Cross-client synchronization, research-derived timers, and custom encounters still need in-game validation.
+**Current research build: v5.2.18 (prerelease).** WoW 3.3.5a / Conquest Reborn. Imports 22-instance coverage and 128 boss-kit SQL candidates from [CoA-Research release coa-priority-encounters-41510655077](https://github.com/uncle-bone/CoA-Research/releases/tag/coa-priority-encounters-41510655077). Public-source data remains unverified against live Conquest Reborn; it is passive research, not automatically active boss mechanics. Classic19 predictive source bars require explicit opt-in. Includes the v5.2.17 Learner Status button fix. Automated Lua 5.1 and ZIP packaging validation passed; in-game verification pending.
 
 ## 🚨 REQUIRED UPDATE STEP: DELETE THE OLD `DBM-CoA-Observer` FOLDER
 
