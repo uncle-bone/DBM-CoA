@@ -25,7 +25,7 @@ local function idFromGuid(guid)
 end
 local band=bit and bit.band
 local function enemy(flags)
- return type(flags)=="number" and band and band(flags,0x800)~=0 and band(flags,0x3000)==0 and band(flags,0x100)==0
+ return type(flags)=="number" and band and band(flags,0x800)~=0 and band(flags,0x3000)==0 and band(flags,0x100)==0 and band(flags,0x4000)==0
 end
 local function updateZone()
  local _,kind,_,_,_,_,_,mapId=GetInstanceInfo()
