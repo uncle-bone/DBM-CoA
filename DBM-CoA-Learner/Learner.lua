@@ -55,17 +55,58 @@ local function channelSignature()
  end
  return table.concat(parts,"|")
 end
--- Hide only BBLC25C in the default chat frame once per login.
--- Never hide all CHANNEL traffic or override a user's later manual opt-in.
-local channelHiddenThisLogin=false
--- Safety mode: the Conquest Reborn client can replace /1 when addons join channels.
--- Never call JoinChannelByName, LeaveChannelByName, or modify chat frame channel lists.
--- Respect only channels that the player (or another addon) has already joined.
-local function hideSyncChannel() end
+-- Shared channel joins are only attempted when channel slots are stable and available.
+-- Do not leave channels, force channel indices, or modify chat-frame subscriptions.
 local joinGrace=0
 local joinRetry=0
+local joinBaseline=nil
+local joinPending=nil
+local joinUnsafe=false
+local joinReason="waiting for 20-second startup grace"
+local function hideSyncChannel() end
+local function channelSnapshot()
+ if type(GetChannelName)~="function" then return nil,nil end
+ local parts={}
+ local occupied=0
+ for i=1,10 do
+  local id,name=GetChannelName(i)
+  if type(id)=="number" and id>0 and type(name)=="string" and name~="" then
+   occupied=occupied+1
+   parts[#parts+1]=tostring(i)..":"..name
+  end
+ end
+ return table.concat(parts,"|"),occupied
+end
 local function ensureSyncChannel()
- -- Intentionally no automatic join: protecting existing channels takes priority.
+ if type(GetChannelName)~="function" or type(JoinChannelByName)~="function" then joinReason="channel APIs unavailable";return end
+ local id=GetChannelName(SYNC_CHANNEL)
+ if type(id)=="number" and id>0 then joinPending=nil;joinReason="joined";return end
+ if joinUnsafe then return end
+ if joinPending then
+  local snapshot=channelSnapshot()
+  if snapshot~=joinPending then
+   joinUnsafe=true
+   joinReason="channel list changed without BBLC25C; autojoin halted to protect /1"
+   return
+  end
+  joinPending=nil
+ end
+ if joinGrace<20 then return end
+ local snapshot,count=channelSnapshot()
+ if not snapshot or not count then joinReason="cannot inspect channels";return end
+ if count>=9 then joinReason="channel slots nearly full; refusing unsafe join";return end
+ if joinBaseline~=snapshot then
+  joinBaseline=snapshot
+  joinRetry=5
+  joinReason="waiting for stable channel list"
+  return
+ end
+ if joinRetry>0 then return end
+ -- The client ultimately controls slot assignment; a full safety guarantee requires in-game testing.
+ local ok=pcall(JoinChannelByName,SYNC_CHANNEL)
+ joinPending=snapshot
+ joinRetry=30
+ joinReason=ok and "join requested; awaiting membership" or "join API error"
 end
 local function verifyChannels() end
 local function say(s) if DEFAULT_CHAT_FRAME then DEFAULT_CHAT_FRAME:AddMessage("|cff66ccffDBM-CoA|r "..s) end end
@@ -479,7 +520,7 @@ end
 f:SetScript("OnEvent",function(self,event,...)
  if event=="ADDON_LOADED" then
   if ...~="DBM-CoA-Learner" then return end
-  joinGrace=0;joinRetry=0
+  joinGrace=0;joinRetry=0;joinBaseline=nil;joinPending=nil;joinUnsafe=false
   DBMCoALearnerDB=DBMCoALearnerDB or {}
   db=DBMCoALearnerDB;db.sessions=db.sessions or {};db.knowledge=db.knowledge or {};db.timings=db.timings or {};db.remoteTimingSources=db.remoteTimingSources or {}
   -- Auto-learning is ON for both party (dungeons) and raid instances by default.
@@ -616,7 +657,7 @@ SlashCmdList.DBMCOA=function(s)
  if s=="options" then if InterfaceOptionsFrame_OpenToCategory and _G.DBMCoAOptionsPanel then InterfaceOptionsFrame_OpenToCategory(_G.DBMCoAOptionsPanel);InterfaceOptionsFrame_OpenToCategory(_G.DBMCoAOptionsPanel) else say("Options unavailable on this client") end
  elseif s=="smart3" or s:sub(1,7)=="smart3 " then smart3Command(s:sub(8))
  elseif s=="perf" then say("Perf: combat="..perf.combatEvents.." stored="..perf.storedEvents.." dropped="..perf.droppedEvents.." new="..perf.discoveries.." UI="..perf.statusRefreshes.." known="..knowledgeCount.." queue="..#syncQueue.." timing="..#timingQueue)
-  elseif s=="status" then local z=zone();local throttleSent,throttleDeferred,throttleFailed=DBMCoAChannelStats();say("Shared channel throttle: sent="..throttleSent.." deferred="..throttleDeferred.." failed="..throttleFailed.." | SmartSync v3: /dbmcoa smart3");say("Auto="..tostring(not db.disabled).." recording="..tostring(recording).." instance="..z.instance.." type="..z.type.." saved="..#db.sessions.." sent="..sent.." received="..received.." pending="..#syncQueue.." controlPending="..#controlQueue.." retryWait="..math.floor(retryWait+0.5).." pongs="..pings.." lastError="..lastSyncError.." channel="..tostring(type(GetChannelName)=="function" and GetChannelName(SYNC_CHANNEL) or "unsupported").." raw="..rawReceived.." duplicates="..duplicates.." rejected="..rejected.." discoverySent="..discoverySent.." peers3m="..activePeers().." timingSent="..timingSent.." timingReceived="..timingReceived.." timingDuplicates="..timingDuplicates.." timingPending="..#timingQueue.." batches="..batchSent.." relaySent="..relaySent.." lastReceive="..lastReceive)
+  elseif s=="status" then local z=zone();local throttleSent,throttleDeferred,throttleFailed=DBMCoAChannelStats();say("Shared channel throttle: sent="..throttleSent.." deferred="..throttleDeferred.." failed="..throttleFailed.." | SmartSync v3: /dbmcoa smart3 | join: "..joinReason");say("Auto="..tostring(not db.disabled).." recording="..tostring(recording).." instance="..z.instance.." type="..z.type.." saved="..#db.sessions.." sent="..sent.." received="..received.." pending="..#syncQueue.." controlPending="..#controlQueue.." retryWait="..math.floor(retryWait+0.5).." pongs="..pings.." lastError="..lastSyncError.." channel="..tostring(type(GetChannelName)=="function" and GetChannelName(SYNC_CHANNEL) or "unsupported").." raw="..rawReceived.." duplicates="..duplicates.." rejected="..rejected.." discoverySent="..discoverySent.." peers3m="..activePeers().." timingSent="..timingSent.." timingReceived="..timingReceived.." timingDuplicates="..timingDuplicates.." timingPending="..#timingQueue.." batches="..batchSent.." relaySent="..relaySent.." lastReceive="..lastReceive)
  elseif s=="experimental off" then db.experimentalDisabled=true;say("Experimental warnings and bars disabled")
  elseif s=="experimental on" then db.experimentalDisabled=false;say("Experimental warnings and bars enabled")
  elseif s=="fast off" then db.fastSyncDisabled=true;say("Batch sync off; single-record compatibility mode")
@@ -628,7 +669,7 @@ SlashCmdList.DBMCOA=function(s)
  elseif s=="ui off" then db.hideStatus=true;if statusFrame then statusFrame:Hide() end
  elseif s=="ui on" then db.hideStatus=false;makeStatus();statusFrame:Show()
  elseif s=="channel off" then db.channelDisabled=true;say("Shared-channel listening disabled; existing channel membership unchanged")
- elseif s=="channel on" then db.channelDisabled=false;db.channelUnsafe=nil;say("Shared-channel listening enabled; manually join BBLC25C if absent (no automatic join)")
+ elseif s=="channel on" then db.channelDisabled=false;db.channelUnsafe=nil;say("Shared-channel listening enabled; guarded BBLC25C autojoin after 20 seconds")
  elseif s=="off" then db.disabled=true;save();say("Automatic recording disabled")
  elseif s=="on" then db.disabled=false;refresh();say("Automatic recording enabled")
  elseif s=="clear" then db.sessions={};say("Saved sessions cleared")
