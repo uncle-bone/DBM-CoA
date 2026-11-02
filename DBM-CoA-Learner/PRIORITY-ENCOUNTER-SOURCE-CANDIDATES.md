@@ -18,3 +18,11 @@ The coverage report identifies **Razorfen Kraul** as the remaining boss-AI sourc
 ## Integration safety
 
 Keep these records in research-only space. Do not enable automated timers, warnings, encounter IDs, or CoASync propagation based solely on this snapshot. Any promotion to runtime DBM mechanics requires per-record source provenance plus matching live-server evidence. Record unknowns and conflicting IDs without deleting learned player data.
+
+## v5.2.18 integrated snapshot
+
+The packaged `Research/PriorityEncounterCandidates.json` contains the 22-instance coverage matrix, 128 complete SQL boss-kit candidate rows (including per-row source revision and all SQL event/timer/target/cast parameters), and selected ScriptDev2 boss script expressions for Wailing Caverns, Sunken Temple, and Razorfen Kraul. It is intentionally passive JSON, **not** a WoW `.toc` runtime dependency. Full source files for all 22 instances remain in the linked CoA-Research release archive. The full seven-repository ZIP was not independently extracted in this build environment; source integrity relies on the upstream release and its recorded test.
+
+Existing Classic19 predictive bars now require explicit `DBMCoALearnerDB.coaDungeonPredictiveTimers=true`; absent settings default to off. Existing ZG source bars remain behind the separate `coaZGStockSourceTimers` opt-in. These settings do not promote any public-source candidate to live-verified status.
+
+The Razorfen Kraul Charlga-looking fork remains excluded. Generic AI and escort/pet scripts are not classified as dungeon trash. Live spell IDs, timers, difficulty selection, phase transitions, and boss deployment must be confirmed from combat logs before automatic activation.
