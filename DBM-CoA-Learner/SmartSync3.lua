@@ -82,7 +82,21 @@ local function send(msg)
  if not id or paused or now()<resumeAt or suspended() or not enabled() then return false end
  return DBMCoAChannelSend(PREFIX..";"..msg,id)
 end
+local function isSelfSender(sender)
+ if type(sender)~="string" then return false end
+ local player=type(UnitName)=="function" and UnitName("player") or nil
+ if type(player)~="string" or player=="" then return false end
+ local short=sender:match("^([^%-]+)")
+ if not short or short:lower()~=player:lower() then return false end
+ local realm=sender:match("%-(.+)$")
+ if not realm then return true end
+ local ownRealm=type(GetRealmName)=="function" and GetRealmName() or nil
+ if type(ownRealm)~="string" or ownRealm=="" then return false end
+ local function norm(v) return v:lower():gsub("%s+","") end
+ return norm(realm)==norm(ownRealm)
+end
 local function receive(msg,sender)
+ if isSelfSender(sender) then return end
  if not enabled() or suspended() or paused or now()<resumeAt then return end
  if type(msg)~="string" or #msg>240 or msg:sub(1,#PREFIX+1)~=PREFIX..";" then return end
  if not msg:match("^[%w ;%-_%.|]+$") then rx.invalid=rx.invalid+1;return end
