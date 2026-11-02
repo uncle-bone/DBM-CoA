@@ -1,3 +1,9 @@
+## 5.2.11-TEST — Cross-module CoASync audit
+- Fix SmartSync3.lua and ArchiveShare.lua still targeting BBLC25C, which left queued synchronization messages unsent.
+- Align Options.lua and SyncThrottle.lua descriptions with CoASync.
+- Add CI checks for channel migration, safe membership behavior and Learner slash registration, in addition to Lua 5.1 syntax validation.
+- Preserve existing Learner window, protocol versions, throttling, and guarded channel join.
+
 ## 5.2.10-TEST — CoASync channel migration
 - Move DBM-CoA Learner sharing and listening from BBLC25C to CoASync.
 - Preserve 20-second guarded autojoin, join notifications, Lua 5.1 validation, and Learner UI.
