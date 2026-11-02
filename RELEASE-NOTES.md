@@ -1,1 +1,1 @@
-DBM-CoA v5.2.15 adds a Status button in the Learner window's More section. It runs the existing /dbmcoa status command directly, alongside Hello, Settings, and Diagnostics. All in-game version labels updated to 5.2.15. In-game verification pending.
+DBM-CoA v5.2.16 fixes the Learner Status button by placing it permanently on the main button row and restores chat notifications when new local NPC/spell discoveries are recorded. Verified Wailing Caverns local discovery data from user export. Existing CoASync safety and learning preserved. In-game verification pending.
