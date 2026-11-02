@@ -1,3 +1,9 @@
+## 5.2.10-TEST — CoASync channel migration
+- Move DBM-CoA Learner sharing and listening from BBLC25C to CoASync.
+- Preserve 20-second guarded autojoin, join notifications, Lua 5.1 validation, and Learner UI.
+- Do not leave BBLC25C, change existing channel memberships, or alter /1 General.
+- Other addons must migrate separately to exchange data on CoASync.
+
 ## 5.2.9-TEST — Fix Learner compile failure
 - Fix malformed string concatenation in `/dbmcoa status` which prevented Learner.lua from compiling, disabling the Learner window, slash commands, and BBLC25C joining.
 - Enforce Lua 5.1 syntax validation in the GitHub release pipeline.
