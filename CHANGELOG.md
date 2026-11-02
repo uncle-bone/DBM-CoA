@@ -1,3 +1,9 @@
+## 5.2.2-TEST — Faster shared-channel recovery and unified SmartSync commands
+- Join BBLC25C after 10 seconds; recheck membership and retry every 15 seconds if the client does not confirm joining. Never evict existing channels.
+- Hide only BBLC25C from the default chat frame once per login; manual Chat Settings opt-in remains respected afterward.
+- Expose SmartSync v3 via /dbmcoa smart3 [hello/rebuild/on/off], retain /coasmart3 alias, and update help/status text.
+- Not live-tested in Conquest Reborn.
+
 ## 5.2.1-TEST — Restore shared-channel autojoin
 - Fix regression introduced in 5.1.9: DBM-CoA can again join BBLC25C automatically after its 20-second grace period when the channel is not already present.
 - Never leave, replace, rename, or reorder existing channels; allow the game client to refuse the join if the channel limit is reached.
