@@ -31,7 +31,7 @@ local function rxSummary()
  return "RX discovery="..rxStats.discovery.." timing="..rxStats.timing.." hello="..rxStats.hello.." batch="..rxStats.batch.." other="..rxStats.other.." badSize="..rxStats.oversized.." badBatch="..rxStats.badBatch.." badTiming="..rxStats.badTiming.." badDiscovery="..rxStats.badDiscovery.." badValues="..rxStats.badValues.." ignoredChannel="..rxStats.ignoredChannel.." paused="..rxStats.paused
 end
 local peerCount=0
-local statusFrame, statusText
+local statusFrame, statusText, statusButtons, statusMoreText
 local known = {}
 local knowledgeCount=0
 local lastZoneSignature=nil
@@ -406,17 +406,33 @@ local function updateStatus()
  perf.statusRefreshes=perf.statusRefreshes+1
  local a=db and db.archiveSmart21 or {}
  local archiveStatus=(db and db.archiveSharingDisabled) and "Paused" or ((ch>0 and db and not db.sharingDisabled and not db.channelDisabled) and "Smart Sync" or "Offline")
+ local smart=type(DBMCoASmartSync3Snapshot)=="function" and DBMCoASmartSync3Snapshot() or nil
  local lines={
-  "DBM-CoA Learner",
+  "DBM-CoA Learner | "..(db.disabled and "Learning OFF" or "Learning ON").." | "..(db.sharingDisabled and "Sharing OFF" or "Sharing ON"),
   (recording and "Recording" or "Idle").." | Events: "..(session and #session.events or 0),
-  "Discoveries: "..n.." | Received: "..received,
+  "Discoveries: "..n.." | New this login: "..perf.discoveries.." | Sessions: "..#db.sessions,
+  "Learner sent: "..sent.." | Received: "..received.." | Timing received: "..timingReceived,
   "Sync: "..(coaSyncSuspended() and "AUTO-PAUSED (instance)" or (ch>0 and not db.sharingDisabled and "Shared channel available" or "Offline")).." | Sent: "..sent.." | Queue: "..#syncQueue,
   "Peers (3m): "..activePeers().." | Raw: "..rawReceived.." | Dup: "..duplicates.." | Bad: "..rejected,
   "RX D/T/H: "..rxStats.discovery.."/"..rxStats.timing.."/"..rxStats.hello.." | Invalid T/D: "..rxStats.badTiming.."/"..(rxStats.badDiscovery+rxStats.badValues),
   "Timing sent: "..timingSent.." | Imported: "..timingReceived,
   "Archive: "..archiveStatus.." | Sent: "..(a.sent or 0).." | New: "..(a.received or 0),
-  "Duplicates: "..(a.duplicates or 0).." | Conflicts: "..(a.conflicts or 0).." | Requests: "..(a.requests or 0)
+  "Duplicates: "..(a.duplicates or 0).." | Conflicts: "..(a.conflicts or 0).." | Requests: "..(a.requests or 0),
+  smart and ("SmartSync v3: "..(smart.ready and "Ready" or "Building").." | Peers: "..smart.peers.." | Queue: "..smart.queue) or "SmartSync v3: initializing"
  }
+ if db and db.statusMoreOpen and smart then
+  lines[#lines+1]="SmartSync RX Hello/Summary/Request/Applied: "..smart.hello.."/"..smart.summaries.."/"..smart.requests.."/"..smart.applied
+  lines[#lines+1]="SmartSync Dup/Bad/Throttle: "..smart.duplicates.."/"..smart.rejected.."/"..smart.throttled
+  lines[#lines+1]="Last received: "..tostring(lastReceive or "none"):sub(1,65)
+ end
+ if statusButtons then
+  statusButtons.learn:SetText(db.disabled and "Learning: OFF" or "Learning: ON")
+  statusButtons.share:SetText(db.sharingDisabled and "Sharing: OFF" or "Sharing: ON")
+  statusButtons.more:SetText(db.statusMoreOpen and "Less" or "More")
+  statusButtons.advanced:SetShown(db.statusMoreOpen==true)
+  statusButtons.hello:SetShown(db.statusMoreOpen==true)
+  statusButtons.archive:SetShown(db.statusMoreOpen==true)
+ end
  statusText:SetText(table.concat(lines,string.char(10)))
 end
 -- Optional UI skin: no dependency on ElvUI, DragonUI, or third-party APIs.
@@ -446,9 +462,9 @@ local function makeStatus()
  if statusFrame then return end
  statusFrame=CreateFrame("Frame","DBMCoALearnerStatus",UIParent)
  local width=(db and tonumber(db.statusWidth)) or 405
- local height=(db and tonumber(db.statusHeight)) or 165
+ local height=(db and tonumber(db.statusHeight)) or 235
  width=math.max(320,math.min(850,width))
- height=math.max(155,math.min(500,height))
+ height=math.max(215,math.min(500,height))
  statusFrame:SetWidth(width);statusFrame:SetHeight(height)
  local pos=db and db.statusPosition
  if type(pos)=="table" and type(pos.x)=="number" and type(pos.y)=="number" then
@@ -456,13 +472,13 @@ local function makeStatus()
  else statusFrame:SetPoint("CENTER",UIParent,"CENTER",0,180) end
  statusFrame:SetFrameStrata("MEDIUM")
  statusFrame:SetResizable(true)
- statusFrame:SetMinResize(320,155)
+ statusFrame:SetMinResize(320,215)
  statusFrame:SetMaxResize(850,500)
  local bg=statusFrame:CreateTexture(nil,"BACKGROUND")
  bg:SetAllPoints(statusFrame);bg:SetTexture(0,0,0,0.72)
  statusText=statusFrame:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
  statusText:SetPoint("TOPLEFT",statusFrame,"TOPLEFT",8,-8)
- statusText:SetPoint("BOTTOMRIGHT",statusFrame,"BOTTOMRIGHT",-18,10)
+ statusText:SetPoint("BOTTOMRIGHT",statusFrame,"BOTTOMRIGHT",-18,53)
  statusText:SetJustifyH("LEFT");statusText:SetJustifyV("TOP")
  statusFrame:EnableMouse(true);statusFrame:SetMovable(true)
  statusFrame:RegisterForDrag("LeftButton")
@@ -499,6 +515,35 @@ local function makeStatus()
    if db then db.statusWidth=math.floor(statusFrame:GetWidth()+0.5);db.statusHeight=math.floor(statusFrame:GetHeight()+0.5) end
   end
  end)
+ local function actionButton(label,x,y,w,fn)
+  local b=CreateFrame("Button",nil,statusFrame,"UIPanelButtonTemplate")
+  b:SetWidth(w);b:SetHeight(20);b:SetPoint("BOTTOMLEFT",statusFrame,"BOTTOMLEFT",x,y)
+  b:SetText(label);b:SetScript("OnClick",fn)
+  return b
+ end
+ statusButtons={}
+ statusButtons.learn=actionButton("Learning",8,28,105,function()
+  if db then db.disabled=not db.disabled;if db.disabled then save() else refresh() end;updateStatus() end
+ end)
+ statusButtons.share=actionButton("Sharing",118,28,105,function()
+  if db then db.sharingDisabled=not db.sharingDisabled;updateStatus() end
+ end)
+ statusButtons.more=actionButton("More",228,28,80,function()
+  if db then db.statusMoreOpen=not db.statusMoreOpen;updateStatus() end
+ end)
+ statusButtons.hello=actionButton("Send Hello",8,5,95,function()
+  if type(DBMCoASmartSync3Command)=="function" then DBMCoASmartSync3Command("hello") end
+  updateStatus()
+ end)
+ statusButtons.archive=actionButton("Archive",108,5,95,function()
+  if type(SlashCmdList.DBMCOA)=="function" then SlashCmdList.DBMCOA("options") end
+ end)
+ statusButtons.advanced=actionButton("Diagnostics",208,5,100,function()
+  if type(SlashCmdList.DBMCOA)=="function" then SlashCmdList.DBMCOA("syncdebug");SlashCmdList.DBMCOA("smart3") end
+ end)
+ for _,b in pairs(statusButtons) do
+  b:SetFrameLevel(statusFrame:GetFrameLevel()+4)
+ end
  applyOptionalUISkin(statusFrame,close,bg)
  if db and db.hideStatus then statusFrame:Hide() end
  updateStatus()
