@@ -1,4 +1,4 @@
-name: Promote DBM-CoA v5.2.13 to current stable
+name: Promote DBM-CoA v5.2.19 to current stable
 on:
   push:
     branches: [main]
@@ -10,15 +10,12 @@ jobs:
   promote:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Verify and promote existing v5.2.13 release
+      - name: Verify release ZIP and mark v5.2.19 stable and latest
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          REPO="uncle-bone/DBM-CoA"
-          TAG="v5.2.13"
-          gh api "repos/$REPO/releases/tags/$TAG" --jq '.assets[] | select(.name == "DBM-CoA-v5.2.13.zip" and .size > 0 and .state == "uploaded") | .name' | grep -qx 'DBM-CoA-v5.2.13.zip'
-          gh release edit "$TAG" --repo "$REPO" --prerelease=false --latest
-          gh api "repos/$REPO/releases/tags/$TAG" --jq '.prerelease == false and .draft == false' | grep -qx true
-          test "$(gh api "repos/$REPO/releases/latest" --jq .tag_name)" = "$TAG"
+          gh release view v5.2.19 --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[] | select(.name=="DBM-CoA-v5.2.19.zip" and .size>0) | .name' | grep -Fx 'DBM-CoA-v5.2.19.zip'
+          gh release edit v5.2.19 --repo "$GITHUB_REPOSITORY" --prerelease=false --latest
+          gh release view v5.2.19 --repo "$GITHUB_REPOSITORY" --json isPrerelease --jq '.isPrerelease' | grep -Fx false
+          gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq '.tag_name' | grep -Fx v5.2.19
