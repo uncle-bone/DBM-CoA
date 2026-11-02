@@ -1,7 +1,7 @@
 -- SmartSync v3: incremental, bounded, discovery-only peer reconciliation.
 -- WoW 3.3.5a / Lua 5.1; legacy DCOAL31 and DCOAR21 remain independent.
 local PREFIX="DCOAS3"
-local CHANNEL="BBLC25C"
+local CHANNEL="CoASync"
 local f=CreateFrame("Frame")
 local db,ready,paused=nil,false,true
 local resumeAt=math.huge
@@ -215,7 +215,7 @@ local version=(GetAddOnMetadata and GetAddOnMetadata("DBM-CoA-Learner","Version"
 title:SetText("DBM-CoA | SmartSync v3 | "..version)
 local help=panel:CreateFontString(nil,"ARTWORK","GameFontHighlight")
 help:SetPoint("TOPLEFT",title,"BOTTOMLEFT",0,-16)
-help:SetText("Incremental discovery reconciliation on BBLC25C. Legacy receive stays available.")
+help:SetText("Incremental discovery reconciliation on CoASync. Legacy receive stays available.")
 local check=CreateFrame("CheckButton",nil,panel,"InterfaceOptionsCheckButtonTemplate")
 check:SetPoint("TOPLEFT",16,-100)
 local label=check:CreateFontString(nil,"ARTWORK","GameFontNormal")
