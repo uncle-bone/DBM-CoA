@@ -121,9 +121,10 @@ local function ensureSyncChannel()
  if joinAttempts>=3 then joinReason="three attempts failed; autojoin paused";return end
  joinAttempts=joinAttempts+1
  joinPending=snapshot
- local ok=pcall(JoinChannelByName,SYNC_CHANNEL)
+ local ok,err=pcall(JoinChannelByName,SYNC_CHANNEL)
  joinRetry=15
- joinReason=ok and ("join attempt "..joinAttempts.." awaiting confirmation") or "join API failed"
+ joinReason=ok and ("join attempt "..joinAttempts.." awaiting confirmation") or ("join API failed: "..tostring(err))
+ joinNotice(joinReason)
 end
 local function verifyChannels() end
 local function say(s) if DEFAULT_CHAT_FRAME then DEFAULT_CHAT_FRAME:AddMessage("|cff66ccffDBM-CoA|r "..s) end end
@@ -552,7 +553,8 @@ f:SetScript("OnEvent",function(self,event,...)
   backfillDone=false
    if db.legacyReceiveDisabled==nil then db.legacyReceiveDisabled=false end
    if db.syncIntensity==nil then db.syncIntensity="Normal" end
-   makeStatus()
+   local uiOk,uiErr=pcall(makeStatus)
+   if not uiOk then say("Learner window initialization error: "..tostring(uiErr)) end
    say("Learner loaded: "..knowledgeCount.." discoveries, "..#db.sessions.." sessions. Initializing encounter tracking...")
   -- Preserve old recordings; default to automatic operation.
   refresh();return
@@ -684,7 +686,7 @@ SlashCmdList.DBMCOA=function(s)
  elseif s=="syncdebug" or s=="diagnostics" then say(rxSummary());say("Wire="..PREFIX.." archive=DCOAR21 (unchanged); peers3m="..activePeers().." received="..received.." timingReceived="..timingReceived.." lastReceive="..lastReceive)
  elseif s=="ping" then if queueControl("H;PING") then say("Ping queued; will send using the 1-second rate limit") else say("Ping queue full; try again shortly") end
  elseif s=="ui off" then db.hideStatus=true;if statusFrame then statusFrame:Hide() end
- elseif s=="ui on" then db.hideStatus=false;makeStatus();statusFrame:Show()
+ elseif s=="ui on" then db.hideStatus=false;db.statusPosition=nil;local ok,err=pcall(makeStatus);if ok and statusFrame then statusFrame:ClearAllPoints();statusFrame:SetPoint("CENTER",UIParent,"CENTER",0,180);statusFrame:Show();statusFrame:Raise();say("Learner window restored and centered") else say("Learner window error: "..tostring(err)) end
  elseif s=="channel off" then db.channelDisabled=true;say("Shared-channel listening disabled; existing channel membership unchanged")
  elseif s=="channel on" then db.channelDisabled=false;db.channelUnsafe=nil;say("Shared-channel listening enabled; guarded BBLC25C autojoin after 20 seconds")
  elseif s=="off" then db.disabled=true;save();say("Automatic recording disabled")
