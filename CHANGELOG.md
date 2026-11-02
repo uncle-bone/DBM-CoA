@@ -1,3 +1,9 @@
+## 5.2.12-TEST — Self-sync protection
+- Ignore own character's channel messages in SmartSync v3, ArchiveShare, and Learner before peer accounting or reconciliation.
+- Prevent self-echoes from creating fake peers, recursive summaries, ping/pong loops, and queue growth.
+- Preserve cross-realm sender discrimination, channel safety, existing UI, and saved data.
+- Extend GitHub Actions validation to enforce self-message filtering across all three modules.
+
 ## 5.2.11-TEST — Cross-module CoASync audit
 - Fix SmartSync3.lua and ArchiveShare.lua still targeting BBLC25C, which left queued synchronization messages unsent.
 - Align Options.lua and SyncThrottle.lua descriptions with CoASync.
