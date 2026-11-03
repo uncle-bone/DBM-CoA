@@ -41,8 +41,8 @@ end
 local function onCombatLog(...)
  local db=DBMCoALearnerDB
  if not db or db.coaDungeonResearchEnabled==false or db.coaDungeonResearchWarnings==false then return end
- local spells=spellByMap[currentMap]
- if not spells then return end
+ local spells=spellByMap[currentMap] or {}
+ if not DBMCoAClassic19Research or not DBMCoAClassic19Research[currentMap] then return end
  local event=select(2,...)
  if event~="SPELL_CAST_START" and event~="SPELL_CAST_SUCCESS" then return end
  local offset=type(select(3,...))=="boolean" and 1 or 0
