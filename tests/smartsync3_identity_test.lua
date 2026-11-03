@@ -38,6 +38,12 @@ local bucketSource="N;Dungeon Alpha;0;101;201"
 for i=1,#bucketSource do h=(h*33+bucketSource:byte(i))%2147483647 end
 local bucket=h%32
 sync.scripts.OnEvent(sync,"CHAT_MSG_CHANNEL","DCOAS3;I;"..bucket,"Peer-Realm",nil,"6. CoASync",nil,nil,nil,6,"CoASync")
+-- A second peer asking for the same inventory before drain must reuse pending packets.
+local queuedBefore=DBMCoASmartSync3Snapshot().queue
+sync.scripts.OnEvent(sync,"CHAT_MSG_CHANNEL","DCOAS3;I;"..bucket,"SecondPeer-Realm",nil,"6. CoASync",nil,nil,nil,6,"CoASync")
+local coalesced=DBMCoASmartSync3Snapshot()
+assert(coalesced.queue==queuedBefore,"duplicate inventory request grew the pending queue")
+assert(coalesced.queueDuplicates>=2,"legacy K and K2 packets were not coalesced")
 local foundBucket,foundHash,foundHash2
 for _=1,4 do
  now=now+2;sync.scripts.OnUpdate(sync,1.5)
