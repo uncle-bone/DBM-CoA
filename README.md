@@ -1,3 +1,5 @@
+**v6 research test ZIP:** v6.0.0-test1 includes source-backed research in DBM-CoA-Learner/V6-Research/ and passive tracking of the seven priority custom dungeons. Use /coadungeons in game. These are research datasets, NOT seven completed native boss modules. Large source catalogs remain at https://github.com/uncle-bone/CoA-Research/tree/main/research/dbm/v6. Existing native DBM and SmartSync v3 remain intact.
+
 # DBM-CoA v5.2.23 — Deadly Boss Mods for Conquest Reborn
 
 > **[Download Here!](https://coa-research.unclebone.workers.dev/download/DBM-CoA)**
