@@ -26,7 +26,7 @@ jobs:
           toc=(Path('DBM-CoA-Learner')/'DBM-CoA-Learner.toc').read_text()
           options=(Path('DBM-CoA-Learner')/'Options.lua').read_text()
           smart=(Path('DBM-CoA-Learner')/'SmartSync3.lua').read_text()
-          assert '## Version: 5.2.24' in toc
+          assert '## Version: 6.0.0-test1' in toc
           assert 'GetAddOnMetadata("DBM-CoA-Learner","Version")' in options
           assert 'GetAddOnMetadata("DBM-CoA-Learner","Version")' in smart
           PY
@@ -66,7 +66,7 @@ jobs:
           import pathlib,json,zipfile,re,os
           root=pathlib.Path('.')
           cfg=json.loads((root/'.release.json').read_text())
-          assert re.fullmatch(r'v[0-9]+(?:[.][0-9]+)+(?:-CoA)?',cfg['version'])
+          assert re.fullmatch(r'v[0-9]+(?:[.][0-9]+)+(?:-CoA|-test[0-9]+)?',cfg['version'])
           folders=cfg['folders']
           assert folders and len(folders)==len(set(folders))
           for name in folders:
