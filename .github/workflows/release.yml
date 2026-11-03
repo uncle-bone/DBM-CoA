@@ -95,7 +95,7 @@ jobs:
           if [ "$PRERELEASE" = true ]; then args+=(--prerelease --latest=false); else args+=(--latest); fi
           if gh release view "$VERSION" >/dev/null 2>&1; then
             gh release upload "$VERSION" "$ASSET" --clobber
-            gh release edit "$VERSION" --title "${GITHUB_REPOSITORY#*/} $VERSION" --notes-file RELEASE-NOTES.md
+            gh release edit "$VERSION" --title "${GITHUB_REPOSITORY#*/} $VERSION" --notes-file RELEASE-NOTES.md --prerelease="$PRERELEASE"
           else
             gh release create "$VERSION" "$ASSET" --target "$GITHUB_SHA" --title "${GITHUB_REPOSITORY#*/} $VERSION" --notes-file RELEASE-NOTES.md "${args[@]}"
           fi
