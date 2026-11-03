@@ -1,3 +1,14 @@
+# DBM-CoA v5.2.24 — Native Classic dungeon roster integration (test build)
+
+- Register 13 additional Classic dungeon categories in DBM-Party-Vanilla's native LoadZone/SubCategories metadata.
+- Add research-roster-based native encounter registration files for those dungeons. NPC-ID display names are provisional and not yet all boss-verified.
+- Enable experimental dungeon predictive timers by default unless manually disabled; preserve explicit false in SavedVariables.
+- Extend experimental observed-cast warnings to all 19 indexed Classic dungeons; include Uldaman Ironaya live-observed spells.
+- Apply limited same-source prediction cooldowns. Full cross-engine bar arbitration and all-difficulty live testing remain pending.
+- Preserve existing DBM encounter modules, learner and SmartSync wire compatibility.
+
+**Prerelease/test build**: Native module load, encounter behavior and timers must be validated in game; not a claim that every boss has complete countdowns.
+
 # DBM-CoA v5.2.23 — SmartSync pending-queue coalescing
 
 - Coalesce identical unsent SmartSync v3 packets across peers to reduce repeated inventory and reconciliation traffic.
