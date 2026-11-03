@@ -13,6 +13,7 @@ local function makeFrame()
 end
 CreateFrame=function() local f=makeFrame();frames[#frames+1]=f;return f end
 UIParent={}
+SlashCmdList={}
 InterfaceOptions_AddCategory=function() end
 GetTime=function() return now end
 GetChannelName=function() return 6 end
