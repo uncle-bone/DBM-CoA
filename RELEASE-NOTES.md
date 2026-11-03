@@ -5,7 +5,7 @@
 - Add queueDedup diagnostics and Lua 5.1 regression for concurrent legacy K and K2 inventory responses.
 - Keep existing throttle, bounded queue, and encounter behavior. This optimization cannot guarantee an empty queue with active peers.
 
-Prerelease pending live multi-client validation. Automated Lua 5.1 and packaging checks run before publication.
+Stable release. Live v5.2.23 test: two active peers, queue decreased 159 → 135 → 117, 33 duplicate enqueue attempts coalesced, 51 data packets received (3 new records imported, 48 duplicates), rejected=0 and throttled=0. Lua 5.1 and packaging checks passed on prerelease. Mixed-version peer testing and long-duration queue behavior remain to be verified.
 
 # DBM-CoA v5.2.22 — Collision-safe SmartSync identity
 
