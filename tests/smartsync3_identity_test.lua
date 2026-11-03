@@ -16,6 +16,7 @@ UIParent={}
 SlashCmdList={}
 InterfaceOptions_AddCategory=function() end
 GetTime=function() return now end
+date=function() return "2026-11-03 00:00" end
 GetChannelName=function() return 6 end
 GetInstanceInfo=function() return nil,"none" end
 DBMCoASyncChannelMatches=function() return true end
