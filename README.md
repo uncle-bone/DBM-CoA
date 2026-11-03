@@ -1,10 +1,10 @@
-# DBM-CoA v5.2.22 — Deadly Boss Mods for Conquest Reborn
+# DBM-CoA v5.2.23 — Deadly Boss Mods for Conquest Reborn
 
-> **[Download Here!](https://github.com/uncle-bone/DBM-CoA/releases/download/v5.2.22/DBM-CoA-v5.2.22.zip)**
+> **[Download Here!](https://github.com/uncle-bone/DBM-CoA/releases/download/v5.2.23/DBM-CoA-v5.2.23.zip)**
 
 **Maintained by Uncle Bone** · [CoA Research & Addons](https://coa-research.unclebone.workers.dev/) · [Report an issue](https://github.com/uncle-bone/DBM-CoA/issues)
 
-**Current stable release: v5.2.22.** SmartSync v3 now retains multiple records that share a short fingerprint, exchanges extended `K2`/`R2` fingerprints to identify exact records, and reports inventory requests, record requests, data sent/received, and detected short-hash collisions separately. Existing `DCOAS3`, `DCOAL31`, and `DCOAR21` handling and saved learner data remain intact. Automated Lua/package validation and in-game multi-client verification are separate; live verification remains pending.
+**Current stable release: v5.2.23.** SmartSync v3 coalesces identical queued packets across peers, reducing redundant inventory traffic without changing K/R/D or K2/R2 wire formats. Live v5.2.23 testing observed 33 prevented duplicate enqueue attempts, queue reduction from 159 to 117, 51 incoming records (3 newly applied and 48 duplicates), and zero rejected or throttled packets. Older compatible client versions remain supported by the existing packet handlers; mixed-version end-to-end testing is still pending.
 
 ## 🚨 REQUIRED UPDATE STEP: DELETE THE OLD `DBM-CoA-Observer` FOLDER
 
@@ -21,7 +21,15 @@
 
 Back up your `WTF` SavedVariables before updating. Keeping SavedVariables preserves learner history and user preferences.
 
-## What's new in v5.2.22 — current stable
+## What's new in v5.2.23 — current stable
+
+- Avoid adding identical unsent SmartSync v3 packets repeatedly when several peers request the same records.
+- Add `queueDedup` to `/dbmcoa smart3` diagnostics to count prevented duplicate enqueue attempts.
+- Preserve the existing K/R/D and K2/R2 wire protocols, SavedVariables, learned data and encounter modules.
+- Live-tested with two peers: queue 159 → 135 → 117, queueDedup 14 → 32 → 33, 51 received records (3 new, 48 duplicates), no rejected or throttled messages.
+- Automated Lua 5.1 regression and packaging checks passed. An empty queue is not guaranteed while peers remain active.
+
+## Previous stable v5.2.22 — collision-safe record identity
 
 - Store every record under a short-hash bucket instead of allowing a collision to overwrite another record.
 - Add `K2`/`R2` inventory and request messages using a second fingerprint; keep legacy `K`/`R` packets readable and answer legacy requests with all colliding records.
@@ -107,14 +115,14 @@ Research-backed candidate timers and learned predictions are **experimental**. S
 3. Replace old DBM addon folders with the folders from the current stable release ZIP. Keep all supplied DBM folders alongside one another; do **not** combine them into one folder.
 4. Start Conquest Reborn and play. The learner and new research features start automatically unless previously disabled in saved settings.
 
-**Release version:** v5.2.19 (current stable). See [GitHub Releases](https://github.com/uncle-bone/DBM-CoA/releases) for the published download.
+**Release version:** v5.2.23 (current stable). See [GitHub Releases](https://github.com/uncle-bone/DBM-CoA/releases) for the published download.
 
 ## Known limits
 
 - Dungeon research roster coverage is not the same as fully implemented boss warnings for all 19 dungeons.
 - The 80 timer candidates are source-derived and **not live verified**.
 - Custom Zul'Gurub Ascension-specific encounter scripts are **not yet integrated**.
-- Live two-player SmartSync v3 exchange, the compact window layout, and default UI/DragonUI/ElvUI behavior still need player testing.
+- Live SmartSync v3 record exchange and duplicate-queue coalescing were observed on v5.2.23; mixed-version peer testing, long-duration queue behavior, compact window layout, and default UI/DragonUI/ElvUI behavior still need further validation.
 - The discontinued Observer's separately saved data is not automatically merged into the AutoLearner.
 
 ## Credits, support and licensing
