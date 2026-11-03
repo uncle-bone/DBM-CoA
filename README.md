@@ -1,6 +1,6 @@
 # DBM-CoA v5.2.23 — Deadly Boss Mods for Conquest Reborn
 
-> **[Download Here!](https://github.com/uncle-bone/DBM-CoA/releases/download/v5.2.23/DBM-CoA-v5.2.23.zip)**
+> **[Download Here!](https://coa-research.unclebone.workers.dev/download/DBM-CoA)**
 
 **Maintained by Uncle Bone** · [CoA Research & Addons](https://coa-research.unclebone.workers.dev/) · [Report an issue](https://github.com/uncle-bone/DBM-CoA/issues)
 
