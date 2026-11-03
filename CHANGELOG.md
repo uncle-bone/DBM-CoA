@@ -1,3 +1,8 @@
+## 5.2.21-TEST — CoASync validation test harness correction
+- Keep the SmartSync v3 channel identity guard: require both the local channel number and the matching plain or decorated CoASync name.
+- Load the compatibility helper explicitly in the regression test, then validate accepted peer accounting and wrong-channel rejection.
+- Preserve protocol, data, and encounter functionality; in-game verification remains pending.
+
 ## 5.2.20-TEST — CoASync channel identity validation
 - Require both the local CoASync channel number and a matching plain or decorated channel name before SmartSync v3 receives a packet.
 - Add Lua 5.1 regression coverage for decorated/plain valid names and wrong-name/index rejection.

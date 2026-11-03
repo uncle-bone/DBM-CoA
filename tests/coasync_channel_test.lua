@@ -1,4 +1,5 @@
 -- Lua 5.1 regression test for DBM-CoA's WoW 3.3.5a CoASync channel identity check.
+dofile("DBM-CoA-Learner/CoASyncChannel.lua")
 GetChannelName=function(name) assert(name=="CoASync");return 6 end
 assert(DBMCoASyncChannelMatches("6. CoASync",6,"CoASync"),"decorated display + plain base name rejected")
 assert(DBMCoASyncChannelMatches("CoASync",6,"CoASync"),"plain channel name rejected")

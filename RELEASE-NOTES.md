@@ -1,3 +1,11 @@
+# DBM-CoA v5.2.21 (prerelease) — CoASync identity validation
+
+- Require both the local CoASync channel number and matching plain/decorated channel name before SmartSync v3 receives packets.
+- Regression test loads the same compatibility helper used by the actual event handler and verifies valid peer receipt plus wrong-name/index rejection.
+- Preserves existing protocols, saved data, and encounter functionality.
+
+Automated Lua and package checks run before publication. In-game multi-client verification remains pending.
+
 # DBM-CoA v5.2.20 (prerelease) — CoASync channel identity validation
 
 - SmartSync v3 now accepts a channel message only when the local CoASync number and the plain or decorated channel name both match.
