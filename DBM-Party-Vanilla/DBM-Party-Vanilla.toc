@@ -139,7 +139,6 @@ Blackfathom Deeps\AkuMai.lua
 
 
 
-# CoA native DBM encounter registrations; roster-backed, no invented timings.
 Shadowfang Keep\Encounters.lua
 The Stockade\Encounters.lua
 The Deadmines\Encounters.lua
