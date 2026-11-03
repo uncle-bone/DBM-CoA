@@ -30,7 +30,7 @@ local function enemy(flags)
 end
 local function updateZone()
  local _,kind,_,_,_,_,_,mapId=GetInstanceInfo()
- currentMap=(kind=="party") and (tonumber(mapId) or 0) or 0
+ currentMap=(kind=="party" or kind=="raid") and (tonumber(mapId) or 0) or 0
  -- 3.3.5a GetInstanceInfo returns instance ID as 8th return on supported clients.
  last={}
 end
@@ -53,10 +53,14 @@ local function onCombatLog(...)
  local liveIronaya=currentMap==70 and npcId==7228
  if not npcId or (not liveIronaya and (not DBMCoAGetClassicResearchEncounter or not DBMCoAGetClassicResearchEncounter(currentMap,npcId))) then return end
  local sid=select(9+offset,...)
- if type(sid)~="number" or not spells[sid] or isStock(npcId,sid) then return end
+ if type(sid)~="number" or isStock(npcId,sid) then return end
+ -- For rostered bosses, announce observed casts even when research has no spell catalog.
+ -- No predictive bars are invented. Throttle uncatalogued spells more conservatively.
+ local catalogued=spells[sid]
+ if not catalogued and event~="SPELL_CAST_START" then return end
  local key=tostring(npcId)..":"..sid
  local now=GetTime()
- if last[key] and now-last[key]<8 then return end
+ if last[key] and now-last[key]<(catalogued and 8 or 20) then return end
  last[key]=now
  local name=GetSpellInfo(sid) or ("Spell "..sid)
  -- Warn only on ACTUAL observed enemy casts, never on player/pet effects.
