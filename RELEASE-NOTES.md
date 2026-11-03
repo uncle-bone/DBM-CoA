@@ -1,3 +1,13 @@
+# DBM-CoA v6.0.0-test1 — SmartSync simulator and compatibility test build
+
+**Prerelease; not a stable v6 encounter overhaul.** This test build preserves existing native DBM encounter modules, learning, predictive timer opt-ins, SavedVariables, and SmartSync v3 peer-to-peer sharing.
+
+- `/dbmcoa smart3 simulate` runs isolated synthetic HELLO, summary, inventory, valid import, duplicate, malformed-packet, and index-rebuild checks through the existing SmartSync receive path.
+- The simulator blocks CoASync network sends and Learner remote-import callbacks, restores live queues, peers, counters, indexes and database state on every exit.
+- SmartSync v3 framing and legacy wire formats remain unchanged. No SmartSync v4 migration.
+- Automated Lua 5.1 and archive checks are required by the release workflow; these do not establish live in-game or cross-client verification.
+- Research for Road to De Other Side, Vaults of the Inquisition, and Manastorm is not yet verified as encounter-specific timer data; this build does not invent timers or claim completed v6 boss coverage.
+
 # DBM-CoA v5.2.24 — Native Classic dungeon roster integration (test build)
 
 - Register 13 additional Classic dungeon categories in DBM-Party-Vanilla's native LoadZone/SubCategories metadata.
