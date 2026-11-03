@@ -14,6 +14,7 @@ DBMCoACustomDungeonResearch = DBMCoACustomDungeonResearch or {}
 for name in pairs(names) do
   DBMCoACustomDungeonResearch[name] = DBMCoACustomDungeonResearch[name] or { status = "research", verifiedMapId = nil, bossIds = {}, spellIds = {} }
 end
+local lastSignature
 local f = CreateFrame("Frame")
 f:RegisterEvent("PLAYER_ENTERING_WORLD")
 f:RegisterEvent("ZONE_CHANGED_NEW_AREA")
@@ -21,7 +22,10 @@ f:SetScript("OnEvent", function()
   if not GetInstanceInfo then return end
   local zone, kind, difficulty, _, _, _, _, mapId = GetInstanceInfo()
   if not names[zone] or (kind ~= "party" and kind ~= "raid") then return end
+  local signature = tostring(zone)..":"..tostring(mapId)..":"..tostring(difficulty)
+  if lastSignature == signature then return end
   if type(DBMCoALearnerDB) ~= "table" then return end
+  lastSignature = signature
   local db = DBMCoALearnerDB
   db.customDungeonObservations = db.customDungeonObservations or {}
   local entry = db.customDungeonObservations[zone] or { visits = 0, difficultyIds = {} }
