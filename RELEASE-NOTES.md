@@ -1,3 +1,10 @@
+## v6.0.0-test1 research expansion (updated test ZIP)
+
+- Bundle 13 source-provenance research files from CoA-Research v6 inside DBM-CoA-Learner/V6-Research, including seven-dungeon dossiers, boss/instance registries, source map, difficulty matrix, implementation and validation specs.
+- Two large candidate datasets remain canonical in CoA-Research: ENCOUNTER-TIMINGS.json and SPELL-MECHANICS.json. They are not loaded as verified encounter timers.
+- Enable passive custom-dungeon discovery for seven priority dungeons; /coadungeons displays observed visits and candidate map IDs.
+- Preserve stock native DBM, learner and SmartSync v3; do not claim complete native custom boss modules or invent timers.
+
 # DBM-CoA v6.0.0-test1 — SmartSync simulator and compatibility test build
 
 **Prerelease; not a stable v6 encounter overhaul.** This test build preserves existing native DBM encounter modules, learning, predictive timer opt-ins, SavedVariables, and SmartSync v3 peer-to-peer sharing.
