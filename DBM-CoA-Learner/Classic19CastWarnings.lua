@@ -101,7 +101,7 @@ local function option(key,label,y,default)
 end
 option("coaDungeonResearchEnabled","Enable experimental dungeon research",-100,true)
 option("coaDungeonResearchWarnings","Show researched enemy cast warnings",-145,true)
-option("coaDungeonPredictiveTimers","Experimental source repeat timers (unverified)",-185,false)
+option("coaDungeonPredictiveTimers","Experimental source repeat timers (unverified)",-185,true)
 local footer=panel:CreateFontString(nil,"ARTWORK","GameFontHighlightSmall")
 footer:SetPoint("TOPLEFT",16,-240);footer:SetWidth(510);footer:SetJustifyH("LEFT")
 footer:SetText("Existing raid modules, AutoLearner, stock timers, and CoASync sharing remain unchanged. Source-only research is not proof of live encounter behavior.")
