@@ -7,6 +7,8 @@ local db,ready,paused=nil,false,true
 local resumeAt=math.huge
 local tick=0
 local queue,head={},1
+local queuedMessages={}
+local queueDuplicates=0
 local MAX_PENDING=160
 local buckets,keys,dirty={}, {},true
 local rebuildKeys,rebuildPos=nil,1
@@ -40,8 +42,9 @@ local function enabled()
  return db and db.smartSync3Disabled~=true and db.sharingDisabled~=true and db.channelDisabled~=true and db.channelUnsafe~=true
 end
 local function enqueue(msg)
+ if queuedMessages[msg] then queueDuplicates=queueDuplicates+1;return true end
  if #queue-head+1>=MAX_PENDING or #msg>231 or not msg:match("^[%w ;%-_%.|]+$") then return false end
- queue[#queue+1]=msg;rx.queued=rx.queued+1;return true
+ queue[#queue+1]=msg;queuedMessages[msg]=true;rx.queued=rx.queued+1;return true
 end
 local function record(key,e)
  if type(e)~="table" or (e.kind~="N" and e.kind~="S") then return end
@@ -230,7 +233,7 @@ f:SetScript("OnUpdate",function(self,dt)
  if not enabled() or (InCombatLockdown and InCombatLockdown()) then return end
  if head<=#queue then
   if send(queue[head]) then
-   queue[head]=false;head=head+1
+   queuedMessages[queue[head]]=nil;queue[head]=false;head=head+1
    if head>#queue then queue={};head=1 end
   end
  else
@@ -241,7 +244,7 @@ end)
 function DBMCoASmartSync3Snapshot()
  local n=0
  for _,p in pairs(peers) do if now()-p.last<180 then n=n+1 end end
- return {ready=ready,peers=n,queue=math.max(0,#queue-head+1),hello=rx.hello,summaries=rx.summary,requests=rx.request,inventoryRequests=rx.inventoryRequests,recordRequests=rx.recordRequests,dataSent=rx.dataSent,dataReceived=rx.dataReceived,hashCollisions=rx.hashCollisions,applied=rx.applied,duplicates=rx.duplicate,rejected=rx.invalid,throttled=rx.throttled}
+ return {ready=ready,peers=n,queue=math.max(0,#queue-head+1),hello=rx.hello,summaries=rx.summary,requests=rx.request,inventoryRequests=rx.inventoryRequests,recordRequests=rx.recordRequests,dataSent=rx.dataSent,dataReceived=rx.dataReceived,hashCollisions=rx.hashCollisions,applied=rx.applied,duplicates=rx.duplicate,rejected=rx.invalid,throttled=rx.throttled,queueDuplicates=queueDuplicates}
 end
 SLASH_COASMART3_1="/coasmart3"
 function DBMCoASmartSync3Command(arg)
@@ -252,7 +255,7 @@ function DBMCoASmartSync3Command(arg)
  elseif arg=="hello" then enqueue("H;3")
  elseif arg=="rebuild" then DBMCoASmartSync3Dirty() end
  local n=0;for _,p in pairs(peers) do if now()-p.last<180 then n=n+1 end end
- log("baseline="..BASELINE_ID.." learned="..tostring(db.knowledge and "persistent" or "none").." enabled="..tostring(not db.smartSync3Disabled).." index="..(ready and "ready" or "building").." peers="..n.." queue="..math.max(0,#queue-head+1).." H/S/R/D="..rx.hello.."/"..rx.summary.."/"..rx.request.."/"..rx.applied.." inv="..rx.inventoryRequests.." rec="..rx.recordRequests.." sent="..rx.dataSent.." received="..rx.dataReceived.." collisions="..rx.hashCollisions.." duplicates="..rx.duplicate.." rejected="..rx.invalid.." throttled="..rx.throttled)
+ log("baseline="..BASELINE_ID.." learned="..tostring(db.knowledge and "persistent" or "none").." enabled="..tostring(not db.smartSync3Disabled).." index="..(ready and "ready" or "building").." peers="..n.." queue="..math.max(0,#queue-head+1).." H/S/R/D="..rx.hello.."/"..rx.summary.."/"..rx.request.."/"..rx.applied.." inv="..rx.inventoryRequests.." rec="..rx.recordRequests.." sent="..rx.dataSent.." received="..rx.dataReceived.." collisions="..rx.hashCollisions.." duplicates="..rx.duplicate.." rejected="..rx.invalid.." throttled="..rx.throttled.." queueDedup="..queueDuplicates)
 end
 SlashCmdList.COASMART3=DBMCoASmartSync3Command
 
