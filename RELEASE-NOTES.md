@@ -1,3 +1,12 @@
+# DBM-CoA v5.2.23 — SmartSync pending-queue coalescing
+
+- Coalesce identical unsent SmartSync v3 packets across peers to reduce repeated inventory and reconciliation traffic.
+- Preserve legacy K/R/D and newer K2/R2 wire formats; no new packet requirements or SavedVariables migrations.
+- Add queueDedup diagnostics and Lua 5.1 regression for concurrent legacy K and K2 inventory responses.
+- Keep existing throttle, bounded queue, and encounter behavior. This optimization cannot guarantee an empty queue with active peers.
+
+Prerelease pending live multi-client validation. Automated Lua 5.1 and packaging checks run before publication.
+
 # DBM-CoA v5.2.22 — Collision-safe SmartSync identity
 
 - Preserve all canonical records sharing a short fingerprint and add a second fingerprint for exact K2/R2 inventory reconciliation.
