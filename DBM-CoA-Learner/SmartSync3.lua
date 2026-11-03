@@ -17,6 +17,7 @@ local peers={}
 local rx={hello=0,summary=0,request=0,inventoryRequests=0,recordRequests=0,dataSent=0,dataReceived=0,hashCollisions=0,ack=0,invalid=0,duplicate=0,applied=0,queued=0,throttled=0}
 local seq=0
 local initialHello=false
+local simulating=false
 local BASELINE_ID="CoAArchive-N-S-Q-I-v1"
 local function now() return GetTime() end
 local function log(msg) if DEFAULT_CHAT_FRAME then DEFAULT_CHAT_FRAME:AddMessage("|cff66ccffDBM-CoA SmartSync v3|r "..msg) end end
@@ -89,6 +90,7 @@ function DBMCoASmartSync3Dirty()
  if rebuildKeys then pendingDirty=true else dirty=true;ready=false end
 end
 local function send(msg)
+ if simulating then return false end -- simulator must never transmit
  local id=channelId()
  if not id or paused or now()<resumeAt or suspended() or not enabled() then return false end
  return DBMCoAChannelSend(PREFIX..";"..msg,id)
@@ -197,7 +199,7 @@ local function receive(msg,sender)
   if db.knowledge[key] then rx.duplicate=rx.duplicate+1;return end
   db.knowledge[key]={kind=kind,instance=inst,difficulty=tonumber(diff),npc=tonumber(nid),spell=tonumber(sid),name=name,seen=date("%Y-%m-%d %H:%M"),remote=true}
   keys[canonical]=true;rx.applied=rx.applied+1
-  if type(DBMCoALearnerNoteRemote)=="function" then DBMCoALearnerNoteRemote(key) end
+  if not simulating and type(DBMCoALearnerNoteRemote)=="function" then DBMCoALearnerNoteRemote(key) end
   -- Do not relay received records automatically; next digest reconciliation handles them.
   DBMCoASmartSync3Dirty()
   if rx.applied%10==0 then enqueue("A;"..rx.applied) end
@@ -246,11 +248,72 @@ function DBMCoASmartSync3Snapshot()
  for _,p in pairs(peers) do if now()-p.last<180 then n=n+1 end end
  return {ready=ready,peers=n,queue=math.max(0,#queue-head+1),hello=rx.hello,summaries=rx.summary,requests=rx.request,inventoryRequests=rx.inventoryRequests,recordRequests=rx.recordRequests,dataSent=rx.dataSent,dataReceived=rx.dataReceived,hashCollisions=rx.hashCollisions,applied=rx.applied,duplicates=rx.duplicate,rejected=rx.invalid,throttled=rx.throttled,queueDuplicates=queueDuplicates}
 end
+
+-- Opt-in isolated local regression. The real receive()/validation/import path is
+-- exercised with temporary state; live SavedVariables, queues and peers are untouched.
+-- No network send and no Learner remote-import callback can run in this scope.
+function DBMCoASmartSync3Simulate()
+ if simulating then return false,"already running" end
+ if not db then return false,"Learner database not initialized" end
+ local old={db=db,ready=ready,paused=paused,resumeAt=resumeAt,tick=tick,
+  queue=queue,head=head,queuedMessages=queuedMessages,queueDuplicates=queueDuplicates,
+  buckets=buckets,keys=keys,dirty=dirty,rebuildKeys=rebuildKeys,rebuildPos=rebuildPos,
+  pendingDirty=pendingDirty,peers=peers,rx=rx,seq=seq,initialHello=initialHello}
+ local function restore()
+  db=old.db;ready=old.ready;paused=old.paused;resumeAt=old.resumeAt;tick=old.tick
+  queue=old.queue;head=old.head;queuedMessages=old.queuedMessages
+  queueDuplicates=old.queueDuplicates;buckets=old.buckets;keys=old.keys
+  dirty=old.dirty;rebuildKeys=old.rebuildKeys;rebuildPos=old.rebuildPos
+  pendingDirty=old.pendingDirty;peers=old.peers;rx=old.rx;seq=old.seq
+  initialHello=old.initialHello;simulating=false
+ end
+ simulating=true
+ local ok,result=xpcall(function()
+  db={knowledge={},smartSync3Disabled=false,sharingDisabled=false,channelDisabled=false,channelUnsafe=false}
+  ready=false;paused=false;resumeAt=0;tick=0
+  queue={};head=1;queuedMessages={};queueDuplicates=0
+  buckets={};keys={};dirty=true;rebuildKeys=nil;rebuildPos=1
+  pendingDirty=false;peers={};seq=0;initialHello=false
+  rx={hello=0,summary=0,request=0,inventoryRequests=0,recordRequests=0,
+   dataSent=0,dataReceived=0,hashCollisions=0,ack=0,invalid=0,
+   duplicate=0,applied=0,queued=0,throttled=0}
+  buildStep()
+  assert(ready,"sandbox index did not initialize")
+  local sender="DBMCoASimulator-Remote"
+  local function inject(payload)
+   receive(PREFIX..";"..payload,sender)
+  end
+  inject("H;3")
+  assert(rx.hello==1,"HELLO not processed")
+  inject("S;0;1;123")
+  assert(rx.summary==1,"summary not processed")
+  inject("I;0")
+  assert(rx.inventoryRequests==1,"inventory request not processed")
+  local entry="N;Simulator Dungeon;0;123456;654321;Simulated"
+  inject("D;"..entry)
+  assert(rx.applied==1 and rx.dataReceived==1,"valid import rejected")
+  assert(db.knowledge["N;Simulator Dungeon;0;123456;654321"],"import not stored in sandbox")
+  inject("D;"..entry)
+  assert(rx.duplicate==1,"duplicate not rejected")
+  inject("D;N;bad")
+  assert(rx.invalid==1,"malformed packet not rejected")
+  while dirty do buildStep() end
+  assert(ready and keys[entry],"imported record missing from rebuilt index")
+  assert(not send("H;3"),"simulated packet was sent")
+  return "HELLO, summary, inventory, import, duplicate, malformed and index checks passed; no channel packets sent"
+ end,function(err) return tostring(err) end)
+ restore()
+ if not ok then log("isolated simulator FAILED: "..tostring(result));return false,result end
+ log("isolated simulator PASSED: "..result)
+ return true,result
+end
+
 SLASH_COASMART3_1="/coasmart3"
 function DBMCoASmartSync3Command(arg)
  if not db then return end
  arg=(arg or ""):lower():match("^%s*(.-)%s*$")
- if arg=="on" then db.smartSync3Disabled=false
+ if arg=="simulate" then return DBMCoASmartSync3Simulate()
+ elseif arg=="on" then db.smartSync3Disabled=false
  elseif arg=="off" then db.smartSync3Disabled=true
  elseif arg=="hello" then enqueue("H;3")
  elseif arg=="rebuild" then DBMCoASmartSync3Dirty() end
@@ -277,5 +340,5 @@ check:SetScript("OnShow",function(self) self:SetChecked(db and not db.smartSync3
 check:SetScript("OnClick",function(self) if db then db.smartSync3Disabled=not self:GetChecked() end end)
 local status=panel:CreateFontString(nil,"ARTWORK","GameFontHighlightSmall")
 status:SetPoint("TOPLEFT",16,-155)
-status:SetText("Use /dbmcoa smart3 for peer, queue and reconciliation diagnostics.")
+status:SetText("Use /dbmcoa smart3 for diagnostics; /dbmcoa smart3 simulate runs isolated local checks (no channel send).")
 if type(InterfaceOptions_AddCategory)=="function" then InterfaceOptions_AddCategory(panel) end
