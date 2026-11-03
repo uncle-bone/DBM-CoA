@@ -185,8 +185,7 @@ f:SetScript("OnEvent",function(self,event,...)
   local msg,sender,_,displayName,_,_,_,index,baseName=...
   if type(msg)~="string" or msg:sub(1,#PREFIX+1)~=PREFIX..";" then return end
   local id=channelId()
-  local function matches(v) return type(v)=="string" and v:gsub("^%d+%.%s*",""):lower()==CHANNEL:lower() end
-  if matches(displayName) or matches(baseName) or (id and tonumber(index)==id) then receive(msg,sender) end
+  if DBMCoASyncChannelMatches(displayName,index,baseName) then receive(msg,sender) end
  end
 end)
 f:SetScript("OnUpdate",function(self,dt)

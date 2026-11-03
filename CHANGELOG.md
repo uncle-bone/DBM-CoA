@@ -1,3 +1,9 @@
+## 5.2.20-TEST — CoASync channel identity validation
+- Require both the local CoASync channel number and a matching plain or decorated channel name before SmartSync v3 receives a packet.
+- Add Lua 5.1 regression coverage for decorated/plain valid names and wrong-name/index rejection.
+- Preserve DCOAS3 framing, peer handling, throttling, duplicate protection, and saved data.
+- Cross-client in-game verification remains pending.
+
 ## 5.2.13-TEST — Compact Learner control dashboard
 - Preserve discovery, session, timing, learner and archive counters in the existing movable/resizable window.
 - Add read-only SmartSync v3 index, peer, queue, and advanced RX metrics.
