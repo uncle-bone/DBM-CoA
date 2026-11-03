@@ -86,12 +86,14 @@ local byMap={}
 for _,r in ipairs(rows) do local m=r[1];byMap[m]=byMap[m] or {};local n=r[2];byMap[m][n]=byMap[m][n] or {};byMap[m][n][r[3]]=r end
 local f=CreateFrame("Frame")
 local map=0;local last={};local band=bit and bit.band
+DBMCoAExperimentalBarRegistry=DBMCoAExperimentalBarRegistry or {}
+local registry=DBMCoAExperimentalBarRegistry
 local function npc(g) if type(g)~="string" then return end if g:sub(1,6)=="0xF130" then return tonumber(g:sub(7,10),16) end return tonumber(g:match("^Creature%-%d+%-%d+%-%d+%-%d+%-(%d+)%-")) end
-local function zone() local _,kind,_,_,_,_,_,id=GetInstanceInfo();map=kind=="party" and (tonumber(id) or 0) or 0;last={} end
+local function zone() local _,kind,_,_,_,_,_,id=GetInstanceInfo();map=(kind=="party" or kind=="raid") and (tonumber(id) or 0) or 0;last={} end
 local function stock(n,s) local t=DBMCoAStockTimerIndex;return t and t[n] and t[n][s] end
 local function bar(sec,sid) if not DBM or not DBM.Bars or not DBM.Bars.CreateBar then return end local name,_,icon=GetSpellInfo(sid);DBM.Bars:CreateBar(sec,"[CoA source?] "..(name or tostring(sid)),icon or "Interface\\Icons\\INV_Misc_PocketWatch_01") end
 local function log(...)
- local db=DBMCoALearnerDB;if not db or db.coaDungeonResearchEnabled==false or db.coaDungeonPredictiveTimers~=true then return end
+ local db=DBMCoALearnerDB;if not db or db.coaDungeonResearchEnabled==false or db.coaDungeonPredictiveTimers==false then return end
  local t=byMap[map];if not t then return end
  local ev=select(2,...);if ev~="SPELL_CAST_START" and ev~="SPELL_CAST_SUCCESS" then return end
  local off=type(select(3,...))=="boolean" and 1 or 0;local guid=select(3+off,...);local flags=select(5+off,...)
@@ -100,7 +102,7 @@ local function log(...)
  local sid=select(9+off,...);local r=spells[sid];if not r or stock(id,sid) then return end
  local key=tostring(id)..":"..sid;local now=GetTime();if last[key] and now-last[key]<2 then return end;last[key]=now
  -- On observed cast, use lower bound of source repeat range; never infer unobserved first casts.
- local ms=r[6];if ms and ms>=1000 then bar(ms/1000,sid) end
+ local ms=r[6];if ms and ms>=1000 then bar(ms/1000,sid,id) end
 end
 f:RegisterEvent("PLAYER_ENTERING_WORLD");f:RegisterEvent("ZONE_CHANGED_NEW_AREA");f:RegisterEvent("PLAYER_REGEN_ENABLED");f:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 f:SetScript("OnEvent",function(_,event,...) if event=="COMBAT_LOG_EVENT_UNFILTERED" then log(...) elseif event=="PLAYER_REGEN_ENABLED" then last={} else zone() end end)
