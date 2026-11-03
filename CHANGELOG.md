@@ -1,3 +1,12 @@
+# DBM-CoA v6.0.0-test1 (prerelease)
+
+- Add an opt-in isolated SmartSync v3 simulator at `/dbmcoa smart3 simulate` using the actual receive/validation/import path.
+- Preserve CoASync v3 wire formats, legacy peer handlers, saved knowledge, learned data and live synchronization.
+- Sandbox peer, queue, index, counters and database; block simulator network sends and remote-import callbacks; restore live state after success or failure.
+- Extend Lua 5.1 SmartSync regression to assert valid import, duplicate/malformed rejection, index rebuild, zero simulated sends and unchanged live state.
+- Carry forward native DBM modules and existing adaptive learning/predictive timer opt-ins without claiming unverified v6 dungeon mechanics.
+- Live cross-client synchronization and encounter timing remain unverified for this test build.
+
 ## 5.2.22 — Collision-safe SmartSync identity
 
 - Retain every canonical record when short fingerprints collide.
