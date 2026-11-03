@@ -1,10 +1,10 @@
-# DBM-CoA v5.2.19 — Deadly Boss Mods for Conquest Reborn
+# DBM-CoA v5.2.21 — Deadly Boss Mods for Conquest Reborn
 
-> **[Download Here!](https://coa-research.unclebone.workers.dev/download/DBM-CoA)**
+> **[Download Here!](https://github.com/uncle-bone/DBM-CoA/releases/download/v5.2.21/DBM-CoA-v5.2.21.zip)**
 
 **Maintained by Uncle Bone** · [CoA Research & Addons](https://coa-research.unclebone.workers.dev/) · [Report an issue](https://github.com/uncle-bone/DBM-CoA/issues)
 
-****Current stable release: v5.2.19.** Integrates the CoA-Research [Shared Database v2.0.1](https://github.com/uncle-bone/CoA-Research/releases/tag/shared-database-v2.0.1) combat attribution and pet/summon candidate policy. New Learner spell discoveries and observed timing records require hostile, non-player-controlled NPC combat sources; target discovery requires an attackable NPC. Source timer predictions remain opt-in for new installations. Historical ownership candidates are **not** hardcoded as universal NPC blacklists, and source encounters are not live-verified. Existing saved records remain preserved. Automated Lua 5.1 and package validation passed; actual in-game behavior awaits testing.
+**Current stable release: v5.2.21.** Fixes SmartSync v3 CoASync receive validation by requiring both the local CoASync channel number and matching plain/decorated channel name. The matching Lua compatibility helper is covered by regression tests for valid peer receipt and rejected mismatches. Existing protocols, saved data, encounter features, and user preferences are preserved. Automated Lua and package validation passed; in-game multi-client verification remains pending.
 
 ## 🚨 REQUIRED UPDATE STEP: DELETE THE OLD `DBM-CoA-Observer` FOLDER
 
@@ -21,7 +21,14 @@
 
 Back up your `WTF` SavedVariables before updating. Keeping SavedVariables preserves learner history and user preferences.
 
-## What's new in v5.2.19 — current stable
+## What's new in v5.2.21 — current stable
+
+- Validate both local CoASync channel number and plain/decorated name before SmartSync v3 receives a packet.
+- Regression-test the compatibility helper used by the actual event handler, including peer receipt and wrong-name/index rejection.
+- Preserve protocols, SavedVariables, encounter functionality, and existing user preferences.
+- Automated Lua and package checks passed; in-game multi-client verification remains pending.
+
+## v5.2.19 details
 
 - CoA-Research Shared Database v2.0.1 evidence integration with provenance preserved.
 - Filter new Learner discoveries and timing evidence to hostile, non-player-controlled NPC sources.
