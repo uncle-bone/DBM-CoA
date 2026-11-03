@@ -1,7 +1,7 @@
 {
   "version": "v6.0.0-test1",
   "prerelease": true,
-  "release_build": 4,
+  "release_build": 5,
   "folders": [
     "DBM-AQ20",
     "DBM-AQ40",
