@@ -7,13 +7,23 @@ local names = {
   ["The Temple of Embers"] = true,
   ["The Radiant Spring"] = true,
   ["Road to the Other Side"] = true,
+  ["Road to De Other Side"] = true,
   ["Vaults of Inquisition"] = true,
+  ["Vaults of the Inquisition"] = true,
   ["Blackrock Caverns"] = true,
 }
 DBMCoACustomDungeonResearch = DBMCoACustomDungeonResearch or {}
 for name in pairs(names) do
   DBMCoACustomDungeonResearch[name] = DBMCoACustomDungeonResearch[name] or { status = "research", verifiedMapId = nil, bossIds = {}, spellIds = {} }
 end
+-- Source-derived map candidates, not verified live instance identifiers.
+-- Never create boss timers or override native DBM modules from these alone.
+DBMCoACustomDungeonResearch["Road to the Other Side"].candidateMapId = 937
+DBMCoACustomDungeonResearch["Road to De Other Side"].candidateMapId = 937
+DBMCoACustomDungeonResearch["Vaults of Inquisition"].candidateMapId = 936
+DBMCoACustomDungeonResearch["Vaults of the Inquisition"].candidateMapId = 936
+DBMCoACustomDungeonResearch["Manastorm"].modeOrProgression = true
+DBMCoACustomDungeonResearch.source = "CoA-Research/research/dbm/v6"
 local lastSignature
 local f = CreateFrame("Frame")
 f:RegisterEvent("PLAYER_ENTERING_WORLD")
