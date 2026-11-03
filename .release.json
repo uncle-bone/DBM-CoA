@@ -1,7 +1,7 @@
 {
   "version": "v5.2.22",
   "prerelease": false,
-  "release_build": 2,
+  "release_build": 3,
   "folders": [
     "DBM-AQ20",
     "DBM-AQ40",

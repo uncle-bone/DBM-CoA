@@ -27,6 +27,7 @@ Back up your `WTF` SavedVariables before updating. Keeping SavedVariables preser
 - Add `K2`/`R2` inventory and request messages using a second fingerprint; keep legacy `K`/`R` packets readable and answer legacy requests with all colliding records.
 - Split diagnostics into inventory requests, record requests, data sent, data received, and short-hash collisions.
 - Add a Lua 5.1 regression for indexed inventory and exact `R2` record responses.
+- In-game Options and SmartSync pane version labels read the installed addon version, now 5.2.22.
 - Preserve existing saved knowledge and all encounter modules.
 
 ## Previous stable v5.2.21 — CoASync receive validation

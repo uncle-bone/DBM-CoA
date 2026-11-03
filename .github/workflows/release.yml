@@ -21,6 +21,15 @@ jobs:
           find DBM-CoA-Learner -name '*.lua' -print0 | xargs -0 -n1 luac5.1 -p
           lua5.1 tests/coasync_channel_test.lua
           lua5.1 tests/smartsync3_identity_test.lua
+          python3 - <<'PY'
+          from pathlib import Path
+          toc=(Path('DBM-CoA-Learner')/'DBM-CoA-Learner.toc').read_text()
+          options=(Path('DBM-CoA-Learner')/'Options.lua').read_text()
+          smart=(Path('DBM-CoA-Learner')/'SmartSync3.lua').read_text()
+          assert '## Version: 5.2.22' in toc
+          assert 'GetAddOnMetadata("DBM-CoA-Learner","Version")' in options
+          assert 'GetAddOnMetadata("DBM-CoA-Learner","Version")' in smart
+          PY
       - name: Verify CoASync migration and safe channel ownership
         run: |
           python3 - <<'PY'
@@ -85,8 +94,9 @@ jobs:
           args=()
           if [ "$PRERELEASE" = true ]; then args+=(--prerelease --latest=false); else args+=(--latest); fi
           if gh release view "$VERSION" >/dev/null 2>&1; then
-            echo "::error::Release already exists; refusing to overwrite it"
-            exit 1
+            gh release upload "$VERSION" "$ASSET" --clobber
+            gh release edit "$VERSION" --title "${GITHUB_REPOSITORY#*/} $VERSION" --notes-file RELEASE-NOTES.md
+          else
+            gh release create "$VERSION" "$ASSET" --target "$GITHUB_SHA" --title "${GITHUB_REPOSITORY#*/} $VERSION" --notes-file RELEASE-NOTES.md "${args[@]}"
           fi
-          gh release create "$VERSION" "$ASSET" --target "$GITHUB_SHA" --title "${GITHUB_REPOSITORY#*/} $VERSION" --notes-file RELEASE-NOTES.md "${args[@]}"
 

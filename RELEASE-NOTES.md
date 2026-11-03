@@ -4,6 +4,7 @@
 - Continue reading legacy K/R requests and D records; legacy collision requests return every record sharing the short hash.
 - Expand diagnostics with inventory requests, record requests, data sent/received, and collision counts.
 - Add Lua 5.1 regression coverage for inventory fingerprints and exact R2 responses.
+- Keep in-game version labels tied to the installed addon metadata (5.2.22).
 - Preserve existing saved knowledge, protocols and encounter features.
 
 Stable release. Automated Lua and package checks run before publication. In-game multi-client verification remains pending.

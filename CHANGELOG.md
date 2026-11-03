@@ -145,6 +145,7 @@
 - Add extended K2/R2 fingerprints for exact new-client inventory reconciliation while keeping old K/R and D packet handling.
 - Report inventory and record requests separately from data sent/received and collision counts.
 - Add Lua 5.1 regression coverage for extended inventory and exact record responses.
+- Confirm the Options and SmartSync pane labels use the 5.2.22 TOC version.
 - Existing protocols, SavedVariables, and encounter features remain intact; live multi-client testing is pending.
 
 All published versions and downloadable packages are listed under [Releases](https://github.com/robsdow87/DBM-CoA/releases).
