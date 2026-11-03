@@ -1,3 +1,9 @@
+## v6 research expansion (same test1 prerelease)
+
+- Bundle 13 v6 research documents and registries; keep oversized candidate catalogs canonical in CoA-Research.
+- Load passive custom dungeon tracking and expose /coadungeons, including Road/Vaults naming variants and source map candidates.
+- Preserve existing native DBM, adaptive learning and SmartSync v3; no fabricated boss modules or timers.
+
 # DBM-CoA v6.0.0-test1 (prerelease)
 
 - Add an opt-in isolated SmartSync v3 simulator at `/dbmcoa smart3 simulate` using the actual receive/validation/import path.
