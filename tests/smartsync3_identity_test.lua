@@ -66,3 +66,20 @@ local snap=DBMCoASmartSync3Snapshot()
 assert(snap.inventoryRequests>=1 and snap.recordRequests>=1,"request diagnostics did not distinguish inventory and record requests")
 assert(snap.dataSent>=1,"sent-data diagnostic did not increment")
 print("DBM-CoA SmartSync v3 K2/R2 identity and diagnostics regression passed.")
+
+-- v6 isolated simulator: real receive path, no network and no persistent mutation.
+local liveDB=DBMCoALearnerDB
+local originalCount=0
+for _ in pairs(liveDB.knowledge) do originalCount=originalCount+1 end
+local beforeSim=DBMCoASmartSync3Snapshot()
+local sentBefore=#sent
+local success,details=DBMCoASmartSync3Simulate()
+assert(success,details or "isolated simulator failed")
+assert(DBMCoALearnerDB==liveDB,"simulator replaced persistent database")
+local afterCount=0
+for _ in pairs(liveDB.knowledge) do afterCount=afterCount+1 end
+assert(afterCount==originalCount,"simulator mutated SavedVariables")
+assert(#sent==sentBefore,"simulator transmitted CoASync packets")
+local afterSim=DBMCoASmartSync3Snapshot()
+for k,v in pairs(beforeSim) do assert(afterSim[k]==v,"simulator changed live state: "..k) end
+print("DBM-CoA SmartSync v3 isolated simulator regression passed; no CoASync packets sent.")
