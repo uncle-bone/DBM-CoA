@@ -45,3 +45,20 @@ f:SetScript("OnEvent", function()
   if difficulty ~= nil then entry.difficultyIds[tostring(difficulty)] = true end
   db.customDungeonObservations[zone] = entry
 end)
+
+-- v6 research visibility, without claiming encounter modules or verified timers.
+SLASH_DBMCOADUNGEONS1 = "/coadungeons"
+SlashCmdList.DBMCOADUNGEONS = function()
+ if not DEFAULT_CHAT_FRAME then return end
+ DEFAULT_CHAT_FRAME:AddMessage("|cff66ccffDBM-CoA v6 custom dungeon research|r (passive observation; no unverified boss timers)")
+ local ordered = {"Manastorm","Shadowbone Depths","The Temple of Embers","The Radiant Spring",
+  "Road to the Other Side","Vaults of Inquisition","Blackrock Caverns"}
+ for _,name in ipairs(ordered) do
+  local e = DBMCoACustomDungeonResearch[name]
+  local obs = DBMCoALearnerDB and DBMCoALearnerDB.customDungeonObservations
+  local o = obs and (obs[name] or (name=="Road to the Other Side" and obs["Road to De Other Side"])
+   or (name=="Vaults of Inquisition" and obs["Vaults of the Inquisition"]))
+  local suffix = o and (" visits="..tostring(o.visits or 0).." observedMap="..tostring(o.lastMapId or "?")) or " not yet observed"
+  DEFAULT_CHAT_FRAME:AddMessage(" - "..name..(e.candidateMapId and (" map candidate="..e.candidateMapId) or "")..suffix)
+ end
+end
