@@ -4,7 +4,7 @@
 
 **Maintained by Uncle Bone** · [CoA Research & Addons](https://coa-research.unclebone.workers.dev/) · [Report an issue](https://github.com/uncle-bone/DBM-CoA/issues)
 
-**Current stable release: v5.2.23.** SmartSync v3 coalesces identical queued packets across peers, reducing redundant inventory traffic without changing K/R/D or K2/R2 wire formats. Live v5.2.23 testing observed 33 prevented duplicate enqueue attempts, queue reduction from 159 to 117, 51 incoming records (3 newly applied and 48 duplicates), and zero rejected or throttled packets. Older compatible client versions remain supported by the existing packet handlers; mixed-version end-to-end testing is still pending.
+**Current v6 test build: [v6.0.0-test1](https://github.com/uncle-bone/DBM-CoA/releases/tag/v6.0.0-test1)** (prerelease, pending automated verification). Includes isolated `/dbmcoa smart3 simulate`; existing SmartSync v3 peer sync remains enabled and compatible. The v6 encounter overhaul is not yet complete; this build is for regression testing.\n\n**Current stable release: v5.2.23.** SmartSync v3 coalesces identical queued packets across peers, reducing redundant inventory traffic without changing K/R/D or K2/R2 wire formats. Live v5.2.23 testing observed 33 prevented duplicate enqueue attempts, queue reduction from 159 to 117, 51 incoming records (3 newly applied and 48 duplicates), and zero rejected or throttled packets. Older compatible client versions remain supported by the existing packet handlers; mixed-version end-to-end testing is still pending.
 
 ## 🚨 REQUIRED UPDATE STEP: DELETE THE OLD `DBM-CoA-Observer` FOLDER
 
