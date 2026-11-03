@@ -1,10 +1,10 @@
 # DBM-CoA v5.2.19 — Deadly Boss Mods for Conquest Reborn
 
-> **[Download](https://github.com/uncle-bone/DBM-CoA/releases/latest)**
+> **[Download Here!](https://coa-research.unclebone.workers.dev/download/DBM-CoA)**
 
 **Maintained by Uncle Bone** · [CoA Research & Addons](https://coa-research.unclebone.workers.dev/) · [Report an issue](https://github.com/uncle-bone/DBM-CoA/issues)
 
-**Current stable release: v5.2.19.** Integrates the CoA-Research [Shared Database v2.0.1](https://github.com/uncle-bone/CoA-Research/releases/tag/shared-database-v2.0.1) combat attribution and pet/summon candidate policy. New Learner spell discoveries and observed timing records require hostile, non-player-controlled NPC combat sources; target discovery requires an attackable NPC. Source timer predictions remain opt-in for new installations. Historical ownership candidates are **not** hardcoded as universal NPC blacklists, and source encounters are not live-verified. Existing saved records remain preserved. Automated Lua 5.1 and package validation passed; actual in-game behavior awaits testing.
+****Current stable release: v5.2.19.** Integrates the CoA-Research [Shared Database v2.0.1](https://github.com/uncle-bone/CoA-Research/releases/tag/shared-database-v2.0.1) combat attribution and pet/summon candidate policy. New Learner spell discoveries and observed timing records require hostile, non-player-controlled NPC combat sources; target discovery requires an attackable NPC. Source timer predictions remain opt-in for new installations. Historical ownership candidates are **not** hardcoded as universal NPC blacklists, and source encounters are not live-verified. Existing saved records remain preserved. Automated Lua 5.1 and package validation passed; actual in-game behavior awaits testing.
 
 ## 🚨 REQUIRED UPDATE STEP: DELETE THE OLD `DBM-CoA-Observer` FOLDER
 
@@ -88,10 +88,10 @@ Research-backed candidate timers and learned predictions are **experimental**. S
 
 1. Close WoW and back up SavedVariables.
 2. **Delete `Interface/AddOns/DBM-CoA-Observer/` if it exists.**
-3. Replace old DBM addon folders with the folders from the v5.2.17 release ZIP. Keep all supplied DBM folders alongside one another; do **not** combine them into one folder.
+3. Replace old DBM addon folders with the folders from the current stable release ZIP. Keep all supplied DBM folders alongside one another; do **not** combine them into one folder.
 4. Start Conquest Reborn and play. The learner and new research features start automatically unless previously disabled in saved settings.
 
-**Release version:** v5.2.17 (current stable). See [GitHub Releases](https://github.com/uncle-bone/DBM-CoA/releases) for the published download.
+**Release version:** v5.2.19 (current stable). See [GitHub Releases](https://github.com/uncle-bone/DBM-CoA/releases) for the published download.
 
 ## Known limits
 
