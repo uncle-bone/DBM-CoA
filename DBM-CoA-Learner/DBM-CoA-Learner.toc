@@ -32,6 +32,7 @@ CoAResearchIntegration.lua
 
 Classic19Research.lua
 FutureInstanceResearch.lua
+FutureRaidEncounters.lua
 Classic19CastWarnings.lua
 
 Classic19SourceTimers.lua
