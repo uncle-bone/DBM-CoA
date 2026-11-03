@@ -12,7 +12,7 @@ local buckets,keys,dirty={}, {},true
 local rebuildKeys,rebuildPos=nil,1
 local pendingDirty=false
 local peers={}
-local rx={hello=0,summary=0,request=0,data=0,ack=0,invalid=0,duplicate=0,applied=0,queued=0,throttled=0}
+local rx={hello=0,summary=0,request=0,inventoryRequests=0,recordRequests=0,dataSent=0,dataReceived=0,hashCollisions=0,ack=0,invalid=0,duplicate=0,applied=0,queued=0,throttled=0}
 local seq=0
 local initialHello=false
 local BASELINE_ID="CoAArchive-N-S-Q-I-v1"
@@ -21,6 +21,11 @@ local function log(msg) if DEFAULT_CHAT_FRAME then DEFAULT_CHAT_FRAME:AddMessage
 local function hash(s)
  local h=5381
  for i=1,#s do h=(h*33+s:byte(i))%2147483647 end
+ return h
+end
+local function hash2(s)
+ local h=5381
+ for i=1,#s do h=(h*65599+s:byte(i))%2147483647 end
  return h
 end
 local function channelId()
@@ -67,7 +72,10 @@ local function buildStep()
    local v=buckets[b]
    v.count=v.count+1;v.digest=(v.digest+hash(encoded))%2147483647
    v.records[#v.records+1]=encoded
-   v.hashes[hash(encoded)]=encoded
+   local h=hash(encoded)
+   local variants=v.hashes[h]
+   if not variants then variants={};v.hashes[h]=variants elseif not variants[encoded] then rx.hashCollisions=rx.hashCollisions+1 end
+   variants[encoded]=true
    keys[encoded]=true
   end
  end
@@ -125,13 +133,16 @@ local function receive(msg,sender)
   if not ready then return end
   local b=tonumber(payload:match("^I;(%d+)$"))
   if not b or b>31 then rx.invalid=rx.invalid+1;return end
-  rx.request=rx.request+1
+  rx.request=rx.request+1;rx.inventoryRequests=rx.inventoryRequests+1
   if t-(p["inventory"..b] or -1000)<120 then return end
   p["inventory"..b]=t
   local list=buckets[b].records
   local start=(p["invOffset"..b] or 0)+1
   local stop=math.min(#list,start+19)
-  for i=start,stop do enqueue("K;"..b..";"..hash(list[i])) end
+  for i=start,stop do
+   enqueue("K;"..b..";"..hash(list[i])) -- legacy inventory compatibility
+   enqueue("K2;"..b..";"..hash(list[i])..";"..hash2(list[i]))
+  end
   p["invOffset"..b]=stop>=#list and 0 or stop
  elseif payload:sub(1,2)=="K;" then
   if not ready then return end
@@ -142,17 +153,38 @@ local function receive(msg,sender)
   if not found and t-(p["want"..h] or -1000)>180 then
    p["want"..h]=t;enqueue("R;"..b..";"..h)
   end
+ elseif payload:sub(1,3)=="K2;" then
+  if not ready then return end
+  local b,h,h2=payload:match("^K2;(%d+);(%d+);(%d+)$")
+  b=tonumber(b);h=tonumber(h);h2=tonumber(h2)
+  if not b or b>31 or not h or h>2147483646 or not h2 or h2>2147483646 then rx.invalid=rx.invalid+1;return end
+  local found=false
+  for encoded in pairs(buckets[b].hashes[h] or {}) do if hash2(encoded)==h2 then found=true;break end end
+  local key="want2"..b..":"..h..":"..h2
+  if not found and t-(p[key] or -1000)>180 then p[key]=t;enqueue("R2;"..b..";"..h..";"..h2) end
  elseif payload:sub(1,2)=="R;" then
   if not ready then return end
   local b,h=payload:match("^R;(%d+);(%d+)$")
   b=tonumber(b);h=tonumber(h)
   if not b or b>31 or not h then rx.invalid=rx.invalid+1;return end
-  rx.request=rx.request+1
+  rx.request=rx.request+1;rx.recordRequests=rx.recordRequests+1
   if t-(p["serve"..h] or -1000)<180 then return end
   p["serve"..h]=t
-  local entry=buckets[b].hashes[h]
-  if entry then enqueue("D;"..entry) end
+  for entry in pairs(buckets[b].hashes[h] or {}) do if enqueue("D;"..entry) then rx.dataSent=rx.dataSent+1 end end
+ elseif payload:sub(1,3)=="R2;" then
+  if not ready then return end
+  local b,h,h2=payload:match("^R2;(%d+);(%d+);(%d+)$")
+  b=tonumber(b);h=tonumber(h);h2=tonumber(h2)
+  if not b or b>31 or not h or not h2 then rx.invalid=rx.invalid+1;return end
+  rx.request=rx.request+1;rx.recordRequests=rx.recordRequests+1
+  local key="serve2"..b..":"..h..":"..h2
+  if t-(p[key] or -1000)<180 then return end
+  p[key]=t
+  for entry in pairs(buckets[b].hashes[h] or {}) do
+   if hash2(entry)==h2 and enqueue("D;"..entry) then rx.dataSent=rx.dataSent+1 end
+  end
  elseif payload:sub(1,2)=="D;" then
+  rx.dataReceived=rx.dataReceived+1
   local kind,inst,diff,nid,sid,name=payload:match("^D;([NS]);([^;]+);(%d+);(%d+);(%d+);([^;]*)$")
   if not kind then rx.invalid=rx.invalid+1;return end
   local b,canonical=record("",{kind=kind,instance=inst,difficulty=diff,npc=nid,spell=sid,name=name})
@@ -209,7 +241,7 @@ end)
 function DBMCoASmartSync3Snapshot()
  local n=0
  for _,p in pairs(peers) do if now()-p.last<180 then n=n+1 end end
- return {ready=ready,peers=n,queue=math.max(0,#queue-head+1),hello=rx.hello,summaries=rx.summary,requests=rx.request,applied=rx.applied,duplicates=rx.duplicate,rejected=rx.invalid,throttled=rx.throttled}
+ return {ready=ready,peers=n,queue=math.max(0,#queue-head+1),hello=rx.hello,summaries=rx.summary,requests=rx.request,inventoryRequests=rx.inventoryRequests,recordRequests=rx.recordRequests,dataSent=rx.dataSent,dataReceived=rx.dataReceived,hashCollisions=rx.hashCollisions,applied=rx.applied,duplicates=rx.duplicate,rejected=rx.invalid,throttled=rx.throttled}
 end
 SLASH_COASMART3_1="/coasmart3"
 function DBMCoASmartSync3Command(arg)
@@ -220,7 +252,7 @@ function DBMCoASmartSync3Command(arg)
  elseif arg=="hello" then enqueue("H;3")
  elseif arg=="rebuild" then DBMCoASmartSync3Dirty() end
  local n=0;for _,p in pairs(peers) do if now()-p.last<180 then n=n+1 end end
- log("baseline="..BASELINE_ID.." learned="..tostring(db.knowledge and "persistent" or "none").." enabled="..tostring(not db.smartSync3Disabled).." index="..(ready and "ready" or "building").." peers="..n.." queue="..math.max(0,#queue-head+1).." H/S/R/D="..rx.hello.."/"..rx.summary.."/"..rx.request.."/"..rx.applied.." duplicates="..rx.duplicate.." rejected="..rx.invalid.." throttled="..rx.throttled)
+ log("baseline="..BASELINE_ID.." learned="..tostring(db.knowledge and "persistent" or "none").." enabled="..tostring(not db.smartSync3Disabled).." index="..(ready and "ready" or "building").." peers="..n.." queue="..math.max(0,#queue-head+1).." H/S/R/D="..rx.hello.."/"..rx.summary.."/"..rx.request.."/"..rx.applied.." inv="..rx.inventoryRequests.." rec="..rx.recordRequests.." sent="..rx.dataSent.." received="..rx.dataReceived.." collisions="..rx.hashCollisions.." duplicates="..rx.duplicate.." rejected="..rx.invalid.." throttled="..rx.throttled)
 end
 SlashCmdList.COASMART3=DBMCoASmartSync3Command
 

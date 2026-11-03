@@ -1,3 +1,11 @@
+## 5.2.22 — Collision-safe SmartSync identity
+
+- Retain every canonical record when short fingerprints collide.
+- Add K2/R2 extended fingerprints for exact new-client reconciliation while continuing to read legacy K/R and D packets.
+- Separate inventory requests, record requests, data sent/received, and collision diagnostics.
+- Add Lua 5.1 regression coverage for extended inventory and exact R2 responses.
+- Preserve existing saved knowledge, protocols, and encounter features; in-game multi-client verification remains pending.
+
 ## 5.2.21-TEST — CoASync validation test harness correction
 - Keep the SmartSync v3 channel identity guard: require both the local channel number and the matching plain or decorated CoASync name.
 - Load the compatibility helper explicitly in the regression test, then validate accepted peer accounting and wrong-channel rejection.
@@ -130,6 +138,14 @@
 - Full SmartSync v3 and in-game validation of research-derived mechanics remain outstanding.
 
 # Changelog
+
+## 5.2.22 — Collision-safe SmartSync identity
+
+- Retain every canonical record when short fingerprints collide.
+- Add extended K2/R2 fingerprints for exact new-client inventory reconciliation while keeping old K/R and D packet handling.
+- Report inventory and record requests separately from data sent/received and collision counts.
+- Add Lua 5.1 regression coverage for extended inventory and exact record responses.
+- Existing protocols, SavedVariables, and encounter features remain intact; live multi-client testing is pending.
 
 All published versions and downloadable packages are listed under [Releases](https://github.com/robsdow87/DBM-CoA/releases).
 

@@ -1,10 +1,10 @@
-# DBM-CoA v5.2.21 — Deadly Boss Mods for Conquest Reborn
+# DBM-CoA v5.2.22 — Deadly Boss Mods for Conquest Reborn
 
-> **[Download Here!](https://github.com/uncle-bone/DBM-CoA/releases/download/v5.2.21/DBM-CoA-v5.2.21.zip)**
+> **[Download Here!](https://github.com/uncle-bone/DBM-CoA/releases/download/v5.2.22/DBM-CoA-v5.2.22.zip)**
 
 **Maintained by Uncle Bone** · [CoA Research & Addons](https://coa-research.unclebone.workers.dev/) · [Report an issue](https://github.com/uncle-bone/DBM-CoA/issues)
 
-**Current stable release: v5.2.21.** Fixes SmartSync v3 CoASync receive validation by requiring both the local CoASync channel number and matching plain/decorated channel name. The matching Lua compatibility helper is covered by regression tests for valid peer receipt and rejected mismatches. Existing protocols, saved data, encounter features, and user preferences are preserved. Automated Lua and package validation passed; in-game multi-client verification remains pending.
+**Current stable release: v5.2.22.** SmartSync v3 now retains multiple records that share a short fingerprint, exchanges extended `K2`/`R2` fingerprints to identify exact records, and reports inventory requests, record requests, data sent/received, and detected short-hash collisions separately. Existing `DCOAS3`, `DCOAL31`, and `DCOAR21` handling and saved learner data remain intact. Automated Lua/package validation and in-game multi-client verification are separate; live verification remains pending.
 
 ## 🚨 REQUIRED UPDATE STEP: DELETE THE OLD `DBM-CoA-Observer` FOLDER
 
@@ -21,7 +21,15 @@
 
 Back up your `WTF` SavedVariables before updating. Keeping SavedVariables preserves learner history and user preferences.
 
-## What's new in v5.2.21 — current stable
+## What's new in v5.2.22 — current stable
+
+- Store every record under a short-hash bucket instead of allowing a collision to overwrite another record.
+- Add `K2`/`R2` inventory and request messages using a second fingerprint; keep legacy `K`/`R` packets readable and answer legacy requests with all colliding records.
+- Split diagnostics into inventory requests, record requests, data sent, data received, and short-hash collisions.
+- Add a Lua 5.1 regression for indexed inventory and exact `R2` record responses.
+- Preserve existing saved knowledge and all encounter modules.
+
+## Previous stable v5.2.21 — CoASync receive validation
 
 - Validate both local CoASync channel number and plain/decorated name before SmartSync v3 receives a packet.
 - Regression-test the compatibility helper used by the actual event handler, including peer receipt and wrong-name/index rejection.

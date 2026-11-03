@@ -1,3 +1,13 @@
+# DBM-CoA v5.2.22 — Collision-safe SmartSync identity
+
+- Preserve all canonical records sharing a short fingerprint and add a second fingerprint for exact K2/R2 inventory reconciliation.
+- Continue reading legacy K/R requests and D records; legacy collision requests return every record sharing the short hash.
+- Expand diagnostics with inventory requests, record requests, data sent/received, and collision counts.
+- Add Lua 5.1 regression coverage for inventory fingerprints and exact R2 responses.
+- Preserve existing saved knowledge, protocols and encounter features.
+
+Stable release. Automated Lua and package checks run before publication. In-game multi-client verification remains pending.
+
 # DBM-CoA v5.2.21 (prerelease) — CoASync identity validation
 
 - Require both the local CoASync channel number and matching plain/decorated channel name before SmartSync v3 receives packets.
