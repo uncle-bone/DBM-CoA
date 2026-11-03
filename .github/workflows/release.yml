@@ -29,6 +29,18 @@ jobs:
           assert '## Version: 6.0.0-test1' in toc
           assert 'GetAddOnMetadata("DBM-CoA-Learner","Version")' in options
           assert 'GetAddOnMetadata("DBM-CoA-Learner","Version")' in smart
+          assert 'CustomDungeonResearch.lua' in toc
+          custom=(Path('DBM-CoA-Learner')/'CustomDungeonResearch.lua').read_text()
+          assert 'SLASH_DBMCOADUNGEONS1' in custom
+          import json
+          research=Path('DBM-CoA-Learner/V6-Research')
+          for name in ('PRIORITY-SEVEN-DUNGEONS.json','BOSS-REGISTRY.json','DIFFICULTY-MATRIX.json','INSTANCE-REGISTRY.json','INSTANCE-SOURCE-MAP.json','SOURCE-PROVENANCE.json','DBM-MODULE-COVERAGE.json'):
+              obj=json.loads((research/name).read_text())
+              assert obj, name
+          seven=json.loads((research/'PRIORITY-SEVEN-DUNGEONS.json').read_text())
+          assert len(seven['dungeons'])==7
+          print('v6 research datasets and passive custom dungeon loader verified')
+
           PY
       - name: Verify CoASync migration and safe channel ownership
         run: |
