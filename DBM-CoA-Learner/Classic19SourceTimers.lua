@@ -91,7 +91,15 @@ local registry=DBMCoAExperimentalBarRegistry
 local function npc(g) if type(g)~="string" then return end if g:sub(1,6)=="0xF130" then return tonumber(g:sub(7,10),16) end return tonumber(g:match("^Creature%-%d+%-%d+%-%d+%-%d+%-(%d+)%-")) end
 local function zone() local _,kind,_,_,_,_,_,id=GetInstanceInfo();map=(kind=="party" or kind=="raid") and (tonumber(id) or 0) or 0;last={} end
 local function stock(n,s) local t=DBMCoAStockTimerIndex;return t and t[n] and t[n][s] end
-local function bar(sec,sid) if not DBM or not DBM.Bars or not DBM.Bars.CreateBar then return end local name,_,icon=GetSpellInfo(sid);DBM.Bars:CreateBar(sec,"[CoA source?] "..(name or tostring(sid)),icon or "Interface\\Icons\\INV_Misc_PocketWatch_01") end
+local function bar(sec,sid,nid)
+ if not DBM or not DBM.Bars or not DBM.Bars.CreateBar then return end
+ local key=tostring(map)..":"..tostring(nid)..":"..tostring(sid)
+ local now=GetTime()
+ if registry[key] and now-registry[key]<math.max(3,sec-1) then return end
+ registry[key]=now
+ local name,_,icon=GetSpellInfo(sid)
+ DBM.Bars:CreateBar(sec,"[CoA source?] "..(name or tostring(sid)),icon or "Interface\\Icons\\INV_Misc_PocketWatch_01")
+end
 local function log(...)
  local db=DBMCoALearnerDB;if not db or db.coaDungeonResearchEnabled==false or db.coaDungeonPredictiveTimers==false then return end
  local t=byMap[map];if not t then return end
