@@ -1,5 +1,5 @@
 -- DBM-CoA v3.33: observed NPC spell research index.
--- Derived from DBM-CoA-Observer(5).lua; not confirmed encounter mechanics.
+-- Historical research index; not confirmed encounter mechanics.
 -- Does not create warnings or timers. Do not promote to encounter spells without verification.
 DBMCoAResearchIndex = {
   [1374] = { name="Rejold Barleybrew", spells={{17261,"SPELL_CAST_SUCCESS",90},{53148,"SPELL_AURA_APPLIED",3},{53148,"SPELL_AURA_REMOVED",4},{54131,"SPELL_AURA_APPLIED",9},{54131,"SPELL_AURA_REMOVED",7},{54681,"SPELL_AURA_APPLIED",12},{54681,"SPELL_AURA_APPLIED_DOSE",2},{54681,"SPELL_AURA_REMOVED",6},{55497,"SPELL_CAST_SUCCESS",13},{61685,"SPELL_AURA_APPLIED",4},{61685,"SPELL_AURA_REMOVED",5},{61685,"SPELL_CAST_SUCCESS",4},{504684,"SPELL_AURA_APPLIED",12},{504684,"SPELL_AURA_REMOVED",15},{572047,"SPELL_AURA_APPLIED",18},{572047,"SPELL_AURA_REMOVED",18},{707369,"SPELL_AURA_APPLIED",2},{707369,"SPELL_AURA_REMOVED",1},{806562,"SPELL_AURA_APPLIED",20},{806562,"SPELL_AURA_REMOVED",20},} },

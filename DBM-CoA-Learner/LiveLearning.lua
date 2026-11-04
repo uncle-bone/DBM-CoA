@@ -147,7 +147,7 @@ local listFrame,listText
 local function buildList()
  local db=DBMCoALearnerDB
  local data=db and db.encounterTimers24 or {}
- local lines={"DBM-CoA Learned Timers (observed only)","Raid / Dungeon -> Instance -> Difficulty -> NPC -> Spell"}
+ local lines={"DBM-CoA Encounter Knowledge: local observations + SmartSync imports", "Raid / Dungeon -> Instance -> Difficulty -> NPC -> Spell"}
  local total=0
  for _,typeName in ipairs({"raid","party"}) do
   local root=data[typeName] or {}
@@ -173,8 +173,31 @@ local function buildList()
    end
   end
  end
- if total==0 then lines[#lines+1]="No categorized observations yet. Enter a dungeon or raid and fight enemies." end
- if total>245 then lines[#lines+1]="(additional records hidden)" end
+ -- SmartSync v3 reconciles N/S discovery records in db.knowledge, separately
+ -- from local interval samples. Show successfully imported discoveries here;
+ -- never mislabel a discovery as a measured cooldown.
+ local shared,localKnowledge=0,0
+ local knowledge=db and db.knowledge or {}
+ local items={}
+ for key,entry in pairs(knowledge) do
+  if type(entry)=="table" and (entry.kind=="N" or entry.kind=="S") and (entry.instance and entry.npc) then
+   if entry.remote then shared=shared+1 else localKnowledge=localKnowledge+1 end
+   items[#items+1]=entry
+  end
+ end
+ table.sort(items,function(a,b)
+  local ak=tostring(a.instance)..":"..tostring(a.npc)..":"..tostring(a.spell)
+  local bk=tostring(b.instance)..":"..tostring(b.npc)..":"..tostring(b.spell)
+  return ak<bk
+ end)
+ lines[#lines+1]="[SMARTSYNC DISCOVERIES] Imported: "..shared.." | Local: "..localKnowledge
+ for _,entry in ipairs(items) do
+  if #lines<490 then
+   lines[#lines+1]="  ["..(entry.remote and "SHARED" or "LOCAL").."] "..tostring(entry.instance).." | NPC "..tostring(entry.npc).." | "..(entry.kind=="S" and ("Spell "..tostring(entry.spell)) or "NPC discovery").." | "..tostring(entry.name or "")
+  end
+ end
+ if total==0 and #items==0 then lines[#lines+1]="No saved observations or SmartSync discoveries yet." end
+ if total>245 or #items>245 then lines[#lines+1]="(additional records may be hidden; SavedVariables retained)" end
  return table.concat(lines,"\n")
 end
 SLASH_COATIMINGS1="/coatimings"
@@ -198,7 +221,8 @@ SlashCmdList.COATIMINGS=function()
   listText:SetMultiLine(true);listText:SetAutoFocus(false)
   listText:SetFontObject(GameFontHighlightSmall)
   listText:SetWidth(565);listText:SetHeight(12000)
-  listText:EnableMouse(false)
+  listText:EnableMouse(true)
+  listText:SetScript("OnEscapePressed",function(self) self:ClearFocus() end)
   scroll:SetScrollChild(listText)
  end
  listText:SetText(buildList())
@@ -206,16 +230,53 @@ SlashCmdList.COATIMINGS=function()
 end
 
 -- Inspect automatic dungeon and raid learning without changing saved preferences.
+-- Read-only, copyable status report. Ctrl+A then Ctrl+C in the field.
+local learningWindow,learningText
+local function showLearningReport(report)
+ if not learningWindow then
+  learningWindow=CreateFrame("Frame","DBMCoALearningCopyWindow",UIParent)
+  learningWindow:SetWidth(610);learningWindow:SetHeight(205)
+  learningWindow:SetPoint("CENTER",UIParent,"CENTER",0,80)
+  learningWindow:SetFrameStrata("DIALOG")
+  learningWindow:SetMovable(true);learningWindow:EnableMouse(true)
+  learningWindow:RegisterForDrag("LeftButton")
+  learningWindow:SetScript("OnDragStart",function(self) self:StartMoving() end)
+  learningWindow:SetScript("OnDragStop",function(self) self:StopMovingOrSizing() end)
+  local bg=learningWindow:CreateTexture(nil,"BACKGROUND")
+  bg:SetAllPoints(learningWindow);bg:SetTexture(0,0,0,0.93)
+  local close=CreateFrame("Button",nil,learningWindow,"UIPanelCloseButton")
+  close:SetPoint("TOPRIGHT",0,0)
+  local heading=learningWindow:CreateFontString(nil,"OVERLAY","GameFontNormal")
+  heading:SetPoint("TOPLEFT",14,-15)
+  heading:SetText("DBM-CoA Learning Status - Ctrl+A / Ctrl+C to copy")
+  local scroll=CreateFrame("ScrollFrame",nil,learningWindow,"UIPanelScrollFrameTemplate")
+  scroll:SetPoint("TOPLEFT",14,-43);scroll:SetPoint("BOTTOMRIGHT",-34,14)
+  learningText=CreateFrame("EditBox",nil,scroll)
+  learningText:SetMultiLine(true);learningText:SetAutoFocus(false)
+  learningText:SetFontObject(GameFontHighlightSmall)
+  learningText:SetWidth(540);learningText:SetHeight(110)
+  learningText:EnableMouse(true)
+  learningText:SetScript("OnEscapePressed",function(self) self:ClearFocus() end)
+  scroll:SetScrollChild(learningText)
+ end
+ learningText:SetText(report)
+ learningWindow:Show()
+ learningText:SetFocus()
+ learningText:HighlightText()
+end
 SLASH_COALEARNING1="/coalearning"
 SlashCmdList.COALEARNING=function()
  local d=DBMCoALearnerDB or {}
  local name,kind,difficulty=GetInstanceInfo()
  local scope=(kind=="party" and "Dungeon") or (kind=="raid" and "Raid") or "Outside instance"
  local state=(d.disabled or d.experimentalDisabled) and "OFF" or "ON"
+ local line1="DBM-CoA automatic learning: "..state.." | "..scope.." | "..tostring(name or "Unknown").." | difficulty "..tostring(difficulty or 0)
+ local line2="Saved encounter categories: /coatimings | Toggle: /dbmcoa experimental on/off"
  if DEFAULT_CHAT_FRAME then
-  DEFAULT_CHAT_FRAME:AddMessage("DBM-CoA automatic learning: "..state.." | "..scope.." | "..tostring(name or "Unknown").." | difficulty "..tostring(difficulty or 0))
-  DEFAULT_CHAT_FRAME:AddMessage("Saved encounter categories: /coatimings | Toggle: /dbmcoa experimental on/off")
+  DEFAULT_CHAT_FRAME:AddMessage(line1)
+  DEFAULT_CHAT_FRAME:AddMessage(line2)
  end
+ showLearningReport(line1.."\\n"..line2)
 end
 
 -- Test native DBM timer rendering without combat or learned mechanic records.
@@ -238,4 +299,90 @@ SlashCmdList.COASTATUS=function()
   DEFAULT_CHAT_FRAME:AddMessage("DBM-CoA: zone="..tostring(z).." type="..tostring(t).." | learned spell records="..count)
   DEFAULT_CHAT_FRAME:AddMessage("DBM-CoA: research NPCs="..tostring(DBMCoAResearchIndex and 52 or 0).." | /coatest /coaresearch /coatimings")
  end
+end
+
+
+-- Read-only knowledge audit. Counts stored rows separately from unique NPC/spell
+-- associations; never treats discoveries as confirmed encounter timers.
+SLASH_COAKNOWLEDGE1="/coaknowledge"
+SlashCmdList.COAKNOWLEDGE=function()
+ local d=DBMCoALearnerDB or {}
+ local rows,shared,localRows=0,0,0
+ local npcSet,spellSet={},{}
+ local uniqueNPC,uniqueSpells=0,0
+ for _,e in pairs(d.knowledge or {}) do
+  if type(e)=="table" and (e.kind=="N" or e.kind=="S") and e.instance and e.npc then
+   rows=rows+1
+   if e.remote then shared=shared+1 else localRows=localRows+1 end
+   local base=tostring(e.instance)..":"..tostring(e.npc)
+   if not npcSet[base] then npcSet[base]=true;uniqueNPC=uniqueNPC+1 end
+   if e.kind=="S" and e.spell then
+    local k=base..":"..tostring(e.spell)
+    if not spellSet[k] then spellSet[k]=true;uniqueSpells=uniqueSpells+1 end
+   end
+  end
+ end
+ local observations,measured,predictable,verified,stockCovered=0,0,0,0,0
+ local instances={}
+ for _,typ in ipairs({"raid","party","world"}) do
+  for inst,diffs in pairs((d.encounterTimers24 or {})[typ] or {}) do
+   if type(diffs)=="table" then
+    for _,mobs in pairs(diffs) do
+     if type(mobs)=="table" then
+      for npcId,boss in pairs(mobs) do
+       if type(boss)=="table" then
+        for sid,rec in pairs(boss.spells or {}) do
+         if type(rec)=="table" then
+          observations=observations+1
+          local mean,count=intervalStats(type(rec.samples)=="table" and rec.samples or {})
+          if mean then measured=measured+1 end
+          local stock=DBMCoAStockTimerIndex and DBMCoAStockTimerIndex[tonumber(npcId)]
+          local hasStock=stock and stock[tonumber(sid)]
+          if hasStock then stockCovered=stockCovered+1 end
+          if mean and count>=5 and not hasStock then predictable=predictable+1 end
+          if rec.verified==true then verified=verified+1 end
+          instances[typ..":"..tostring(inst)]=true
+         end
+        end
+       end
+      end
+     end
+    end
+   end
+  end
+ end
+ local instanceCount=0
+ for _ in pairs(instances) do instanceCount=instanceCount+1 end
+ local lines={
+  "DBM-CoA Encounter Knowledge Summary (read-only)",
+  "SmartSync stored discovery rows: "..rows.." (shared "..shared..", local "..localRows..")",
+  "Unique discovered instance/NPC pairs: "..uniqueNPC,
+  "Unique discovered instance/NPC/spell pairs: "..uniqueSpells,
+  "Observed spell records: "..observations.." across "..instanceCount.." observed areas",
+  "Measured stable intervals (3+ consistent samples): "..measured,
+  "Prediction-eligible (5+ consistent samples, no indexed stock timer): "..predictable,
+  "Observed spells with indexed stock timers: "..stockCovered,
+  "Explicitly verified observed records: "..verified,
+  "Current automatic learning: "..(enabled() and "ON" or "OFF"),
+  "Shared discovery rows are NOT automatically timers or active boss warnings.",
+  "Prebuilt encounter-module coverage is NOT fully audited by this command.",
+  "Details: /coatimings  |  Sync: /dbmcoa smart3 status"
+ }
+ local report=table.concat(lines,"\n")
+ local w=_G.DBMCoAKnowledgeSummaryWindow
+ if not w then
+  w=CreateFrame("Frame","DBMCoAKnowledgeSummaryWindow",UIParent)
+  w:SetWidth(690);w:SetHeight(340);w:SetPoint("CENTER")
+  w:SetFrameStrata("DIALOG");w:SetMovable(true);w:EnableMouse(true)
+  w:RegisterForDrag("LeftButton");w:SetScript("OnDragStart",w.StartMoving);w:SetScript("OnDragStop",w.StopMovingOrSizing)
+  w:SetBackdrop({bgFile="Interface\\DialogFrame\\UI-DialogBox-Background",edgeFile="Interface\\DialogFrame\\UI-DialogBox-Border",edgeSize=24,insets={left=8,right=8,top=8,bottom=8}})
+  local close=CreateFrame("Button",nil,w,"UIPanelCloseButton");close:SetPoint("TOPRIGHT",-5,-5)
+  local edit=CreateFrame("EditBox",nil,w)
+  edit:SetMultiLine(true);edit:SetAutoFocus(false);edit:SetFontObject(ChatFontNormal)
+  edit:SetWidth(640);edit:SetHeight(270);edit:SetPoint("TOPLEFT",24,-35)
+  edit:SetScript("OnEscapePressed",function(self) self:ClearFocus();w:Hide() end)
+  w.copyText=edit
+ end
+ w.copyText:SetText(report);w:Show();w.copyText:SetFocus();w.copyText:HighlightText()
+ if DEFAULT_CHAT_FRAME then DEFAULT_CHAT_FRAME:AddMessage("DBM-CoA: /coaknowledge summary open; Ctrl+C copies selected report.") end
 end

@@ -1,12 +1,12 @@
-**v6 research test ZIP:** v6.0.0-test1 includes source-backed research in DBM-CoA-Learner/V6-Research/ and passive tracking of the seven priority custom dungeons. Use /coadungeons in game. These are research datasets, NOT seven completed native boss modules. Large source catalogs remain at https://github.com/uncle-bone/CoA-Research/tree/main/research/dbm/v6. Existing native DBM and SmartSync v3 remain intact.
+**Current stable release: v6.0.0 — Knowledge Summary.** Includes source-backed research for seven priority custom dungeons, passive visit tracking through `/coadungeons`, and the existing DBM encounter modules, learning, and SmartSync v3. The research datasets are reference candidates; they do not represent seven completed native boss modules or verified live timers.
 
-# DBM-CoA v5.2.23 — Deadly Boss Mods for Conquest Reborn
+# DBM-CoA v6.0.0 — Deadly Boss Mods for Conquest Reborn
 
 > **[Download Here!](https://coa-research.unclebone.workers.dev/download/DBM-CoA)**
 
 **Maintained by Uncle Bone** · [CoA Research & Addons](https://coa-research.unclebone.workers.dev/) · [Report an issue](https://github.com/uncle-bone/DBM-CoA/issues)
 
-**Current v6 test build: [v6.0.0-test1](https://github.com/uncle-bone/DBM-CoA/releases/tag/v6.0.0-test1)** (prerelease, pending automated verification). Includes isolated `/dbmcoa smart3 simulate`; existing SmartSync v3 peer sync remains enabled and compatible. The v6 encounter overhaul is not yet complete; this build is for regression testing.\n\n**Current stable release: v5.2.23.** SmartSync v3 coalesces identical queued packets across peers, reducing redundant inventory traffic without changing K/R/D or K2/R2 wire formats. Live v5.2.23 testing observed 33 prevented duplicate enqueue attempts, queue reduction from 159 to 117, 51 incoming records (3 newly applied and 48 duplicates), and zero rejected or throttled packets. Older compatible client versions remain supported by the existing packet handlers; mixed-version end-to-end testing is still pending.
+**Current stable release: v6.0.0 — Knowledge Summary.** The release bundles CoA-Research material for seven priority custom dungeons and adds passive visit tracking through `/coadungeons`. Existing DBM encounter modules, learner data, SavedVariables, and SmartSync v3 remain supported. Research records remain candidate/reference data; this release does not claim completed native boss modules or verified timers for all seven dungeons.
 
 ## 🚨 REQUIRED UPDATE STEP: DELETE THE OLD `DBM-CoA-Observer` FOLDER
 
@@ -23,7 +23,7 @@
 
 Back up your `WTF` SavedVariables before updating. Keeping SavedVariables preserves learner history and user preferences.
 
-## What's new in v5.2.23 — current stable
+## What's new in v5.2.23 — previous stable
 
 - Avoid adding identical unsent SmartSync v3 packets repeatedly when several peers request the same records.
 - Add `queueDedup` to `/dbmcoa smart3` diagnostics to count prevented duplicate enqueue attempts.
@@ -117,14 +117,14 @@ Research-backed candidate timers and learned predictions are **experimental**. S
 3. Replace old DBM addon folders with the folders from the current stable release ZIP. Keep all supplied DBM folders alongside one another; do **not** combine them into one folder.
 4. Start Conquest Reborn and play. The learner and new research features start automatically unless previously disabled in saved settings.
 
-**Release version:** v5.2.23 (current stable). See [GitHub Releases](https://github.com/uncle-bone/DBM-CoA/releases) for the published download.
+**Previous stable release:** v5.2.23. See [GitHub Releases](https://github.com/uncle-bone/DBM-CoA/releases) for the published download.
 
 ## Known limits
 
 - Dungeon research roster coverage is not the same as fully implemented boss warnings for all 19 dungeons.
 - The 80 timer candidates are source-derived and **not live verified**.
 - Custom Zul'Gurub Ascension-specific encounter scripts are **not yet integrated**.
-- Live SmartSync v3 record exchange and duplicate-queue coalescing were observed on v5.2.23; mixed-version peer testing, long-duration queue behavior, compact window layout, and default UI/DragonUI/ElvUI behavior still need further validation.
+- The current v6.0.0 release preserves existing SmartSync v3 formats. Research datasets remain candidates and do not establish complete live encounter coverage.
 - The discontinued Observer's separately saved data is not automatically merged into the AutoLearner.
 
 ## Credits, support and licensing

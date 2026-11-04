@@ -5,7 +5,6 @@
 local spellByMap={
   [36]={[975011]=true,[2102553]=true,[2102580]=true,[2102576]=true,[2102577]=true,[674]=true,[5200]=true,[5141]=true,[2102559]=true,[2102569]=true,[2102554]=true,[2102590]=true,[2102589]=true,[2102527]=true,[40505]=true,[5208]=true,[2101111]=true,[5213]=true,[2102571]=true},
   [48]={[2102687]=true},
-  [70]={[8374]=true,[11876]=true,[10101]=true}, -- Uldaman: Ironaya, observed in live combat log
   [209]={[975011]=true},
   [229]={[975011]=true,[2102619]=true,[2102203]=true,[2102552]=true,[2100428]=true,[2100148]=true,[2100345]=true,[2102189]=true,[2102825]=true,[2102850]=true,[2100255]=true,[2102851]=true,[2102192]=true,[2102159]=true,[2100205]=true,[2100439]=true,[2100465]=true,[15284]=true,[15615]=true,[10966]=true,[14516]=true,[11972]=true,[15749]=true,[2102741]=true,[2102840]=true,[15580]=true,[16172]=true,[6253]=true,[2102553]=true,[2102138]=true,[2102137]=true},
   [230]={[975011]=true,[505347]=true,[92603]=true,[92606]=true,[381251]=true,[815637]=true,[14033]=true,[17203]=true},

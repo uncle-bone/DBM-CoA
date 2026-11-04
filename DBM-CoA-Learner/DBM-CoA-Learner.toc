@@ -2,7 +2,7 @@
 ## Title: DBM-CoA - Prebuilt Encounter Overhaul + Adaptive Learning
 ## Notes: Automatic encounter learning and opt-out channel synchronization for Conquest of Azeroth.
 ## Dependencies: DBM-Core
-## Version: 6.0.0-test1
+## Version: 6.0.0-central-engine-test1
 ## SavedVariables: DBMCoALearnerDB
 ArchiveRefs.lua
 ArchiveSeed.lua
@@ -31,9 +31,11 @@ SourceTimerEngine.lua
 CoAResearchIntegration.lua
 
 Classic19Research.lua
-FutureInstanceResearch.lua
-CustomDungeonResearch.lua
-FutureRaidEncounters.lua
 Classic19CastWarnings.lua
 
 Classic19SourceTimers.lua
+
+DungeonDataEngine.lua
+CustomDungeonResearch.lua
+FutureInstanceResearch.lua
+FutureRaidEncounters.lua

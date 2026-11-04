@@ -8,10 +8,10 @@
 ## X-DBM-Mod: 1
 ## X-DBM-Mod-Category: Vanilla
 ## X-DBM-Mod-Has-Heroic-Mode: 0
-## X-DBM-Mod-SubCategories: Blackrock Depths,Blackrock Spire,Dire Maul,Scholomance,Stratholme,Blackfathom Deeps,Shadowfang Keep,The Stockade,The Deadmines,Wailing Caverns,Razorfen Kraul,Uldaman,Gnomeregan,Sunken Temple,Razorfen Downs,Scarlet Monastery,Zul'Farrak,Maraudon,Ragefire Chasm
+## X-DBM-Mod-SubCategories: Blackrock Depths,Blackrock Spire,Dire Maul,Scholomance,Stratholme,Blackfathom Deeps
 ## X-DBM-Mod-Name: Party-Vanilla
 ## X-DBM-Mod-Sort: 125
-## X-DBM-Mod-LoadZone: Blackrock Depths,Blackrock Spire,Dire Maul,Scholomance,Stratholme,Blackfathom Deeps,Shadowfang Keep,The Stockade,The Deadmines,Wailing Caverns,Razorfen Kraul,Uldaman,Gnomeregan,Sunken Temple,Razorfen Downs,Scarlet Monastery,Zul'Farrak,Maraudon,Ragefire Chasm
+## X-DBM-Mod-LoadZone: Blackrock Depths,Blackrock Spire,Dire Maul,Scholomance,Stratholme,Blackfathom Deeps
 
 MythicChampion.lua
 localization.en.lua
@@ -132,23 +132,3 @@ Blackfathom Deeps\OldSerrakis.lua
 Blackfathom Deeps\TwilightLord.lua
 Blackfathom Deeps\Zora.lua
 Blackfathom Deeps\AkuMai.lua
-
-
-
-
-
-
-
-Shadowfang Keep\Encounters.lua
-The Stockade\Encounters.lua
-The Deadmines\Encounters.lua
-Wailing Caverns\Encounters.lua
-Razorfen Kraul\Encounters.lua
-Uldaman\Encounters.lua
-Gnomeregan\Encounters.lua
-Sunken Temple\Encounters.lua
-Razorfen Downs\Encounters.lua
-Scarlet Monastery\Encounters.lua
-Zul'Farrak\Encounters.lua
-Maraudon\Encounters.lua
-Ragefire Chasm\Encounters.lua

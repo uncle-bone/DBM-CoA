@@ -1,20 +1,10 @@
-## v6.0.0-test1 research expansion (updated test ZIP)
+# DBM-CoA v6.0.0 — Knowledge Summary (stable)
 
-- Bundle 13 source-provenance research files from CoA-Research v6 inside DBM-CoA-Learner/V6-Research, including seven-dungeon dossiers, boss/instance registries, source map, difficulty matrix, implementation and validation specs.
-- Two large candidate datasets remain canonical in CoA-Research: ENCOUNTER-TIMINGS.json and SPELL-MECHANICS.json. They are not loaded as verified encounter timers.
-- Enable passive custom-dungeon discovery for seven priority dungeons; /coadungeons displays observed visits and candidate map IDs.
-- Preserve stock native DBM, learner and SmartSync v3; do not claim complete native custom boss modules or invent timers.
-
-# DBM-CoA v6.0.0-test1 — SmartSync simulator and compatibility test build
-
-**Prerelease; not a stable v6 encounter overhaul.** This test build preserves existing native DBM encounter modules, learning, predictive timer opt-ins, SavedVariables, and SmartSync v3 peer-to-peer sharing.
-
-- `/dbmcoa smart3 simulate` runs isolated synthetic HELLO, summary, inventory, valid import, duplicate, malformed-packet, and index-rebuild checks through the existing SmartSync receive path.
-- The simulator blocks CoASync network sends and Learner remote-import callbacks, restores live queues, peers, counters, indexes and database state on every exit.
-- SmartSync v3 framing and legacy wire formats remain unchanged. No SmartSync v4 migration.
-- Automated Lua 5.1 and archive checks are required by the release workflow; these do not establish live in-game or cross-client verification.
-- Research for Road to De Other Side, Vaults of the Inquisition, and Manastorm is not yet verified as encounter-specific timer data; this build does not invent timers or claim completed v6 boss coverage.
-
+- Bundle source-provenance research files from CoA-Research v6 for seven priority custom dungeons, including dungeon dossiers, encounter registries, source maps, difficulty data, implementation notes, and validation guidance.
+- Add passive custom-dungeon visit discovery. Use `/coadungeons` to review observed visits and candidate map IDs.
+- Preserve existing native DBM modules, learner data, SavedVariables, and SmartSync v3 peer-to-peer synchronization.
+- Keep research records labeled as reference candidates. This release does not claim seven complete native boss modules or verified encounter timers.
+- The in-game knowledge summary was reviewed by the maintainer. Broader live encounter and timer coverage remains an open research and validation area.
 # DBM-CoA v5.2.24 — Native Classic dungeon roster integration (test build)
 
 - Register 13 additional Classic dungeon categories in DBM-Party-Vanilla's native LoadZone/SubCategories metadata.

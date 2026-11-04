@@ -1,9 +1,8 @@
-## v6 research expansion (same test1 prerelease)
+## v6.0.0 stable — Knowledge Summary
 
-- Bundle 13 v6 research documents and registries; keep oversized candidate catalogs canonical in CoA-Research.
-- Load passive custom dungeon tracking and expose /coadungeons, including Road/Vaults naming variants and source map candidates.
-- Preserve existing native DBM, adaptive learning and SmartSync v3; no fabricated boss modules or timers.
-
+- Bundle evidence-labeled CoA-Research material for seven priority custom dungeons and add passive visit tracking through `/coadungeons`.
+- Preserve existing DBM encounter modules, learner data, SavedVariables, and SmartSync v3.
+- Keep research candidates distinct from confirmed live boss mechanics; no complete native timer coverage is claimed.
 # DBM-CoA v6.0.0-test1 (prerelease)
 
 - Add an opt-in isolated SmartSync v3 simulator at `/dbmcoa smart3 simulate` using the actual receive/validation/import path.
@@ -12,6 +11,12 @@
 - Extend Lua 5.1 SmartSync regression to assert valid import, duplicate/malformed rejection, index rebuild, zero simulated sends and unchanged live state.
 - Carry forward native DBM modules and existing adaptive learning/predictive timer opt-ins without claiming unverified v6 dungeon mechanics.
 - Live cross-client synchronization and encounter timing remain unverified for this test build.
+
+## v6.0.0-test2 preparation — SmartSync cleanup regression
+
+- Extend the Lua 5.1 SmartSync regression to force an exception after a simulated remote record reaches the real receive/import path.
+- Verify the simulator reports failure and restores SavedVariables, protocol snapshot, and network/callback isolation; run it again after the forced failure and require success.
+- No release has been published from this handoff package. Two-client synchronization and custom-dungeon mechanics remain unverified in game.
 
 ## 5.2.22 — Collision-safe SmartSync identity
 
@@ -168,3 +173,7 @@ All published versions and downloadable packages are listed under [Releases](htt
 ## Unreleased
 
 - Repository initialized; awaiting verified current addon source.
+
+## v6.0.0-test4 local test packaging
+- Move nine custom dungeon directories and observation registry into DBM-Party-Vanilla; remove separate DBM-CoA-CustomDungeons addon.
+- Extend Vanilla load-zone/subcategory metadata and preserve observation SavedVariables. No fabricated boss mechanics.

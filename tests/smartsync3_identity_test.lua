@@ -83,4 +83,45 @@ assert(afterCount==originalCount,"simulator mutated SavedVariables")
 assert(#sent==sentBefore,"simulator transmitted CoASync packets")
 local afterSim=DBMCoASmartSync3Snapshot()
 for k,v in pairs(beforeSim) do assert(afterSim[k]==v,"simulator changed live state: "..k) end
-print("DBM-CoA SmartSync v3 isolated simulator regression passed; no CoASync packets sent.")
+
+-- Force an exception after a valid D record has passed through the real
+-- receive/import path. Always restore the monkeypatch before asserting results.
+local savedDB=DBMCoALearnerDB
+local savedKnowledge=savedDB.knowledge
+local savedRows={}
+for key,value in pairs(savedKnowledge) do savedRows[key]=value end
+local beforeFailure=DBMCoASmartSync3Snapshot()
+local remoteNotes=0
+local originalNoteCallback=DBMCoALearnerNoteRemote
+DBMCoALearnerNoteRemote=function() remoteNotes=remoteNotes+1 end
+local originalDirty=DBMCoASmartSync3Dirty
+DBMCoASmartSync3Dirty=function() error("forced SmartSync simulator cleanup regression") end
+local callOK,failureSuccess,failureDetails=pcall(DBMCoASmartSync3Simulate)
+DBMCoASmartSync3Dirty=originalDirty
+local checksOK,checksError=pcall(function()
+ assert(callOK,"simulator threw instead of returning its protected error: "..tostring(failureSuccess))
+ assert(failureSuccess==false and tostring(failureDetails):find("forced SmartSync simulator cleanup regression",1,true),"simulator did not report the forced receive-path failure")
+ assert(DBMCoALearnerDB==savedDB and DBMCoALearnerDB.knowledge==savedKnowledge,"failed simulation replaced SavedVariables tables")
+ local rowCount=0
+ for key,value in pairs(DBMCoALearnerDB.knowledge) do
+  rowCount=rowCount+1
+  assert(savedRows[key]==value,"failed simulation altered a SavedVariables row")
+ end
+ local savedCount=0;for _ in pairs(savedRows) do savedCount=savedCount+1 end
+ assert(rowCount==savedCount,"failed simulation altered SavedVariables record count")
+ assert(#sent==sentBefore,"failed simulation transmitted CoASync packets")
+ assert(remoteNotes==0,"failed simulation invoked live remote-import callback")
+ local afterFailure=DBMCoASmartSync3Snapshot()
+ for k,v in pairs(beforeFailure) do assert(afterFailure[k]==v,"failed simulation did not restore live state: "..k) end
+
+ -- Run again after the injected error: prove the simulator guard and receive/index state recovered.
+ local retryOK,retryDetails=DBMCoASmartSync3Simulate()
+ assert(retryOK,retryDetails or "simulator did not recover after forced failure")
+ assert(DBMCoALearnerDB==savedDB and DBMCoALearnerDB.knowledge==savedKnowledge,"recovery run replaced SavedVariables tables")
+ assert(#sent==sentBefore and remoteNotes==0,"recovery run leaked a packet or live callback")
+ local afterRetry=DBMCoASmartSync3Snapshot()
+ for k,v in pairs(beforeFailure) do assert(afterRetry[k]==v,"recovery run changed live state: "..k) end
+end)
+DBMCoALearnerNoteRemote=originalNoteCallback
+assert(checksOK,checksError)
+print("DBM-CoA SmartSync v3 K2/R2, isolated simulator and forced-error cleanup regressions passed; no CoASync packets sent.")

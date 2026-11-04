@@ -757,7 +757,7 @@ SlashCmdList.DBMCOA=function(s)
  elseif s=="fast on" then db.fastSyncDisabled=false;say("Batch sync enabled; conservative 0.75s pacing")
  elseif s=="share off" then db.sharingDisabled=true;say("Sync sharing disabled; local recording continues")
  elseif s=="share on" then db.sharingDisabled=false;backfillDone=false;say("Sync sharing enabled")
- elseif s=="syncdebug" or s=="diagnostics" then say(rxSummary());say("Wire="..PREFIX.." archive=DCOAR21 (unchanged); peers3m="..activePeers().." received="..received.." timingReceived="..timingReceived.." lastReceive="..lastReceive)
+ elseif s=="syncdebug" or s=="diagnostics" or s=="diag" then say(rxSummary());say("Wire="..PREFIX.." archive=DCOAR21 (unchanged); peers3m="..activePeers().." received="..received.." timingReceived="..timingReceived.." lastReceive="..lastReceive)
  elseif s=="ping" then if queueControl("H;PING") then say("Ping queued; will send using the 1-second rate limit") else say("Ping queue full; try again shortly") end
  elseif s=="ui off" then db.hideStatus=true;if statusFrame then statusFrame:Hide() end
  elseif s=="ui on" then db.hideStatus=false;db.statusPosition=nil;local ok,err=pcall(makeStatus);if ok and statusFrame then statusFrame:ClearAllPoints();statusFrame:SetPoint("CENTER",UIParent,"CENTER",0,180);statusFrame:Show();statusFrame:Raise();say("Learner window restored and centered") else say("Learner window error: "..tostring(err)) end
@@ -767,5 +767,5 @@ SlashCmdList.DBMCOA=function(s)
  elseif s=="on" then db.disabled=false;refresh();say("Automatic recording enabled")
  elseif s=="clear" then db.sessions={};say("Saved sessions cleared")
  elseif s=="save" then save();refresh();say("Current recording saved (if any)")
- else say("Automatic in instances. Settings: /dbmcoa options. Commands: /dbmcoa status | on | off | save | clear | channel on | channel off | share on/off | fast on/off | experimental on/off | ping | syncdebug | ui on/off | perf | smart3 [hello/rebuild/on/off]") end
+ else say("Automatic in instances. Settings: /dbmcoa options. Commands: /dbmcoa status | on | off | save | clear | channel on | channel off | share on/off | fast on/off | experimental on/off | ping | diag | syncdebug | ui on/off | perf | smart3 [hello/rebuild/on/off]") end
 end

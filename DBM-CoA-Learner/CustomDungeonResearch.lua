@@ -11,6 +11,9 @@ local names = {
   ["Vaults of Inquisition"] = true,
   ["Vaults of the Inquisition"] = true,
   ["Blackrock Caverns"] = true,
+  ["Karazhan Crypts"] = true,
+  ["Tor'Watha"] = true,
+  ["Manastorm Endless"] = true,
 }
 DBMCoACustomDungeonResearch = DBMCoACustomDungeonResearch or {}
 for name in pairs(names) do
@@ -52,7 +55,8 @@ SlashCmdList.DBMCOADUNGEONS = function()
  if not DEFAULT_CHAT_FRAME then return end
  DEFAULT_CHAT_FRAME:AddMessage("|cff66ccffDBM-CoA v6 custom dungeon research|r (passive observation; no unverified boss timers)")
  local ordered = {"Manastorm","Shadowbone Depths","The Temple of Embers","The Radiant Spring",
-  "Road to the Other Side","Vaults of Inquisition","Blackrock Caverns"}
+  "Road to the Other Side","Vaults of Inquisition","Blackrock Caverns",
+  "Karazhan Crypts","Tor'Watha","Manastorm Endless"}
  for _,name in ipairs(ordered) do
   local e = DBMCoACustomDungeonResearch[name]
   local obs = DBMCoALearnerDB and DBMCoALearnerDB.customDungeonObservations
